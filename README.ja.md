@@ -58,10 +58,16 @@ default_interval = 1000
 # 設定ファイル自体の変更チェック間隔（ミリ秒単位）
 config_check_interval = 1000
 
+# 時間帯の定義（省略可）
+[time_periods]
+business_hours = { start = "09:00", end = "17:00" }
+night_shift = { start = "23:00", end = "01:00" }
+
 [files]
 "myfile.txt" = { command = "echo 'File changed!'" }
 "script.py" = { command = "python -m pytest tests/", interval = 2000 }
 "src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
+"batch.csv" = { command = "./process.sh", time_period = "night_shift" }
 ```
 
 ### 設定フォーマット
@@ -72,12 +78,30 @@ config_check_interval = 1000
 - **値**: 実行するシェルコマンドを含む `command` フィールドを持つオブジェクト
   - `command` (必須): ファイル変更時に実行するシェルコマンド
   - `interval` (省略可): このファイルの監視間隔（ミリ秒単位）。省略した場合は `default_interval` が使用されます
-  - `suppress_if_process` (省略可): 実行中のプロセス名にマッチする正規表現パターン。マッチするプロセスが見つかった場合、コマンド実行をスキップします。エディタなどの特定のプログラムが実行中の場合にアクションをトリガーしないようにする場合に便利です。
+  - `suppress_if_process` (省略可): 実行中のプロセス名にマッチする正規表現パターン。マッチするプロセスが見つかった場合、コマンド実行をスキップします。エディタなどの特定のプログラムが実行中の場合にアクションをトリガーしないようにする場合に便利です
+  - `time_period` (省略可): ファイルを監視する時間帯の名前。`[time_periods]` セクションで定義された時間帯名を指定します。指定した時間帯内でのみファイルを監視します
 
 ### グローバル設定
 
 - `default_interval` (省略可): すべてのファイルのデフォルト監視間隔（ミリ秒単位）。省略した場合は1000ms（1秒）が使用されます
 - `config_check_interval` (省略可): 設定ファイル自体の変更チェック間隔（ミリ秒単位）。設定ファイルが変更されると自動的に再読み込みされます。省略した場合は1000ms（1秒）が使用されます
+
+### 時間帯設定
+
+`[time_periods]` セクション（省略可）で時間帯を定義できます:
+
+- 各時間帯は名前を付けて定義します
+- `start`: 開始時刻（HH:MM形式、例: "09:00"）
+- `end`: 終了時刻（HH:MM形式、例: "17:00"）
+- 日をまたぐ時間帯もサポート（例: `start = "23:00", end = "01:00"`）
+- ファイルごとに `time_period` パラメータで時間帯名を指定すると、その時間帯内でのみファイルを監視します
+
+例:
+```toml
+[time_periods]
+business_hours = { start = "09:00", end = "17:00" }  # 通常の時間帯
+night_shift = { start = "23:00", end = "01:00" }     # 日をまたぐ時間帯
+```
 
 ### 設定例
 
@@ -90,6 +114,11 @@ default_interval = 1000
 # 設定ファイル自体の変更チェック間隔を1秒に設定
 config_check_interval = 1000
 
+# 時間帯の定義
+[time_periods]
+business_hours = { start = "09:00", end = "17:00" }
+after_hours = { start = "18:00", end = "08:00" }  # 日をまたぐ
+
 [files]
 # デフォルト間隔を使用（1秒ごとにチェック）
 "document.txt" = { command = "cp document.txt document.txt.bak" }
@@ -99,6 +128,12 @@ config_check_interval = 1000
 
 # カスタム間隔を指定（5秒ごとにチェック）
 "config.ini" = { command = "systemctl reload myapp", interval = 5000 }
+
+# 営業時間のみ監視
+"report.txt" = { command = "python generate_report.py", time_period = "business_hours" }
+
+# 営業時間外のみ監視（バッチ処理など）
+"batch.csv" = { command = "./process_batch.sh", time_period = "after_hours" }
 ```
 
 ## 動作の仕組み

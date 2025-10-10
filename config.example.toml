@@ -11,11 +11,28 @@ default_interval = 1000
 # Default: 1000 (1 second)
 config_check_interval = 1000
 
+# Optional: Define time periods for file monitoring
+# Files can specify a time_period to only be monitored during certain hours
+# Time periods support spanning across midnight (e.g., 23:00-01:00)
+[time_periods]
+# Business hours: 9 AM to 5 PM
+business_hours = { start = "09:00", end = "17:00" }
+
+# After hours: 6 PM to 8 AM (spans midnight)
+after_hours = { start = "18:00", end = "08:00" }
+
+# Night shift: 11 PM to 1 AM (spans midnight)
+night_shift = { start = "23:00", end = "01:00" }
+
+# Midnight transition example from requirements: 23:59 to 00:01
+midnight_window = { start = "23:59", end = "00:01" }
+
 [files]
 # Each entry defines a file to monitor and a command to execute when it changes
 # Optional: specify 'interval' in milliseconds to override the default for this file
 # Optional: specify 'suppress_if_process' with a regex pattern to skip command execution
 #           when a process matching the pattern is running
+# Optional: specify 'time_period' to only monitor the file during that time period
 
 # Example 1: Monitor a text file and display a message (uses default interval)
 # "example.txt" = { command = "echo 'example.txt has been modified!'" }
@@ -39,3 +56,13 @@ config_check_interval = 1000
 
 # Example 7: Only sync when specific sync process is not running
 # "data.json" = { command = "rsync -av data.json backup/", suppress_if_process = "rsync" }
+
+# Example 8: Monitor only during business hours
+# "work_report.txt" = { command = "python generate_report.py", time_period = "business_hours" }
+
+# Example 9: Monitor only during after hours (night time)
+# "batch_data.csv" = { command = "./process_batch.sh", time_period = "after_hours" }
+
+# Example 10: Combine time period with process suppression
+# "code.py" = { command = "python -m pytest", time_period = "business_hours", suppress_if_process = "vim|code" }
+
