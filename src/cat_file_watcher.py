@@ -102,6 +102,13 @@ class FileWatcher:
                     continue
             
             self.file_last_check[filename] = current_time
+            
+            # Special case: empty filename means execute command without file monitoring
+            # This is useful for process health monitoring or periodic tasks
+            if filename == "":
+                CommandExecutor.execute_command(settings['command'], filename, settings, self.config)
+                continue
+            
             current_timestamp = self._get_file_timestamp(filename)
             
             if current_timestamp is None:

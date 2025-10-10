@@ -77,3 +77,16 @@ midnight_window = { start = "23:59", end = "00:01" }
 # Example 12: Monitor with logging and custom interval
 # "config.json" = { command = "validate_config.sh", interval = 2000, enable_log = true }
 
+# Example 13: Process health monitoring without file watching (empty filename)
+# Executes command every second (default_interval) without monitoring any file
+# Useful for process health checks, auto-restart, or periodic tasks
+# "" = { command = "echo 'Health check at' $(date)" }
+
+# Example 14: Auto-restart process when it's not running
+# Using empty filename with suppress_if_process for process health monitoring
+# Command only executes when the process is NOT running (suppressed when running)
+# "" = { command = "./start_myapp.sh", suppress_if_process = "myapp", interval = 5000 }
+
+# Example 15: Periodic cleanup task (runs every 10 seconds)
+# "" = { command = "find /tmp -type f -mtime +7 -delete", interval = 10000 }
+
