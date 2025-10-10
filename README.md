@@ -30,14 +30,8 @@ Run the file watcher with a configuration file:
 python src/cat_file_watcher.py --config-filename config.toml
 ```
 
-Optional arguments:
+Arguments:
 - `--config-filename`: Path to the TOML configuration file (required)
-- `--interval`: Check interval in seconds (default: 1.0)
-
-Example with custom interval:
-```bash
-python src/cat_file_watcher.py --config-filename config.toml --interval 2.0
-```
 
 ## Configuration
 

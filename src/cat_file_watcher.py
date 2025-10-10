@@ -114,17 +114,11 @@ def main():
         required=True,
         help='Path to the TOML configuration file'
     )
-    parser.add_argument(
-        '--interval',
-        type=float,
-        default=1.0,
-        help='Check interval in seconds (default: 1.0)'
-    )
     
     args = parser.parse_args()
     
     watcher = FileWatcher(args.config_filename)
-    watcher.run(interval=args.interval)
+    watcher.run()
 
 
 if __name__ == '__main__':
