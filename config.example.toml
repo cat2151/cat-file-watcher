@@ -1,0 +1,20 @@
+# Example configuration for cat-file-watcher
+# This file demonstrates how to configure file monitoring and command execution
+
+[files]
+# Each entry defines a file to monitor and a command to execute when it changes
+
+# Example 1: Monitor a text file and display a message
+# "example.txt" = { command = "echo 'example.txt has been modified!'" }
+
+# Example 2: Monitor a Python file and run tests
+# "my_script.py" = { command = "python -m pytest tests/" }
+
+# Example 3: Monitor a config file and reload a service
+# "/etc/myapp/config.ini" = { command = "systemctl reload myapp" }
+
+# Example 4: Monitor a log file and send a notification
+# "app.log" = { command = "notify-send 'Log Updated' 'app.log has new entries'" }
+
+# Example 5: Monitor a document and create a backup
+# "document.txt" = { command = "cp document.txt document.txt.bak" }
