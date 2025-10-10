@@ -203,6 +203,136 @@ class TestFileWatcher(unittest.TestCase):
         result = watcher._get_interval_for_file(settings)
         self.assertIsInstance(result, float, "Result should be a float type")
         self.assertEqual(result, 0.5)
+    
+    def test_process_detection(self):
+        """Test that process detection works correctly."""
+        watcher = FileWatcher(self.config_file)
+        
+        # Test that current python process is detected
+        # The process name should be "python" or "python3"
+        result = watcher._is_process_running(r'python')
+        self.assertTrue(result, "Should detect running python process")
+        
+        # Test with a non-existent process
+        result = watcher._is_process_running(r'nonexistent_process_xyz123')
+        self.assertFalse(result, "Should not detect non-existent process")
+    
+    def test_process_detection_with_regex(self):
+        """Test that process detection works with regex patterns."""
+        watcher = FileWatcher(self.config_file)
+        
+        # Test regex pattern matching
+        result = watcher._is_process_running(r'python[23]?')
+        self.assertTrue(result, "Should detect python process with regex")
+        
+        # Test case-insensitive matching (just ensure it doesn't crash)
+        result = watcher._is_process_running(r'(?i)PYTHON')
+        # Result may vary based on process name case, but should not crash
+        self.assertIsInstance(result, bool)
+    
+    def test_process_detection_invalid_regex(self):
+        """Test that invalid regex patterns are handled gracefully."""
+        watcher = FileWatcher(self.config_file)
+        
+        # Invalid regex pattern
+        result = watcher._is_process_running(r'[invalid(regex')
+        self.assertFalse(result, "Should return False for invalid regex")
+    
+    def test_command_suppression_when_process_exists(self):
+        """Test that command execution is suppressed when specified process exists."""
+        # Create a test file that will be modified
+        test_output = os.path.join(self.test_dir, 'output.txt')
+        
+        # Create config with suppress_if_process for a running process (python)
+        # Use short interval to speed up test
+        config_content = f'''default_interval = 50
+
+[files]
+"{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "python" }}
+'''
+        with open(self.config_file, 'w') as f:
+            f.write(config_content)
+        
+        watcher = FileWatcher(self.config_file)
+        
+        # Initialize tracking
+        watcher._check_files()
+        
+        # Modify the file
+        time.sleep(0.1)
+        with open(self.test_file, 'a') as f:
+            f.write('Modified content\n')
+        
+        # Check files - command should be suppressed
+        watcher._check_files()
+        
+        # Output file should NOT be created because command was suppressed
+        self.assertFalse(os.path.exists(test_output), 
+                        "Command should have been suppressed, output file should not exist")
+    
+    def test_command_execution_when_process_not_exists(self):
+        """Test that command executes normally when specified process doesn't exist."""
+        # Create a test file that will be modified
+        test_output = os.path.join(self.test_dir, 'output.txt')
+        
+        # Create config with suppress_if_process for a non-existent process
+        # Use short interval to speed up test
+        config_content = f'''default_interval = 50
+
+[files]
+"{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "nonexistent_process_xyz123" }}
+'''
+        with open(self.config_file, 'w') as f:
+            f.write(config_content)
+        
+        watcher = FileWatcher(self.config_file)
+        
+        # Initialize tracking
+        watcher._check_files()
+        
+        # Modify the file
+        time.sleep(0.1)
+        with open(self.test_file, 'a') as f:
+            f.write('Modified content\n')
+        
+        # Check files - command should execute
+        watcher._check_files()
+        
+        # Output file should be created because process doesn't exist
+        self.assertTrue(os.path.exists(test_output), 
+                       "Command should have executed, output file should exist")
+    
+    def test_command_execution_without_suppress_if_process(self):
+        """Test that commands execute normally when suppress_if_process is not specified."""
+        # Create a test file that will be modified
+        test_output = os.path.join(self.test_dir, 'output.txt')
+        
+        # Create config without suppress_if_process
+        # Use short interval to speed up test
+        config_content = f'''default_interval = 50
+
+[files]
+"{self.test_file}" = {{ command = "echo 'executed' > {test_output}" }}
+'''
+        with open(self.config_file, 'w') as f:
+            f.write(config_content)
+        
+        watcher = FileWatcher(self.config_file)
+        
+        # Initialize tracking
+        watcher._check_files()
+        
+        # Modify the file
+        time.sleep(0.1)
+        with open(self.test_file, 'a') as f:
+            f.write('Modified content\n')
+        
+        # Check files - command should execute
+        watcher._check_files()
+        
+        # Output file should be created
+        self.assertTrue(os.path.exists(test_output), 
+                       "Command should have executed, output file should exist")
 
 
 if __name__ == '__main__':

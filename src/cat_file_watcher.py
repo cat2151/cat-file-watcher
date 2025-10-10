@@ -4,10 +4,12 @@ File Watcher - Monitor files and execute commands on timestamp changes
 """
 import argparse
 import os
+import re
 import sys
 import time
 import subprocess
 import toml
+import psutil
 
 
 class FileWatcher:
@@ -40,8 +42,58 @@ class FileWatcher:
         except OSError:
             return None
     
-    def _execute_command(self, command, filepath):
-        """Execute a shell command."""
+    def _is_process_running(self, process_pattern):
+        """Check if a process matching the given regex pattern is running.
+        
+        Args:
+            process_pattern: Regular expression pattern to match against process names
+            
+        Returns:
+            bool: True if a matching process is found, False otherwise
+        """
+        try:
+            # Compile the regex pattern
+            pattern = re.compile(process_pattern)
+            
+            # Iterate through all running processes
+            for proc in psutil.process_iter(['name', 'cmdline']):
+                try:
+                    # Check process name
+                    if proc.info['name'] and pattern.search(proc.info['name']):
+                        return True
+                    
+                    # Check command line arguments
+                    if proc.info['cmdline']:
+                        cmdline = ' '.join(proc.info['cmdline'])
+                        if pattern.search(cmdline):
+                            return True
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    # Process may have terminated or we don't have access
+                    continue
+            
+            return False
+        except re.error as e:
+            print(f"Warning: Invalid regex pattern '{process_pattern}': {e}")
+            return False
+        except Exception as e:
+            print(f"Warning: Error checking for process '{process_pattern}': {e}")
+            return False
+    
+    def _execute_command(self, command, filepath, settings):
+        """Execute a shell command if the conditions are met.
+        
+        Args:
+            command: The shell command to execute
+            filepath: The path to the file that changed
+            settings: Dictionary containing file-specific settings including optional 'suppress_if_process'
+        """
+        # Check if command execution should be suppressed based on running processes
+        if 'suppress_if_process' in settings:
+            process_pattern = settings['suppress_if_process']
+            if self._is_process_running(process_pattern):
+                print(f"Skipping command for '{filepath}': process matching '{process_pattern}' is running")
+                return
+        
         print(f"Executing command for '{filepath}': {command}")
         try:
             result = subprocess.run(
@@ -126,7 +178,7 @@ class FileWatcher:
             # Check if the timestamp has changed
             elif current_timestamp != self.file_timestamps[filename]:
                 print(f"Detected change in '{filename}'")
-                self._execute_command(settings['command'], filename)
+                self._execute_command(settings['command'], filename, settings)
                 self.file_timestamps[filename] = current_timestamp
     
     def run(self, interval=0.1):
