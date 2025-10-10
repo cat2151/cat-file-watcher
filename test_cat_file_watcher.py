@@ -154,6 +154,55 @@ class TestFileWatcher(unittest.TestCase):
         watcher._check_files()
         # Check time should have been updated
         self.assertGreater(watcher.file_last_check[self.test_file], first_check_time)
+    
+    def test_interval_division_by_1000_various_values(self):
+        """Test that interval division by 1000 works correctly for various values.
+        
+        This test clarifies that dividing milliseconds by 1000.0 produces correct
+        float values in seconds for all common use cases.
+        """
+        watcher = FileWatcher(self.config_file)
+        
+        # Test various millisecond values and their expected second equivalents
+        test_cases = [
+            # (interval_ms, expected_seconds)
+            (1000, 1.0),      # 1 second
+            (500, 0.5),       # Half second (mentioned in issue)
+            (250, 0.25),      # Quarter second
+            (100, 0.1),       # 100 milliseconds
+            (1, 0.001),       # 1 millisecond
+            (2000, 2.0),      # 2 seconds
+            (5000, 5.0),      # 5 seconds
+            (10000, 10.0),    # 10 seconds
+            (333, 0.333),     # Odd value
+            (1500, 1.5),      # 1.5 seconds
+        ]
+        
+        for interval_ms, expected_seconds in test_cases:
+            settings = {'interval': interval_ms}
+            result = watcher._get_interval_for_file(settings)
+            self.assertEqual(result, expected_seconds,
+                           f"Failed for {interval_ms}ms: expected {expected_seconds}s, got {result}s")
+    
+    def test_interval_division_returns_float(self):
+        """Test that interval division always returns a float type.
+        
+        This ensures that even integer millisecond values produce float results,
+        which is important for time.sleep() and time comparison operations.
+        """
+        watcher = FileWatcher(self.config_file)
+        
+        # Test with integer input
+        settings = {'interval': 1000}
+        result = watcher._get_interval_for_file(settings)
+        self.assertIsInstance(result, float, "Result should be a float type")
+        self.assertEqual(result, 1.0)
+        
+        # Test with another integer that should produce a fractional result
+        settings = {'interval': 500}
+        result = watcher._get_interval_for_file(settings)
+        self.assertIsInstance(result, float, "Result should be a float type")
+        self.assertEqual(result, 0.5)
 
 
 if __name__ == '__main__':
