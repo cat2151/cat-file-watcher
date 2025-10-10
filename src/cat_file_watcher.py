@@ -62,14 +62,28 @@ class FileWatcher:
             print(f"Error executing command: {e}")
     
     def _get_interval_for_file(self, settings):
-        """Get the interval for a file in seconds (converts from milliseconds if specified)."""
+        """Get the interval for a file in seconds (converts from milliseconds if specified).
+        
+        Converts milliseconds to seconds by dividing by 1000.0 (float division).
+        This ensures proper float results for all values:
+        - 1000ms -> 1.0s
+        - 500ms -> 0.5s
+        - 250ms -> 0.25s
+        
+        Args:
+            settings: Dictionary containing file-specific settings, may include 'interval' key
+            
+        Returns:
+            float: Interval in seconds
+        """
         # Get default interval from config (in milliseconds), default to 1000ms (1 second)
         default_interval_ms = self.config.get('default_interval', 1000)
         
         # Get file-specific interval (in milliseconds), or use default
         interval_ms = settings.get('interval', default_interval_ms)
         
-        # Convert milliseconds to seconds
+        # Convert milliseconds to seconds using float division
+        # Division by 1000.0 (not 1000) ensures float result for proper time operations
         return interval_ms / 1000.0
     
     def _check_files(self):
