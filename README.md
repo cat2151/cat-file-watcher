@@ -58,6 +58,7 @@ default_interval = 1000
 [files]
 "myfile.txt" = { command = "echo 'File changed!'" }
 "script.py" = { command = "python -m pytest tests/", interval = 2000 }
+"src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
 ```
 
 ### Configuration Format
@@ -68,6 +69,7 @@ The configuration file requires a `[files]` section where each entry maps a file
 - **Value**: An object containing a `command` field with the shell command to execute
   - `command` (required): The shell command to execute when the file changes
   - `interval` (optional): The watch interval for this specific file (in milliseconds). If omitted, `default_interval` will be used.
+  - `suppress_if_process` (optional): A regular expression pattern to match against running process names. If a matching process is found, command execution is skipped. This is useful to avoid triggering actions while certain programs (e.g., editors) are running.
 
 ### Global Settings
 

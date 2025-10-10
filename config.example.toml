@@ -9,6 +9,8 @@ default_interval = 1000
 [files]
 # Each entry defines a file to monitor and a command to execute when it changes
 # Optional: specify 'interval' in milliseconds to override the default for this file
+# Optional: specify 'suppress_if_process' with a regex pattern to skip command execution
+#           when a process matching the pattern is running
 
 # Example 1: Monitor a text file and display a message (uses default interval)
 # "example.txt" = { command = "echo 'example.txt has been modified!'" }
@@ -24,3 +26,11 @@ default_interval = 1000
 
 # Example 5: Monitor a document and create a backup (uses default interval)
 # "document.txt" = { command = "cp document.txt document.txt.bak" }
+
+# Example 6: Only run build when editor is not running (process suppression)
+# Suppress command execution if a process matching the regex pattern is running
+# This is useful to avoid rebuilding while you're actively editing
+# "src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
+
+# Example 7: Only sync when specific sync process is not running
+# "data.json" = { command = "rsync -av data.json backup/", suppress_if_process = "rsync" }

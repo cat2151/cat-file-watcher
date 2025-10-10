@@ -58,6 +58,7 @@ default_interval = 1000
 [files]
 "myfile.txt" = { command = "echo 'File changed!'" }
 "script.py" = { command = "python -m pytest tests/", interval = 2000 }
+"src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
 ```
 
 ### 設定フォーマット
@@ -68,6 +69,7 @@ default_interval = 1000
 - **値**: 実行するシェルコマンドを含む `command` フィールドを持つオブジェクト
   - `command` (必須): ファイル変更時に実行するシェルコマンド
   - `interval` (省略可): このファイルの監視間隔（ミリ秒単位）。省略した場合は `default_interval` が使用されます
+  - `suppress_if_process` (省略可): 実行中のプロセス名にマッチする正規表現パターン。マッチするプロセスが見つかった場合、コマンド実行をスキップします。エディタなどの特定のプログラムが実行中の場合にアクションをトリガーしないようにする場合に便利です。
 
 ### グローバル設定
 
