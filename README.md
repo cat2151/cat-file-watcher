@@ -52,9 +52,12 @@ Arguments:
 Create a TOML configuration file to define the files to monitor and the commands to execute:
 
 ```toml
+# Default monitoring interval (in milliseconds)
+default_interval = 1000
+
 [files]
 "myfile.txt" = { command = "echo 'File changed!'" }
-"script.py" = { command = "python -m pytest tests/" }
+"script.py" = { command = "python -m pytest tests/", interval = 2000 }
 ```
 
 ### Configuration Format
@@ -62,16 +65,31 @@ Create a TOML configuration file to define the files to monitor and the commands
 The configuration file requires a `[files]` section where each entry maps a filename to a command:
 
 - **Key**: The path to the file to monitor (relative or absolute)
-- **Value**: An object with a `command` field containing the shell command to execute
+- **Value**: An object with the following fields:
+  - `command` (required): The shell command to execute when the file changes
+  - `interval` (optional): The monitoring interval for this file (in milliseconds). If omitted, `default_interval` is used
+
+### Global Settings
+
+- `default_interval` (optional): The default monitoring interval for all files (in milliseconds). If omitted, defaults to 1000ms (1 second)
 
 ### Configuration Example
 
 Refer to `config.example.toml` for a complete example with various use cases.
 
 ```toml
+# Set default monitoring interval to 1 second
+default_interval = 1000
+
 [files]
+# Uses default interval (checked every 1 second)
 "document.txt" = { command = "cp document.txt document.txt.bak" }
-"app.log" = { command = "notify-send 'Log Updated' 'New entries in app.log'" }
+
+# Custom interval (checked every 500ms)
+"app.log" = { command = "notify-send 'Log Updated' 'New entries in app.log'", interval = 500 }
+
+# Custom interval (checked every 5 seconds)
+"config.ini" = { command = "systemctl reload myapp", interval = 5000 }
 ```
 
 ## How It Works

@@ -82,6 +82,78 @@ class TestFileWatcher(unittest.TestCase):
         # Check again - timestamp should be different
         new_timestamp = watcher._get_file_timestamp(self.test_file)
         self.assertNotEqual(initial_timestamp, new_timestamp)
+    
+    def test_default_interval(self):
+        """Test that default interval is used when not specified."""
+        watcher = FileWatcher(self.config_file)
+        settings = {}
+        interval = watcher._get_interval_for_file(settings)
+        # Default is 1000ms = 1 second
+        self.assertEqual(interval, 1.0)
+    
+    def test_custom_default_interval(self):
+        """Test that custom default interval is respected."""
+        # Create config with custom default interval
+        config_content = f'''default_interval = 500
+
+[files]
+"{self.test_file}" = {{ command = "echo 'File changed'" }}
+'''
+        with open(self.config_file, 'w') as f:
+            f.write(config_content)
+        
+        watcher = FileWatcher(self.config_file)
+        settings = {}
+        interval = watcher._get_interval_for_file(settings)
+        # Custom default is 500ms = 0.5 second
+        self.assertEqual(interval, 0.5)
+    
+    def test_per_file_interval(self):
+        """Test that per-file interval overrides default."""
+        # Create config with per-file interval
+        config_content = f'''default_interval = 1000
+
+[files]
+"{self.test_file}" = {{ command = "echo 'File changed'", interval = 250 }}
+'''
+        with open(self.config_file, 'w') as f:
+            f.write(config_content)
+        
+        watcher = FileWatcher(self.config_file)
+        settings = watcher.config['files'][self.test_file]
+        interval = watcher._get_interval_for_file(settings)
+        # Per-file interval is 250ms = 0.25 second
+        self.assertEqual(interval, 0.25)
+    
+    def test_interval_throttling(self):
+        """Test that files are not checked more frequently than their interval."""
+        # Create config with a longer interval
+        config_content = f'''default_interval = 500
+
+[files]
+"{self.test_file}" = {{ command = "echo 'File changed'" }}
+'''
+        with open(self.config_file, 'w') as f:
+            f.write(config_content)
+        
+        watcher = FileWatcher(self.config_file)
+        
+        # First check should process the file
+        watcher._check_files()
+        self.assertIn(self.test_file, watcher.file_last_check)
+        first_check_time = watcher.file_last_check[self.test_file]
+        
+        # Immediate second check should skip the file (not enough time passed)
+        time.sleep(0.05)  # Much less than 500ms
+        watcher._check_files()
+        # Check time should not have changed
+        self.assertEqual(watcher.file_last_check[self.test_file], first_check_time)
+        
+        # After waiting for the interval, file should be checked again
+        time.sleep(0.5)  # Wait for 500ms interval
+        watcher._check_files()
+        # Check time should have been updated
+        self.assertGreater(watcher.file_last_check[self.test_file], first_check_time)
 
 
 if __name__ == '__main__':

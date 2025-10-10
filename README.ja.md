@@ -52,9 +52,12 @@ python src/cat_file_watcher.py --config-filename config.toml
 監視するファイルと実行するコマンドを定義するTOML設定ファイルを作成します:
 
 ```toml
+# デフォルトの監視間隔（ミリ秒単位）
+default_interval = 1000
+
 [files]
 "myfile.txt" = { command = "echo 'File changed!'" }
-"script.py" = { command = "python -m pytest tests/" }
+"script.py" = { command = "python -m pytest tests/", interval = 2000 }
 ```
 
 ### 設定フォーマット
@@ -63,15 +66,30 @@ python src/cat_file_watcher.py --config-filename config.toml
 
 - **キー**: 監視するファイルのパス（相対パスまたは絶対パス）
 - **値**: 実行するシェルコマンドを含む `command` フィールドを持つオブジェクト
+  - `command` (必須): ファイル変更時に実行するシェルコマンド
+  - `interval` (省略可): このファイルの監視間隔（ミリ秒単位）。省略した場合は `default_interval` が使用されます
+
+### グローバル設定
+
+- `default_interval` (省略可): すべてのファイルのデフォルト監視間隔（ミリ秒単位）。省略した場合は1000ms（1秒）が使用されます
 
 ### 設定例
 
 様々なユースケースの完全な例は `config.example.toml` を参照してください。
 
 ```toml
+# デフォルトの監視間隔を1秒に設定
+default_interval = 1000
+
 [files]
+# デフォルト間隔を使用（1秒ごとにチェック）
 "document.txt" = { command = "cp document.txt document.txt.bak" }
-"app.log" = { command = "notify-send 'Log Updated' 'New entries in app.log'" }
+
+# カスタム間隔を指定（500msごとにチェック）
+"app.log" = { command = "notify-send 'Log Updated' 'New entries in app.log'", interval = 500 }
+
+# カスタム間隔を指定（5秒ごとにチェック）
+"config.ini" = { command = "systemctl reload myapp", interval = 5000 }
 ```
 
 ## 動作の仕組み

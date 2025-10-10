@@ -18,6 +18,7 @@ class FileWatcher:
         self.config_path = config_path
         self.config = self._load_config()
         self.file_timestamps = {}
+        self.file_last_check = {}  # Track last check time for each file
         
     def _load_config(self):
         """Load and parse the TOML configuration file."""
@@ -60,17 +61,41 @@ class FileWatcher:
         except Exception as e:
             print(f"Error executing command: {e}")
     
+    def _get_interval_for_file(self, settings):
+        """Get the interval for a file in seconds (converts from milliseconds if specified)."""
+        # Get default interval from config (in milliseconds), default to 1000ms (1 second)
+        default_interval_ms = self.config.get('default_interval', 1000)
+        
+        # Get file-specific interval (in milliseconds), or use default
+        interval_ms = settings.get('interval', default_interval_ms)
+        
+        # Convert milliseconds to seconds
+        return interval_ms / 1000.0
+    
     def _check_files(self):
         """Check all files for timestamp changes and execute commands if needed."""
         if 'files' not in self.config:
             print("Warning: No 'files' section found in configuration.")
             return
         
+        current_time = time.time()
         files_config = self.config['files']
         for filename, settings in files_config.items():
             if 'command' not in settings:
                 print(f"Warning: No command specified for file '{filename}'")
                 continue
+            
+            # Get the interval for this file
+            interval = self._get_interval_for_file(settings)
+            
+            # Check if enough time has passed since last check
+            if filename in self.file_last_check:
+                time_since_last_check = current_time - self.file_last_check[filename]
+                if time_since_last_check < interval:
+                    continue  # Skip this file, not enough time has passed
+            
+            # Update last check time
+            self.file_last_check[filename] = current_time
             
             current_timestamp = self._get_file_timestamp(filename)
             
@@ -90,8 +115,13 @@ class FileWatcher:
                 self._execute_command(settings['command'], filename)
                 self.file_timestamps[filename] = current_timestamp
     
-    def run(self, interval=1):
-        """Run the file watcher with the specified check interval (in seconds)."""
+    def run(self, interval=0.1):
+        """Run the file watcher with the specified check interval (in seconds).
+        
+        Note: The interval parameter controls how often _check_files is called.
+        Individual files may have their own check intervals configured in the TOML file.
+        This should be set to a small value (default 0.1s) for responsiveness.
+        """
         print(f"Starting file watcher with config: {self.config_path}")
         print(f"Checking for changes every {interval} second(s)...")
         print("Press Ctrl+C to stop.")
