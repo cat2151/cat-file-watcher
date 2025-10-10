@@ -58,6 +58,9 @@ default_interval = 1000
 # Interval for checking changes to the config file itself (in milliseconds)
 config_check_interval = 1000
 
+# Log file path for command execution logging (optional)
+log_file = "command_execution.log"
+
 # Time period definitions (optional)
 [time_periods]
 business_hours = { start = "09:00", end = "17:00" }
@@ -68,6 +71,7 @@ night_shift = { start = "23:00", end = "01:00" }
 "script.py" = { command = "python -m pytest tests/", interval = 2000 }
 "src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
 "batch.csv" = { command = "./process.sh", time_period = "night_shift" }
+"important.txt" = { command = "backup.sh", enable_log = true }
 ```
 
 ### Configuration Format
@@ -80,11 +84,13 @@ The configuration file requires a `[files]` section where each entry maps a file
   - `interval` (optional): The monitoring interval for this file (in milliseconds). If omitted, `default_interval` will be used.
   - `suppress_if_process` (optional): A regular expression pattern to match against running process names. If a matching process is found, command execution will be skipped. This is useful for preventing actions from triggering when specific programs like editors are running.
   - `time_period` (optional): The name of a time period during which the file should be monitored. Specify a time period name defined in the `[time_periods]` section. The file will only be monitored within the specified time period.
+  - `enable_log` (optional): Set to `true` to log command execution details to the log file (default: `false`). Requires `log_file` to be configured globally.
 
 ### Global Settings
 
 - `default_interval` (optional): The default monitoring interval for all files (in milliseconds). If omitted, 1000ms (1 second) will be used.
 - `config_check_interval` (optional): The interval for checking changes to the configuration file itself (in milliseconds). If the configuration file changes, it will be automatically reloaded. If omitted, 1000ms (1 second) will be used.
+- `log_file` (optional): Path to the log file where command execution details will be recorded. When specified, files with `enable_log = true` will log their command execution information (timestamp, file path, and all TOML settings) to this file.
 
 ### Time Period Settings
 
@@ -114,6 +120,9 @@ default_interval = 1000
 # Set the configuration file self-check interval to 1 second
 config_check_interval = 1000
 
+# Log file for command execution details (optional)
+log_file = "command_execution.log"
+
 # Time period definitions
 [time_periods]
 business_hours = { start = "09:00", end = "17:00" }
@@ -134,6 +143,9 @@ after_hours = { start = "18:00", end = "08:00" }  # Spans across midnight
 
 # Monitored only outside business hours (e.g., for batch processing)
 "batch.csv" = { command = "./process_batch.sh", time_period = "after_hours" }
+
+# Enable logging for critical file (logs timestamp, file path, and settings)
+"important.txt" = { command = "backup.sh", enable_log = true }
 ```
 
 ## How it Works
