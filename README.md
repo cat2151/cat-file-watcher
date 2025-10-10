@@ -27,7 +27,7 @@ pip install -r requirements.txt
 Run the file watcher with a configuration file:
 
 ```bash
-python cat_file_watcher.py --config-filename config.toml
+python src/cat_file_watcher.py --config-filename config.toml
 ```
 
 Optional arguments:
@@ -36,7 +36,7 @@ Optional arguments:
 
 Example with custom interval:
 ```bash
-python cat_file_watcher.py --config-filename config.toml --interval 2.0
+python src/cat_file_watcher.py --config-filename config.toml --interval 2.0
 ```
 
 ## Configuration
