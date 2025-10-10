@@ -10,10 +10,12 @@ try:
     from .config_loader import ConfigLoader
     from .command_executor import CommandExecutor
     from .process_detector import ProcessDetector
+    from .time_period_checker import TimePeriodChecker
 except ImportError:
     from config_loader import ConfigLoader
     from command_executor import CommandExecutor
     from process_detector import ProcessDetector
+    from time_period_checker import TimePeriodChecker
 
 
 class FileWatcher:
@@ -85,6 +87,11 @@ class FileWatcher:
         for filename, settings in files_config.items():
             if 'command' not in settings:
                 print(f"Warning: No command specified for file '{filename}'")
+                continue
+            
+            # Check if file should be monitored based on time period
+            if not TimePeriodChecker.should_monitor_file(self.config, settings):
+                # Skip monitoring this file - outside time period
                 continue
             
             interval = ConfigLoader.get_interval_for_file(self.config, settings)
