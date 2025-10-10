@@ -1,6 +1,6 @@
 # cat-file-watcher
 
-**A file monitoring tool that watches files for changes and executes commands when their timestamps are updated.**
+**File Change Monitoring Tool - Detects file changes and executes commands**
 
 <p align="left">
   <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-Japanese-red.svg" alt="Japanese"></a>
@@ -12,10 +12,14 @@
 |------|--------|
 | 📊 Development Status | [generated-docs/daily-summaries](generated-docs/daily-summaries) |
 
+## Overview
+
+This is a file monitoring tool that watches for changes in file timestamps and executes commands when files are updated.
+
 ## Features
 
 - Monitor multiple files simultaneously
-- Execute custom commands when files change
+- Execute custom commands on file changes
 - Configurable via TOML configuration file
 - Lightweight and easy to use
 
@@ -34,7 +38,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-Run the file watcher with a configuration file:
+Run the file watcher by specifying a configuration file:
 
 ```bash
 python src/cat_file_watcher.py --config-filename config.toml
@@ -45,7 +49,7 @@ Arguments:
 
 ## Configuration
 
-Create a TOML configuration file that defines the files to monitor and commands to execute:
+Create a TOML configuration file to define the files to monitor and the commands to execute:
 
 ```toml
 [files]
@@ -55,14 +59,14 @@ Create a TOML configuration file that defines the files to monitor and commands 
 
 ### Configuration Format
 
-The configuration file must contain a `[files]` section where each entry maps a filename to a command:
+The configuration file requires a `[files]` section where each entry maps a filename to a command:
 
-- **Key**: The path to the file to monitor (can be relative or absolute)
+- **Key**: The path to the file to monitor (relative or absolute)
 - **Value**: An object with a `command` field containing the shell command to execute
 
-### Example Configuration
+### Configuration Example
 
-See `config.example.toml` for a complete example with various use cases.
+Refer to `config.example.toml` for a complete example with various use cases.
 
 ```toml
 [files]
@@ -72,11 +76,13 @@ See `config.example.toml` for a complete example with various use cases.
 
 ## How It Works
 
-1. The tool loads the TOML configuration file
-2. It monitors the modification timestamps of all specified files
-3. When a file's timestamp changes, it executes the associated command
-4. This process repeats continuously until stopped with Ctrl+C
+1. The tool loads the TOML configuration file.
+2. It monitors the modification timestamps of all specified files.
+3. When a file's timestamp changes, the associated command is executed.
+4. This process continuously repeats until stopped by Ctrl+C.
 
 ## License
 
-MIT License - see LICENSE file for details
+MIT License - See the LICENSE file for details.
+
+*This README.md is automatically generated from README.ja.md using Gemini translation via GitHub Actions.
