@@ -11,11 +11,13 @@ try:
     from .command_executor import CommandExecutor
     from .process_detector import ProcessDetector
     from .time_period_checker import TimePeriodChecker
+    from .error_logger import ErrorLogger
 except ImportError:
     from config_loader import ConfigLoader
     from command_executor import CommandExecutor
     from process_detector import ProcessDetector
     from time_period_checker import TimePeriodChecker
+    from error_logger import ErrorLogger
 
 
 class FileWatcher:
@@ -67,13 +69,21 @@ class FileWatcher:
         # Check if the config file has been modified
         if current_timestamp != self.config_timestamp:
             print(f"Detected change in config file '{self.config_path}', reloading...")
+            error_log_file = self.config.get('error_log_file')
             try:
                 new_config = ConfigLoader.load_config(self.config_path)
                 self.config = new_config
                 self.config_timestamp = current_timestamp
                 print("Config reloaded successfully")
-            except (SystemExit, Exception) as e:
+            except SystemExit as e:
+                error_msg = f"Fatal error reloading config file '{self.config_path}'"
                 print(f"Error reloading config: {e}")
+                ErrorLogger.log_error(error_log_file, error_msg, e)
+                print("Continuing with previous config")
+            except Exception as e:
+                error_msg = f"Error reloading config file '{self.config_path}'"
+                print(f"Error reloading config: {e}")
+                ErrorLogger.log_error(error_log_file, error_msg, e)
                 print("Continuing with previous config")
     
     def _check_files(self):
@@ -82,6 +92,7 @@ class FileWatcher:
             print("Warning: No 'files' section found in configuration.")
             return
         
+        error_log_file = self.config.get('error_log_file')
         current_time = time.time()
         files_config = self.config['files']
         for filename, settings in files_config.items():
@@ -89,43 +100,50 @@ class FileWatcher:
                 print(f"Warning: No command specified for file '{filename}'")
                 continue
             
-            # Check if file should be monitored based on time period
-            if not TimePeriodChecker.should_monitor_file(self.config, settings):
-                # Skip monitoring this file - outside time period
-                continue
-            
-            interval = ConfigLoader.get_interval_for_file(self.config, settings)
-            
-            # Check if enough time has passed since last check
-            if filename in self.file_last_check:
-                if current_time - self.file_last_check[filename] < interval:
+            try:
+                # Check if file should be monitored based on time period
+                if not TimePeriodChecker.should_monitor_file(self.config, settings):
+                    # Skip monitoring this file - outside time period
                     continue
-            
-            self.file_last_check[filename] = current_time
-            
-            # Special case: empty filename means execute command without file monitoring
-            # This is useful for process health monitoring or periodic tasks
-            if filename == "":
-                CommandExecutor.execute_command(settings['command'], filename, settings, self.config)
+                
+                interval = ConfigLoader.get_interval_for_file(self.config, settings)
+                
+                # Check if enough time has passed since last check
+                if filename in self.file_last_check:
+                    if current_time - self.file_last_check[filename] < interval:
+                        continue
+                
+                self.file_last_check[filename] = current_time
+                
+                # Special case: empty filename means execute command without file monitoring
+                # This is useful for process health monitoring or periodic tasks
+                if filename == "":
+                    CommandExecutor.execute_command(settings['command'], filename, settings, self.config)
+                    continue
+                
+                current_timestamp = self._get_file_timestamp(filename)
+                
+                if current_timestamp is None:
+                    if filename in self.file_timestamps:
+                        print(f"Warning: File '{filename}' is no longer accessible")
+                        del self.file_timestamps[filename]
+                    continue
+                
+                # Check if this is the first time we're seeing this file
+                if filename not in self.file_timestamps:
+                    self.file_timestamps[filename] = current_timestamp
+                    print(f"Started monitoring '{filename}'")
+                # Check if the timestamp has changed
+                elif current_timestamp != self.file_timestamps[filename]:
+                    print(f"Detected change in '{filename}'")
+                    CommandExecutor.execute_command(settings['command'], filename, settings, self.config)
+                    self.file_timestamps[filename] = current_timestamp
+            except Exception as e:
+                error_msg = f"Error processing file '{filename}'"
+                print(f"{error_msg}: {e}")
+                ErrorLogger.log_error(error_log_file, error_msg, e)
+                # Continue processing other files despite error
                 continue
-            
-            current_timestamp = self._get_file_timestamp(filename)
-            
-            if current_timestamp is None:
-                if filename in self.file_timestamps:
-                    print(f"Warning: File '{filename}' is no longer accessible")
-                    del self.file_timestamps[filename]
-                continue
-            
-            # Check if this is the first time we're seeing this file
-            if filename not in self.file_timestamps:
-                self.file_timestamps[filename] = current_timestamp
-                print(f"Started monitoring '{filename}'")
-            # Check if the timestamp has changed
-            elif current_timestamp != self.file_timestamps[filename]:
-                print(f"Detected change in '{filename}'")
-                CommandExecutor.execute_command(settings['command'], filename, settings, self.config)
-                self.file_timestamps[filename] = current_timestamp
     
     def run(self, interval=0.1):
         """Run the file watcher with the specified check interval (in seconds)."""
