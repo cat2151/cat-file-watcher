@@ -1,6 +1,16 @@
 # cat-file-watcher
 
-A file monitoring tool that watches files for changes and executes commands when their timestamps are updated.
+**A file monitoring tool that watches files for changes and executes commands when their timestamps are updated.**
+
+<p align="left">
+  <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-Japanese-red.svg" alt="Japanese"></a>
+  <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
+</p>
+
+## Quick Links
+| Item | Link |
+|------|--------|
+| 📊 Development Status | [generated-docs/daily-summaries](generated-docs/daily-summaries) |
 
 ## Features
 
