@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 # Add src directory to path to import the module
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 from cat_file_watcher import FileWatcher
 from config_loader import ConfigLoader
 from process_detector import ProcessDetector
