@@ -11,6 +11,10 @@ default_interval = 1000
 # Default: 1000 (1 second)
 config_check_interval = 1000
 
+# Optional: Log file path for command execution logging
+# When specified, files with enable_log=true will log command execution details here
+# log_file = "command_execution.log"
+
 # Optional: Define time periods for file monitoring
 # Files can specify a time_period to only be monitored during certain hours
 # Time periods support spanning across midnight (e.g., 23:00-01:00)
@@ -33,6 +37,7 @@ midnight_window = { start = "23:59", end = "00:01" }
 # Optional: specify 'suppress_if_process' with a regex pattern to skip command execution
 #           when a process matching the pattern is running
 # Optional: specify 'time_period' to only monitor the file during that time period
+# Optional: specify 'enable_log = true' to log command execution to the log file (default: false)
 
 # Example 1: Monitor a text file and display a message (uses default interval)
 # "example.txt" = { command = "echo 'example.txt has been modified!'" }
@@ -65,4 +70,10 @@ midnight_window = { start = "23:59", end = "00:01" }
 
 # Example 10: Combine time period with process suppression
 # "code.py" = { command = "python -m pytest", time_period = "business_hours", suppress_if_process = "vim|code" }
+
+# Example 11: Enable logging for a critical file (requires log_file to be set globally)
+# "important.txt" = { command = "backup.sh", enable_log = true }
+
+# Example 12: Monitor with logging and custom interval
+# "config.json" = { command = "validate_config.sh", interval = 2000, enable_log = true }
 
