@@ -1,8 +1,0 @@
-Defaulting to user installation because normal site-packages is not writeable
-Collecting psutil
-  Downloading psutil-7.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata
-     - 23.1 kB 228.3 MB/s 0:00:00
-Downloading psutil-7.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-   - 291.2 kB 184.1 MB/s 0:00:00
-Installing collected packages: psutil
-Successfully installed psutil-7.1.0
