@@ -117,7 +117,7 @@ class FileWatcher:
             # Check if the timestamp has changed
             elif current_timestamp != self.file_timestamps[filename]:
                 print(f"Detected change in '{filename}'")
-                CommandExecutor.execute_command(settings['command'], filename, settings)
+                CommandExecutor.execute_command(settings['command'], filename, settings, self.config)
                 self.file_timestamps[filename] = current_timestamp
     
     def run(self, interval=0.1):
