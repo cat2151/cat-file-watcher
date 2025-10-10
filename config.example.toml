@@ -6,6 +6,11 @@
 # Default: 1000 (1 second)
 default_interval = 1000
 
+# Interval for checking the config file itself for changes (in milliseconds)
+# When the config file changes, it will be automatically reloaded
+# Default: 1000 (1 second)
+config_check_interval = 1000
+
 [files]
 # Each entry defines a file to monitor and a command to execute when it changes
 # Optional: specify 'interval' in milliseconds to override the default for this file

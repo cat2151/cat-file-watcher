@@ -55,6 +55,9 @@ Create a TOML configuration file to define the files to monitor and the commands
 # Default monitoring interval (in milliseconds)
 default_interval = 1000
 
+# Config file change check interval (in milliseconds)
+config_check_interval = 1000
+
 [files]
 "myfile.txt" = { command = "echo 'File changed!'" }
 "script.py" = { command = "python -m pytest tests/", interval = 2000 }
@@ -74,6 +77,7 @@ The configuration file requires a `[files]` section where each entry maps a file
 ### Global Settings
 
 - `default_interval` (optional): Default monitoring interval for all files (in milliseconds). If omitted, 1000ms (1 second) will be used.
+- `config_check_interval` (optional): Interval for checking the config file itself for changes (in milliseconds). When the config file changes, it will be automatically reloaded. If omitted, 1000ms (1 second) will be used.
 
 ### Configuration Example
 
@@ -82,6 +86,9 @@ Refer to `config.example.toml` for a complete example of various use cases.
 ```toml
 # Set the default monitoring interval to 1 second
 default_interval = 1000
+
+# Set the config file change check interval to 1 second
+config_check_interval = 1000
 
 [files]
 # Use default interval (checks every 1 second)
@@ -99,7 +106,8 @@ default_interval = 1000
 1. The tool reads the TOML configuration file.
 2. It monitors the modification timestamps of all specified files.
 3. When a file's timestamp changes, the associated command is executed.
-4. This process continuously repeats until stopped with Ctrl+C.
+4. The config file itself is also monitored and automatically reloaded when changed.
+5. This process continuously repeats until stopped with Ctrl+C.
 
 ## License
 

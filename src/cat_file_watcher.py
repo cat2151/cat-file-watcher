@@ -25,6 +25,8 @@ class FileWatcher:
         self.config = ConfigLoader.load_config(config_path)
         self.file_timestamps = {}
         self.file_last_check = {}
+        self.config_last_check = 0
+        self.config_timestamp = self._get_file_timestamp(config_path)
         
     def _get_file_timestamp(self, filepath):
         """Get the modification timestamp of a file."""
@@ -40,6 +42,37 @@ class FileWatcher:
     def _is_process_running(self, process_pattern):
         """Check if a process is running (backward compatibility)."""
         return ProcessDetector.is_process_running(process_pattern)
+    
+    def _check_config_file(self):
+        """Check if config file has been modified and reload if needed."""
+        current_time = time.time()
+        
+        # Get config check interval (in milliseconds), default to 1000ms (1 second)
+        config_check_interval_ms = self.config.get('config_check_interval', 1000)
+        config_check_interval = config_check_interval_ms / 1000.0
+        
+        # Check if enough time has passed since last check
+        if current_time - self.config_last_check < config_check_interval:
+            return
+        
+        self.config_last_check = current_time
+        current_timestamp = self._get_file_timestamp(self.config_path)
+        
+        if current_timestamp is None:
+            print(f"Warning: Config file '{self.config_path}' is no longer accessible")
+            return
+        
+        # Check if the config file has been modified
+        if current_timestamp != self.config_timestamp:
+            print(f"Detected change in config file '{self.config_path}', reloading...")
+            try:
+                new_config = ConfigLoader.load_config(self.config_path)
+                self.config = new_config
+                self.config_timestamp = current_timestamp
+                print("Config reloaded successfully")
+            except (SystemExit, Exception) as e:
+                print(f"Error reloading config: {e}")
+                print("Continuing with previous config")
     
     def _check_files(self):
         """Check all files for timestamp changes and execute commands if needed."""
@@ -88,6 +121,7 @@ class FileWatcher:
         
         try:
             while True:
+                self._check_config_file()
                 self._check_files()
                 time.sleep(interval)
         except KeyboardInterrupt:

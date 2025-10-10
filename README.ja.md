@@ -55,6 +55,9 @@ python src/cat_file_watcher.py --config-filename config.toml
 # デフォルトの監視間隔（ミリ秒単位）
 default_interval = 1000
 
+# 設定ファイル自体の変更チェック間隔（ミリ秒単位）
+config_check_interval = 1000
+
 [files]
 "myfile.txt" = { command = "echo 'File changed!'" }
 "script.py" = { command = "python -m pytest tests/", interval = 2000 }
@@ -74,6 +77,7 @@ default_interval = 1000
 ### グローバル設定
 
 - `default_interval` (省略可): すべてのファイルのデフォルト監視間隔（ミリ秒単位）。省略した場合は1000ms（1秒）が使用されます
+- `config_check_interval` (省略可): 設定ファイル自体の変更チェック間隔（ミリ秒単位）。設定ファイルが変更されると自動的に再読み込みされます。省略した場合は1000ms（1秒）が使用されます
 
 ### 設定例
 
@@ -82,6 +86,9 @@ default_interval = 1000
 ```toml
 # デフォルトの監視間隔を1秒に設定
 default_interval = 1000
+
+# 設定ファイル自体の変更チェック間隔を1秒に設定
+config_check_interval = 1000
 
 [files]
 # デフォルト間隔を使用（1秒ごとにチェック）
@@ -99,7 +106,8 @@ default_interval = 1000
 1. ツールがTOML設定ファイルを読み込みます
 2. 指定されたすべてのファイルの更新タイムスタンプを監視します
 3. ファイルのタイムスタンプが変更されると、関連するコマンドを実行します
-4. このプロセスはCtrl+Cで停止するまで継続的に繰り返されます
+4. 設定ファイル自体も監視し、変更があれば自動的に再読み込みします
+5. このプロセスはCtrl+Cで停止するまで継続的に繰り返されます
 
 ## ライセンス
 
