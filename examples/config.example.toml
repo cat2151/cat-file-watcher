@@ -1,15 +1,17 @@
 # Example configuration for cat-file-watcher
 # This file demonstrates how to configure file monitoring and command execution
 
-# Default interval for checking files (in milliseconds)
-# This is used when a file doesn't specify its own interval
-# Default: 1000 (1 second)
-default_interval = 1000
+# Default interval for checking files
+# Supports time format: "1s" (1 second), "2m" (2 minutes), "3h" (3 hours), "0.5s" (0.5 seconds)
+# Also supports old format: integer milliseconds (e.g., 1000 for 1 second) for backward compatibility
+# Default: "1s" (1 second)
+default_interval = "1s"
 
-# Interval for checking the config file itself for changes (in milliseconds)
+# Interval for checking the config file itself for changes
 # When the config file changes, it will be automatically reloaded
-# Default: 1000 (1 second)
-config_check_interval = 1000
+# Supports same time format as default_interval
+# Default: "1s" (1 second)
+config_check_interval = "1s"
 
 # Optional: Load external TOML files containing [files] sections
 # This allows you to organize your file configurations into groups
@@ -56,7 +58,8 @@ midnight_window = { start = "23:59", end = "00:01" }
 [files]
 # Each entry defines a file or directory to monitor and a command to execute when it changes
 # Directories: Command executes when directory modification time changes (files added/removed/etc.)
-# Optional: specify 'interval' in milliseconds to override the default
+# Optional: specify 'interval' with time format ("1s", "2m", "3h", "0.5s") to override the default
+#           Also supports old format: integer milliseconds for backward compatibility
 # Optional: specify 'suppress_if_process' with a regex pattern to skip command execution
 #           when a process matching the pattern is running
 # Optional: specify 'time_period' to only monitor during that time period
@@ -67,23 +70,23 @@ midnight_window = { start = "23:59", end = "00:01" }
 # "example.txt" = { command = "echo 'example.txt has been modified!'" }
 
 # Example 2: Monitor a Python file and run tests (check every 2 seconds)
-# "my_script.py" = { command = "python -m pytest tests/", interval = 2000 }
+# "my_script.py" = { command = "python -m pytest tests/", interval = "2s" }
 
 # Example 3: Monitor a config file and reload a service (check every 5 seconds)
-# "/etc/myapp/config.ini" = { command = "systemctl reload myapp", interval = 5000 }
+# "/etc/myapp/config.ini" = { command = "systemctl reload myapp", interval = "5s" }
 
 # Example 4: Monitor a log file frequently and send a notification (check every 500ms)
-# "app.log" = { command = "notify-send 'Log Updated' 'app.log has new entries'", interval = 500 }
+# "app.log" = { command = "notify-send 'Log Updated' 'app.log has new entries'", interval = "0.5s" }
 
 # Example 5: Monitor a document and create a backup (uses default interval)
 # "document.txt" = { command = "cp document.txt document.txt.bak" }
 
 # Example 6: Monitor a directory for changes (files added/removed/modified)
 # Triggers when files are added, removed, or renamed in the directory
-# "src/" = { command = "echo 'Source directory changed!'", interval = 1000 }
+# "src/" = { command = "echo 'Source directory changed!'", interval = "1s" }
 
-# Example 7: Monitor a directory and rebuild on changes
-# "/path/to/project/src/" = { command = "make build", interval = 2000 }
+# Example 7: Monitor a directory and rebuild on changes (check every 2 seconds)
+# "/path/to/project/src/" = { command = "make build", interval = "2s" }
 
 # Example 8: Only run build when editor is not running (process suppression)
 # Suppress command execution if a process matching the regex pattern is running
@@ -105,8 +108,8 @@ midnight_window = { start = "23:59", end = "00:01" }
 # Example 13: Enable logging for a critical file (requires log_file to be set globally)
 # "important.txt" = { command = "backup.sh", enable_log = true }
 
-# Example 14: Monitor with logging and custom interval
-# "config.json" = { command = "validate_config.sh", interval = 2000, enable_log = true }
+# Example 14: Monitor with logging and custom interval (check every 2 seconds)
+# "config.json" = { command = "validate_config.sh", interval = "2s", enable_log = true }
 
 # Example 15: Process health monitoring without file watching (empty filename)
 # Executes command every second (default_interval) without monitoring any file
@@ -116,10 +119,10 @@ midnight_window = { start = "23:59", end = "00:01" }
 # Example 16: Auto-restart process when it's not running
 # Using empty filename with suppress_if_process for process health monitoring
 # Command only executes when the process is NOT running (suppressed when running)
-# "" = { command = "./start_myapp.sh", suppress_if_process = "myapp", interval = 5000 }
+# "" = { command = "./start_myapp.sh", suppress_if_process = "myapp", interval = "5s" }
 
 # Example 17: Periodic cleanup task (runs every 10 seconds)
-# "" = { command = "find /tmp -type f -mtime +7 -delete", interval = 10000 }
+# "" = { command = "find /tmp -type f -mtime +7 -delete", interval = "10s" }
 
 # Example 18: Execute command in a different directory (cwd)
 # Run build script from the build directory

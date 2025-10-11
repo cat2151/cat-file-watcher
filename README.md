@@ -54,11 +54,13 @@ Arguments:
 Create a TOML configuration file to define the files to monitor and the commands to execute:
 
 ```toml
-# Default monitoring interval (in milliseconds)
-default_interval = 1000
+# Default monitoring interval
+# Time format: "1s" (1 second), "2m" (2 minutes), "3h" (3 hours), "0.5s" (0.5 seconds)
+# Old format (integer milliseconds, e.g., 1000) is also supported for backward compatibility
+default_interval = "1s"
 
-# Configuration file self-check interval (in milliseconds)
-config_check_interval = 1000
+# Configuration file self-check interval
+config_check_interval = "1s"
 
 # File path for command execution logs (optional)
 log_file = "command_execution.log"
@@ -70,7 +72,7 @@ night_shift = { start = "23:00", end = "01:00" }
 
 [files]
 "myfile.txt" = { command = "echo 'File changed!'" }
-"script.py" = { command = "python -m pytest tests/", interval = 2000 }
+"script.py" = { command = "python -m pytest tests/", interval = "2s" }
 "src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
 "batch.csv" = { command = "./process.sh", time_period = "night_shift" }
 "important.txt" = { command = "backup.sh", enable_log = true }
@@ -86,7 +88,7 @@ The configuration file requires a `[files]` section, where each entry maps a fil
   - For directories: The command is executed when the directory's modification time changes (e.g., when files are added or deleted).
 - **Value**: An object with a `command` field containing the shell command to execute.
   - `command` (required): The shell command to execute when the file or directory changes.
-  - `interval` (optional): The monitoring interval for this file or directory (in milliseconds). If omitted, `default_interval` will be used.
+  - `interval` (optional): The monitoring interval for this file or directory. Specify using time format ("1s", "2m", "3h", "0.5s"). Decimal values are supported (e.g., "0.5s" for 0.5 seconds). Old format (integer milliseconds) is also supported for backward compatibility. If omitted, `default_interval` will be used.
   - `suppress_if_process` (optional): A regular expression pattern that matches running process names. If a matching process is found, the command execution is skipped. This is useful for preventing actions from triggering when specific programs like editors are running.
   - `time_period` (optional): The name of the time period during which the file or directory should be monitored. Specify a time period name defined in the `[time_periods]` section. Monitoring will only occur within the specified time period.
   - `enable_log` (optional): If set to `true`, detailed command execution information will be recorded in the log file (default: `false`). The `log_file` setting is required in the global configuration.
@@ -94,8 +96,8 @@ The configuration file requires a `[files]` section, where each entry maps a fil
 
 ### Global Configuration
 
-- `default_interval` (optional): The default monitoring interval for all files and directories (in milliseconds). If omitted, 1000ms (1 second) will be used.
-- `config_check_interval` (optional): The interval for checking changes to the configuration file itself (in milliseconds). If the configuration file changes, it will be automatically reloaded. If omitted, 1000ms (1 second) will be used.
+- `default_interval` (optional): The default monitoring interval for all files and directories. Specify using time format ("1s", "2m", "3h", "0.5s"). Decimal values are supported (e.g., "0.5s" for 0.5 seconds). Old format (integer milliseconds, e.g., 1000) is also supported for backward compatibility. If omitted, "1s" (1 second) will be used.
+- `config_check_interval` (optional): The interval for checking changes to the configuration file itself. Specify using time format ("1s", "2m", "3h", "0.5s"). If the configuration file changes, it will be automatically reloaded. If omitted, "1s" (1 second) will be used.
 - `log_file` (optional): The path to the log file for recording detailed command execution information. If set, command execution details (timestamp, path, TOML configuration content) for files or directories with `enable_log = true` will be recorded in this file.
 
 ### Time Period Configuration
@@ -121,10 +123,10 @@ Refer to `examples/config.example.toml` for a complete example of various use ca
 
 ```toml
 # Set default monitoring interval to 1 second
-default_interval = 1000
+default_interval = "1s"
 
 # Set configuration file self-check interval to 1 second
-config_check_interval = 1000
+config_check_interval = "1s"
 
 # Log file for detailed command execution (optional)
 log_file = "command_execution.log"
