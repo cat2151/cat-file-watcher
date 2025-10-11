@@ -113,7 +113,7 @@ night_shift = { start = "23:00", end = "01:00" }     # 日をまたぐ時間帯
 
 ### 設定例
 
-様々なユースケースの完全な例は `config.example.toml` を参照してください。
+様々なユースケースの完全な例は `examples/config.example.toml` を参照してください。
 
 ```toml
 # デフォルトの監視間隔を1秒に設定

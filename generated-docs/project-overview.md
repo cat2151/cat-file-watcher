@@ -32,7 +32,9 @@ Last updated: 2025-10-11
 📄 LICENSE
 📖 README.ja.md
 📖 README.md
-📄 config.example.toml
+📁 examples/
+  📄 config.example.toml
+  📄 monitoring-group-example.toml
 📁 generated-docs/
 📁 issue-notes/
   📖 11.md
@@ -68,7 +70,9 @@ Last updated: 2025-10-11
 -   `LICENSE`: プロジェクトのライセンス情報が記載されています。
 -   `README.ja.md`: プロジェクトの日本語版の概要、使い方、開発情報などが記載されたドキュメントです。
 -   `README.md`: プロジェクトの英語版の概要、使い方、開発情報などが記載されたドキュメントです。
--   `config.example.toml`: プロジェクトの設定ファイル（TOML形式）の例です。ユーザーがこれを参考に自分用の設定ファイルを作成できます。
+-   `examples/`: 設定ファイルのサンプルが格納されているディレクトリです。
+    -   `config.example.toml`: プロジェクトの設定ファイル（TOML形式）の例です。ユーザーがこれを参考に自分用の設定ファイルを作成できます。
+    -   `monitoring-group-example.toml`: 外部ファイル読み込み機能で使用する設定ファイルのグループ化の例です。
 -   `generated-docs/`: プロジェクトのドキュメントが自動生成されて格納されるディレクトリです。
 -   `issue-notes/`: 開発中のGitHub Issueに関する詳細なメモや補足情報が格納されるディレクトリです。
     -   `[数字].md`, `[数字]-refactoring-summary.md`: 特定のIssueやリファクタリングに関する詳細な議論や決定事項を記録したMarkdownファイルです。

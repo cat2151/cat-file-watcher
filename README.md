@@ -113,7 +113,7 @@ night_shift = { start = "23:00", end = "01:00" }     # Period spanning across mi
 
 ### Configuration Example
 
-Refer to `config.example.toml` for a complete example of various use cases.
+Refer to `examples/config.example.toml` for a complete example of various use cases.
 
 ```toml
 # Set default monitoring interval to 1 second
