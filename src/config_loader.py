@@ -11,8 +11,10 @@ import toml
 # Support both relative and absolute imports
 try:
     from .error_logger import ErrorLogger
+    from .interval_parser import IntervalParser
 except ImportError:
     from error_logger import ErrorLogger
+    from interval_parser import IntervalParser
 
 
 class ConfigLoader:
@@ -128,13 +130,14 @@ class ConfigLoader:
 
     @staticmethod
     def get_interval_for_file(config, settings):
-        """Get the interval for a file in seconds (converts from milliseconds if specified).
+        """Get the interval for a file in seconds.
 
-        Converts milliseconds to seconds by dividing by 1000.0 (float division).
-        This ensures proper float results for all values:
-        - 1000ms -> 1.0s
-        - 500ms -> 0.5s
-        - 250ms -> 0.25s
+        Supports both old format (milliseconds as integer) and new format
+        (time strings like "1s", "2m", "3h", "0.5s").
+
+        Examples:
+        - Old format: 1000 -> 1.0s, 500 -> 0.5s
+        - New format: "1s" -> 1.0s, "2m" -> 120.0s, "0.5s" -> 0.5s
 
         Args:
             config: Global configuration dictionary
@@ -143,12 +146,12 @@ class ConfigLoader:
         Returns:
             float: Interval in seconds
         """
-        # Get default interval from config (in milliseconds), default to 1000ms (1 second)
-        default_interval_ms = config.get("default_interval", 1000)
+        # Get default interval from config, default to "1s" (1 second)
+        # Support both old format (integer milliseconds) and new format (time strings)
+        default_interval = config.get("default_interval", "1s")
 
-        # Get file-specific interval (in milliseconds), or use default
-        interval_ms = settings.get("interval", default_interval_ms)
+        # Get file-specific interval, or use default
+        interval_value = settings.get("interval", default_interval)
 
-        # Convert milliseconds to seconds using float division
-        # Division by 1000.0 (not 1000) ensures float result for proper time operations
-        return interval_ms / 1000.0
+        # Parse interval using IntervalParser which handles both formats
+        return IntervalParser.parse_interval(interval_value)
