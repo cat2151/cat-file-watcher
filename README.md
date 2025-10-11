@@ -56,7 +56,6 @@ Create a TOML configuration file to define the files to monitor and the commands
 ```toml
 # Default monitoring interval
 # Time format: "1s" (1 second), "2m" (2 minutes), "3h" (3 hours), "0.5s" (0.5 seconds)
-# Old format (integer milliseconds, e.g., 1000) is also supported for backward compatibility
 default_interval = "1s"
 
 # Check interval for changes to the config file itself
@@ -88,7 +87,7 @@ The configuration file requires a `[files]` section where each entry maps a file
   - For directories: The command is executed when the directory's modification time changes (e.g., file added/deleted).
 - **Value**: An object with a `command` field containing the shell command to execute.
   - `command` (required): The shell command to execute when the file or directory changes.
-  - `interval` (optional): The monitoring interval for this specific file or directory. Specified in time format ("1s", "2m", "3h", "0.5s"). Decimal values are allowed (e.g., "0.5s" is 0.5 seconds). The old format (integer milliseconds) is also supported for backward compatibility. If omitted, `default_interval` is used.
+  - `interval` (optional): The monitoring interval for this specific file or directory. Specified in time format ("1s", "2m", "3h", "0.5s"). Decimal values are allowed (e.g., "0.5s" is 0.5 seconds). If omitted, `default_interval` is used.
   - `suppress_if_process` (optional): A regular expression pattern to match against running process names. If a matching process is found, command execution is skipped. Useful for preventing actions from triggering while specific programs like editors are running.
   - `time_period` (optional): The name of a time period during which the file or directory should be monitored. Specifies a time period name defined in the `[time_periods]` section. Monitoring only occurs within the specified time period.
   - `enable_log` (optional): If set to `true`, detailed command execution will be logged to the log file (default: `false`). The `log_file` setting must be configured in global settings.
@@ -96,7 +95,7 @@ The configuration file requires a `[files]` section where each entry maps a file
 
 ### Global Configuration
 
-- `default_interval` (optional): The default monitoring interval for all files and directories. Specified in time format ("1s", "2m", "3h", "0.5s"). Decimal values are allowed (e.g., "0.5s" is 0.5 seconds). The old format (integer milliseconds, e.g., 1000) is also supported for backward compatibility. If omitted, "1s" (1 second) is used.
+- `default_interval` (optional): The default monitoring interval for all files and directories. Specified in time format ("1s", "2m", "3h", "0.5s"). Decimal values are allowed (e.g., "0.5s" is 0.5 seconds). If omitted, "1s" (1 second) is used.
 - `config_check_interval` (optional): The check interval for changes to the configuration file itself. Specified in time format ("1s", "2m", "3h", "0.5s"). The configuration file will be automatically reloaded if it changes. If omitted, "1s" (1 second) is used.
 - `log_file` (optional): The path to a log file where detailed command execution information will be recorded. If set, command execution details (timestamp, path, TOML configuration content) for files or directories with `enable_log = true` will be written to this file.
 
@@ -123,10 +122,10 @@ Refer to `examples/config.example.toml` for complete examples of various use cas
 
 ```toml
 # Set default monitoring interval to 1 second
-default_interval = 1000
+default_interval = "1s"
 
 # Set config file change check interval to 1 second
-config_check_interval = 1000
+config_check_interval = "1s"
 
 # Log file for detailed command execution (optional)
 log_file = "command_execution.log"
@@ -140,11 +139,11 @@ after_hours = { start = "18:00", end = "08:00" }  # Spans midnight
 # Use default interval (checks every 1 second)
 "document.txt" = { command = "cp document.txt document.txt.bak" }
 
-# Specify custom interval (checks every 500ms)
-"app.log" = { command = "notify-send 'Log Updated' 'New entries in app.log'", interval = 500 }
+# Specify custom interval (checks every 0.5 seconds)
+"app.log" = { command = "notify-send 'Log Updated' 'New entries in app.log'", interval = "0.5s" }
 
 # Specify custom interval (checks every 5 seconds)
-"config.ini" = { command = "systemctl reload myapp", interval = 5000 }
+"config.ini" = { command = "systemctl reload myapp", interval = "5s" }
 
 # Monitor only during business hours
 "report.txt" = { command = "python generate_report.py", time_period = "business_hours" }
