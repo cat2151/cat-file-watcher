@@ -1,0 +1,12 @@
+# Development dependencies for cat-file-watcher
+# Install with: pip install -r dev-requirements.txt
+
+# Core dependencies (from requirements.txt)
+-r requirements.txt
+
+# Linting and formatting
+ruff>=0.6.0
+
+# Type checking (optional)
+mypy>=1.0.0
+types-toml>=0.10.0
