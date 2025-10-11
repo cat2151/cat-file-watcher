@@ -61,7 +61,7 @@ midnight_window = { start = "23:59", end = "00:01" }
 #           when a process matching the pattern is running
 # Optional: specify 'time_period' to only monitor during that time period
 # Optional: specify 'enable_log = true' to log command execution to the log file (default: false)
-# Optional: specify 'chdir' to change the working directory before executing the command
+# Optional: specify 'cwd' to change the working directory before executing the command
 
 # Example 1: Monitor a text file and display a message (uses default interval)
 # "example.txt" = { command = "echo 'example.txt has been modified!'" }
@@ -121,12 +121,12 @@ midnight_window = { start = "23:59", end = "00:01" }
 # Example 17: Periodic cleanup task (runs every 10 seconds)
 # "" = { command = "find /tmp -type f -mtime +7 -delete", interval = 10000 }
 
-# Example 18: Execute command in a different directory (chdir)
+# Example 18: Execute command in a different directory (cwd)
 # Run build script from the build directory
-# "src/main.py" = { command = "make", chdir = "./build" }
+# "src/main.py" = { command = "make", cwd = "./build" }
 
-# Example 19: Execute command with relative paths using chdir
+# Example 19: Execute command with relative paths using cwd
 # Compile code in the project directory
-# "lib/module.c" = { command = "gcc -c module.c -o module.o", chdir = "./lib" }
+# "lib/module.c" = { command = "gcc -c module.c -o module.o", cwd = "./lib" }
 
 

@@ -47,8 +47,8 @@ class CommandExecutor:
 
         error_log_file = config.get("error_log_file") if config else None
 
-        # Get chdir setting if specified
-        cwd = settings.get("chdir")
+        # Get cwd setting if specified
+        cwd = settings.get("cwd")
 
         try:
             result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30, cwd=cwd)
