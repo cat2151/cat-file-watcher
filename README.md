@@ -177,6 +177,21 @@ after_hours = { start = "18:00", end = "08:00" }  # Spanning across midnight
 4. It also monitors the configuration file itself and automatically reloads it if changes are detected.
 5. This process continuously repeats until stopped with Ctrl+C.
 
+### Command Execution Processing
+
+**Important**: Commands are executed **sequentially**.
+
+- When a file change is detected and a command is executed, the next file check does not occur until the command completes (or times out after 30 seconds).
+- For example, if a file's command takes 25 seconds to complete, monitoring of other files will be paused during those 25 seconds.
+- If other files are updated during this time, they will not be detected until after the running command completes (they will be detected in the next main loop iteration).
+- The current implementation does not support parallel monitoring and execution of multiple files.
+
+If you need long-running commands, consider using background execution within the command, or launching it as a separate process.
+
+**Non-blocking execution methods**:
+- **Linux/macOS**: Append `&` at the end of the command (e.g., `command = "long_task.sh &"`)
+- **Windows**: Prepend `start ` at the beginning of the command (e.g., `command = "start long_task.bat"`)
+
 ### Command Execution Output
 
 The standard output and standard error of executed commands are displayed on the console **in real-time**:
