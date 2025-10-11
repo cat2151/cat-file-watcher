@@ -54,11 +54,12 @@ night_shift = { start = "23:00", end = "01:00" }
 midnight_window = { start = "23:59", end = "00:01" }
 
 [files]
-# Each entry defines a file to monitor and a command to execute when it changes
-# Optional: specify 'interval' in milliseconds to override the default for this file
+# Each entry defines a file or directory to monitor and a command to execute when it changes
+# Directories: Command executes when directory modification time changes (files added/removed/etc.)
+# Optional: specify 'interval' in milliseconds to override the default
 # Optional: specify 'suppress_if_process' with a regex pattern to skip command execution
 #           when a process matching the pattern is running
-# Optional: specify 'time_period' to only monitor the file during that time period
+# Optional: specify 'time_period' to only monitor during that time period
 # Optional: specify 'enable_log = true' to log command execution to the log file (default: false)
 
 # Example 1: Monitor a text file and display a message (uses default interval)
@@ -76,39 +77,47 @@ midnight_window = { start = "23:59", end = "00:01" }
 # Example 5: Monitor a document and create a backup (uses default interval)
 # "document.txt" = { command = "cp document.txt document.txt.bak" }
 
-# Example 6: Only run build when editor is not running (process suppression)
+# Example 6: Monitor a directory for changes (files added/removed/modified)
+# Triggers when files are added, removed, or renamed in the directory
+# "src/" = { command = "echo 'Source directory changed!'", interval = 1000 }
+
+# Example 7: Monitor a directory and rebuild on changes
+# "/path/to/project/src/" = { command = "make build", interval = 2000 }
+
+# Example 8: Only run build when editor is not running (process suppression)
 # Suppress command execution if a process matching the regex pattern is running
 # This is useful to avoid rebuilding while you're actively editing
 # "src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
 
-# Example 7: Only sync when specific sync process is not running
+# Example 9: Only sync when specific sync process is not running
 # "data.json" = { command = "rsync -av data.json backup/", suppress_if_process = "rsync" }
 
-# Example 8: Monitor only during business hours
+# Example 10: Monitor only during business hours
 # "work_report.txt" = { command = "python generate_report.py", time_period = "business_hours" }
 
-# Example 9: Monitor only during after hours (night time)
+# Example 11: Monitor only during after hours (night time)
 # "batch_data.csv" = { command = "./process_batch.sh", time_period = "after_hours" }
 
-# Example 10: Combine time period with process suppression
+# Example 12: Combine time period with process suppression
 # "code.py" = { command = "python -m pytest", time_period = "business_hours", suppress_if_process = "vim|code" }
 
-# Example 11: Enable logging for a critical file (requires log_file to be set globally)
+# Example 13: Enable logging for a critical file (requires log_file to be set globally)
 # "important.txt" = { command = "backup.sh", enable_log = true }
 
-# Example 12: Monitor with logging and custom interval
+# Example 14: Monitor with logging and custom interval
 # "config.json" = { command = "validate_config.sh", interval = 2000, enable_log = true }
 
-# Example 13: Process health monitoring without file watching (empty filename)
+# Example 15: Process health monitoring without file watching (empty filename)
 # Executes command every second (default_interval) without monitoring any file
 # Useful for process health checks, auto-restart, or periodic tasks
 # "" = { command = "echo 'Health check at' $(date)" }
 
-# Example 14: Auto-restart process when it's not running
+# Example 16: Auto-restart process when it's not running
 # Using empty filename with suppress_if_process for process health monitoring
 # Command only executes when the process is NOT running (suppressed when running)
 # "" = { command = "./start_myapp.sh", suppress_if_process = "myapp", interval = 5000 }
 
-# Example 15: Periodic cleanup task (runs every 10 seconds)
+# Example 17: Periodic cleanup task (runs every 10 seconds)
 # "" = { command = "find /tmp -type f -mtime +7 -delete", interval = 10000 }
+
 

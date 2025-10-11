@@ -80,19 +80,21 @@ night_shift = { start = "23:00", end = "01:00" }
 
 The configuration file requires a `[files]` section where each entry maps a filename to a command:
 
-- **Key**: Path to the file to monitor (relative or absolute)
+- **Key**: Path to the file or directory to monitor (relative or absolute)
+  - For files: Command executes when the file's modification time changes
+  - For directories: Command executes when the directory's modification time changes (e.g., when files are added or removed)
 - **Value**: An object containing a `command` field with the shell command to execute
-  - `command` (required): The shell command to execute when the file changes
-  - `interval` (optional): The monitoring interval for this file (in milliseconds). If omitted, `default_interval` will be used.
+  - `command` (required): The shell command to execute when the file or directory changes
+  - `interval` (optional): The monitoring interval for this file or directory (in milliseconds). If omitted, `default_interval` will be used.
   - `suppress_if_process` (optional): A regular expression pattern to match against running process names. If a matching process is found, command execution will be skipped. This is useful for preventing actions from being triggered when certain programs, such as editors, are running.
-  - `time_period` (optional): The name of a time period during which to monitor the file. Specify a time period name defined in the `[time_periods]` section. The file will only be monitored within the specified time period.
+  - `time_period` (optional): The name of a time period during which to monitor the file or directory. Specify a time period name defined in the `[time_periods]` section. Monitoring will only occur within the specified time period.
   - `enable_log` (optional): If set to `true`, detailed command execution information will be logged to a log file (default: `false`). The `log_file` must be configured in the global settings.
 
 ### Global Settings
 
-- `default_interval` (optional): The default monitoring interval for all files (in milliseconds). If omitted, 1000ms (1 second) will be used.
+- `default_interval` (optional): The default monitoring interval for all files and directories (in milliseconds). If omitted, 1000ms (1 second) will be used.
 - `config_check_interval` (optional): The interval for checking changes to the configuration file itself (in milliseconds). If the configuration file is modified, it will be automatically reloaded. If omitted, 1000ms (1 second) will be used.
-- `log_file` (optional): The path to the log file where detailed command execution information will be recorded. If configured, command execution information (timestamp, file path, TOML configuration content) for files with `enable_log = true` will be logged to this file.
+- `log_file` (optional): The path to the log file where detailed command execution information will be recorded. If configured, command execution information (timestamp, path, TOML configuration content) for files or directories with `enable_log = true` will be logged to this file.
 
 ### Time Period Settings
 
@@ -102,7 +104,7 @@ You can define time periods in the `[time_periods]` section (optional):
 - `start`: Start time (HH:MM format, e.g., "09:00")
 - `end`: End time (HH:MM format, e.g., "17:00")
 - Time periods spanning across midnight are also supported (e.g., `start = "23:00", end = "01:00"`).
-- By specifying a time period name with the `time_period` parameter for each file, that file will only be monitored within that specific time period.
+- By specifying a time period name with the `time_period` parameter for each file or directory, that item will only be monitored within that specific time period.
 
 Example:
 ```toml
