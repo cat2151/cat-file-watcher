@@ -43,7 +43,7 @@ pip install -r requirements.txt
 設定ファイルを指定してファイルウォッチャーを実行:
 
 ```bash
-python src/cat_file_watcher.py --config-filename config.toml
+python -m src --config-filename config.toml
 ```
 
 引数:
