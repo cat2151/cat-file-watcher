@@ -17,14 +17,16 @@
 
   // Ruff configuration
   "ruff.lint.enable": true,
-  "ruff.format.args": [
-    "--line-length=120"
-  ],
-  "ruff.lint.args": [
-    "--line-length=120",
-    "--select=E,F,W,I",  // Enable pycodestyle errors, pyflakes, warnings, isort
-    "--ignore=E501"      // Ignore line too long (handled by formatter)
-  ],
+
+  // コメントアウトする。linterにより、deprecated警告が表示されたため。
+  // "ruff.format.args": [
+  //   "--line-length=120"
+  // ],
+  // "ruff.lint.args": [
+  //   "--line-length=120",
+  //   "--select=E,F,W,I",  // Enable pycodestyle errors, pyflakes, warnings, isort
+  //   "--ignore=E501"      // Ignore line too long (handled by formatter)
+  // ],
 
   // Testing with pytest
   "python.testing.pytestEnabled": true,
