@@ -5,17 +5,17 @@ Interval division tests for cat_file_watcher
 import os
 import sys
 import tempfile
-import unittest
+import shutil
 
 # Add src directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 from cat_file_watcher import FileWatcher
 
 
-class TestIntervalDivision(unittest.TestCase):
+class TestIntervalDivision:
     """Test cases for interval division calculations."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.test_dir, 'test_config.toml')
@@ -30,9 +30,8 @@ class TestIntervalDivision(unittest.TestCase):
         with open(self.config_file, 'w') as f:
             f.write(config_content)
     
-    def tearDown(self):
+    def teardown_method(self):
         """Clean up test fixtures."""
-        import shutil
         shutil.rmtree(self.test_dir, ignore_errors=True)
     
     def test_interval_division_by_1000_various_values(self):
@@ -48,8 +47,8 @@ class TestIntervalDivision(unittest.TestCase):
         for interval_ms, expected_seconds in test_cases:
             settings = {'interval': interval_ms}
             result = watcher._get_interval_for_file(settings)
-            self.assertEqual(result, expected_seconds,
-                           f"Failed for {interval_ms}ms: expected {expected_seconds}s")
+            assert result == expected_seconds, \
+                f"Failed for {interval_ms}ms: expected {expected_seconds}s"
     
     def test_interval_division_returns_float(self):
         """Test that interval division always returns a float type."""
@@ -57,14 +56,10 @@ class TestIntervalDivision(unittest.TestCase):
         
         settings = {'interval': 1000}
         result = watcher._get_interval_for_file(settings)
-        self.assertIsInstance(result, float)
-        self.assertEqual(result, 1.0)
+        assert isinstance(result, float)
+        assert result == 1.0
         
         settings = {'interval': 500}
         result = watcher._get_interval_for_file(settings)
-        self.assertIsInstance(result, float)
-        self.assertEqual(result, 0.5)
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert isinstance(result, float)
+        assert result == 0.5

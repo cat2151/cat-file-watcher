@@ -2,7 +2,7 @@
 """
 Tests for command suppression logging functionality
 """
-import unittest
+import shutil
 import tempfile
 import os
 import time
@@ -13,10 +13,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from cat_file_watcher import FileWatcher
 
 
-class TestSuppressionLogging(unittest.TestCase):
+class TestSuppressionLogging:
     """Test cases for suppression logging."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.test_dir, 'test_config.toml')
@@ -26,9 +26,8 @@ class TestSuppressionLogging(unittest.TestCase):
         with open(self.test_file, 'w') as f:
             f.write('Initial content\n')
     
-    def tearDown(self):
+    def teardown_method(self):
         """Clean up test fixtures."""
-        import shutil
         shutil.rmtree(self.test_dir, ignore_errors=True)
     
     def test_suppression_logging_enabled(self):
@@ -57,18 +56,18 @@ suppression_log_file = "{self.suppression_log_file}"
         watcher._check_files()
         
         # Suppression log file should be created
-        self.assertTrue(os.path.exists(self.suppression_log_file))
+        assert os.path.exists(self.suppression_log_file)
         
         # Check log content
         with open(self.suppression_log_file, 'r') as f:
             log_content = f.read()
         
         # Log should contain timestamp, process pattern, and matched process
-        self.assertIn('File:', log_content)
-        self.assertIn('Process pattern: python', log_content)
-        self.assertIn('Matched process:', log_content)
+        assert 'File:' in log_content
+        assert 'Process pattern: python' in log_content
+        assert 'Matched process:' in log_content
         # Should contain "python" somewhere in the matched process line
-        self.assertIn('python', log_content.lower())
+        assert 'python' in log_content.lower()
     
     def test_suppression_logging_disabled(self):
         """Test that suppression logging is not created when not configured."""
@@ -95,7 +94,7 @@ suppression_log_file = "{self.suppression_log_file}"
         watcher._check_files()
         
         # Suppression log file should not be created
-        self.assertFalse(os.path.exists(self.suppression_log_file))
+        assert not os.path.exists(self.suppression_log_file)
     
     def test_suppression_logging_no_suppression(self):
         """Test that no log is written when command is not suppressed."""
@@ -123,7 +122,7 @@ suppression_log_file = "{self.suppression_log_file}"
         watcher._check_files()
         
         # Suppression log file should not be created
-        self.assertFalse(os.path.exists(self.suppression_log_file))
+        assert not os.path.exists(self.suppression_log_file)
     
     def test_suppression_logging_multiple_suppressions(self):
         """Test that multiple suppressions are logged correctly."""
@@ -150,7 +149,7 @@ suppression_log_file = "{self.suppression_log_file}"
             watcher._check_files()
         
         # Suppression log file should be created
-        self.assertTrue(os.path.exists(self.suppression_log_file))
+        assert os.path.exists(self.suppression_log_file)
         
         # Check log content - should have 3 entries
         with open(self.suppression_log_file, 'r') as f:
@@ -158,7 +157,7 @@ suppression_log_file = "{self.suppression_log_file}"
         
         # Count the number of log entries (each has a File: line)
         entry_count = log_content.count('File:')
-        self.assertEqual(entry_count, 3)
+        assert entry_count == 3
     
     def test_suppression_logging_timestamp_format(self):
         """Test that log entries include properly formatted timestamps."""
@@ -192,8 +191,4 @@ suppression_log_file = "{self.suppression_log_file}"
         # Should have timestamp in format [YYYY-MM-DD HH:MM:SS]
         import re
         timestamp_pattern = r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]'
-        self.assertTrue(re.search(timestamp_pattern, log_content))
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert re.search(timestamp_pattern, log_content)

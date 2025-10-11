@@ -6,16 +6,16 @@ import os
 import sys
 import tempfile
 import time
-import unittest
+import shutil
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 from cat_file_watcher import FileWatcher
 
 
-class TestCommandSuppression(unittest.TestCase):
+class TestCommandSuppression:
     """Test cases for command suppression based on running processes."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.test_dir, 'test_config.toml')
@@ -23,9 +23,8 @@ class TestCommandSuppression(unittest.TestCase):
         with open(self.test_file, 'w') as f:
             f.write('Initial content\n')
     
-    def tearDown(self):
+    def teardown_method(self):
         """Clean up test fixtures."""
-        import shutil
         shutil.rmtree(self.test_dir, ignore_errors=True)
     
     def test_command_suppression_when_process_exists(self):
@@ -47,7 +46,7 @@ class TestCommandSuppression(unittest.TestCase):
             f.write('Modified content\n')
         
         watcher._check_files()
-        self.assertFalse(os.path.exists(test_output))
+        assert not os.path.exists(test_output)
     
     def test_command_execution_when_process_not_exists(self):
         """Test that command executes normally when specified process doesn't exist."""
@@ -68,7 +67,7 @@ class TestCommandSuppression(unittest.TestCase):
             f.write('Modified content\n')
         
         watcher._check_files()
-        self.assertTrue(os.path.exists(test_output))
+        assert os.path.exists(test_output)
     
     def test_command_execution_without_suppress_if_process(self):
         """Test that commands execute normally when suppress_if_process is not specified."""
@@ -89,9 +88,5 @@ class TestCommandSuppression(unittest.TestCase):
             f.write('Modified content\n')
         
         watcher._check_files()
-        self.assertTrue(os.path.exists(test_output))
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert os.path.exists(test_output)
 

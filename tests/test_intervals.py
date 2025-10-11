@@ -6,16 +6,16 @@ import os
 import sys
 import tempfile
 import time
-import unittest
+import shutil
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 from cat_file_watcher import FileWatcher
 
 
-class TestFileWatcherIntervals(unittest.TestCase):
+class TestFileWatcherIntervals:
     """Test cases for interval-related functionality."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.test_dir, 'test_config.toml')
@@ -23,9 +23,8 @@ class TestFileWatcherIntervals(unittest.TestCase):
         with open(self.test_file, 'w') as f:
             f.write('Initial content\n')
     
-    def tearDown(self):
+    def teardown_method(self):
         """Clean up test fixtures."""
-        import shutil
         shutil.rmtree(self.test_dir, ignore_errors=True)
     
     def test_default_interval(self):
@@ -38,7 +37,7 @@ class TestFileWatcherIntervals(unittest.TestCase):
         
         watcher = FileWatcher(self.config_file)
         interval = watcher._get_interval_for_file({})
-        self.assertEqual(interval, 1.0)
+        assert interval == 1.0
     
     def test_custom_default_interval(self):
         """Test that custom default interval is respected."""
@@ -52,7 +51,7 @@ class TestFileWatcherIntervals(unittest.TestCase):
         
         watcher = FileWatcher(self.config_file)
         interval = watcher._get_interval_for_file({})
-        self.assertEqual(interval, 0.5)
+        assert interval == 0.5
     
     def test_per_file_interval(self):
         """Test that per-file interval overrides default."""
@@ -67,7 +66,7 @@ class TestFileWatcherIntervals(unittest.TestCase):
         watcher = FileWatcher(self.config_file)
         settings = watcher.config['files'][self.test_file]
         interval = watcher._get_interval_for_file(settings)
-        self.assertEqual(interval, 0.25)
+        assert interval == 0.25
     
     def test_interval_throttling(self):
         """Test that files are not checked more frequently than their interval."""
@@ -85,13 +84,8 @@ class TestFileWatcherIntervals(unittest.TestCase):
         
         time.sleep(0.05)
         watcher._check_files()
-        self.assertEqual(watcher.file_last_check[self.test_file], first_check_time)
+        assert watcher.file_last_check[self.test_file] == first_check_time
         
         time.sleep(0.5)
         watcher._check_files()
-        self.assertGreater(watcher.file_last_check[self.test_file], first_check_time)
-
-
-if __name__ == '__main__':
-    unittest.main()
-
+        assert watcher.file_last_check[self.test_file] > first_check_time

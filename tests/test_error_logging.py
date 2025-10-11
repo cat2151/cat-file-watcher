@@ -2,7 +2,8 @@
 """
 Tests for error logging functionality
 """
-import unittest
+import pytest
+import shutil
 import tempfile
 import os
 import time
@@ -16,10 +17,10 @@ from command_executor import CommandExecutor
 from config_loader import ConfigLoader
 
 
-class TestErrorLogging(unittest.TestCase):
+class TestErrorLogging:
     """Test cases for error logging functionality."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.error_log_file = os.path.join(self.test_dir, 'error.log')
@@ -30,24 +31,23 @@ class TestErrorLogging(unittest.TestCase):
         with open(self.test_file, 'w') as f:
             f.write('Initial content\n')
     
-    def tearDown(self):
+    def teardown_method(self):
         """Clean up test fixtures."""
-        import shutil
         shutil.rmtree(self.test_dir, ignore_errors=True)
     
     def test_error_logger_basic_message(self):
         """Test that ErrorLogger logs basic error messages."""
         ErrorLogger.log_error(self.error_log_file, "Test error message")
         
-        self.assertTrue(os.path.exists(self.error_log_file))
+        assert os.path.exists(self.error_log_file)
         
         with open(self.error_log_file, 'r') as f:
             content = f.read()
         
-        self.assertIn('ERROR: Test error message', content)
+        assert 'ERROR: Test error message' in content
         # Check timestamp format [YYYY-MM-DD HH:MM:SS]
-        self.assertTrue(content.startswith('['))
-        self.assertIn(']', content)
+        assert content.startswith('[')
+        assert ']' in content
     
     def test_error_logger_with_exception(self):
         """Test that ErrorLogger logs exceptions with stack traces."""
@@ -60,18 +60,18 @@ class TestErrorLogging(unittest.TestCase):
         with open(self.error_log_file, 'r') as f:
             content = f.read()
         
-        self.assertIn('ERROR: Test error', content)
-        self.assertIn('Exception type: ValueError', content)
-        self.assertIn('Exception message: Test exception message', content)
-        self.assertIn('Stack trace:', content)
-        self.assertIn('ValueError: Test exception message', content)
+        assert 'ERROR: Test error' in content
+        assert 'Exception type: ValueError' in content
+        assert 'Exception message: Test exception message' in content
+        assert 'Stack trace:' in content
+        assert 'ValueError: Test exception message' in content
     
     def test_error_logger_none_file(self):
         """Test that ErrorLogger handles None error_log_file gracefully."""
         # Should not raise exception
         ErrorLogger.log_error(None, "Test message")
         # No file should be created
-        self.assertFalse(os.path.exists(self.error_log_file))
+        assert not os.path.exists(self.error_log_file)
     
     def test_error_logger_appends_to_file(self):
         """Test that ErrorLogger appends to existing error log."""
@@ -81,10 +81,10 @@ class TestErrorLogging(unittest.TestCase):
         with open(self.error_log_file, 'r') as f:
             content = f.read()
         
-        self.assertIn('First error', content)
-        self.assertIn('Second error', content)
+        assert 'First error' in content
+        assert 'Second error' in content
         # Should have two timestamp entries
-        self.assertEqual(content.count('['), 2)
+        assert content.count('[') == 2
     
     def test_config_loader_logs_file_not_found(self):
         """Test that ConfigLoader logs errors when config file is not found."""
@@ -93,7 +93,7 @@ class TestErrorLogging(unittest.TestCase):
         # Create a minimal config first to set error_log_file
         # Since load_config exits, we can't test it directly, but we can verify it tries
         # We'll test this indirectly through the error message
-        with self.assertRaises(SystemExit):
+        with pytest.raises(SystemExit):
             ConfigLoader.load_config(nonexistent_config)
     
     def test_config_loader_logs_parse_error(self):
@@ -102,7 +102,7 @@ class TestErrorLogging(unittest.TestCase):
         with open(self.config_file, 'w') as f:
             f.write('invalid toml syntax [[[')
         
-        with self.assertRaises(SystemExit):
+        with pytest.raises(SystemExit):
             ConfigLoader.load_config(self.config_file)
     
     def test_command_executor_logs_timeout_error(self):
@@ -119,7 +119,7 @@ error_log_file = "{self.error_log_file}"
         watcher = FileWatcher(self.config_file)
         
         # This will timeout and should log the error
-        with self.assertRaises(Exception):  # subprocess.TimeoutExpired
+        with pytest.raises(Exception):  # subprocess.TimeoutExpired
             CommandExecutor.execute_command(
                 'sleep 60',
                 self.test_file,
@@ -128,12 +128,12 @@ error_log_file = "{self.error_log_file}"
             )
         
         # Verify error was logged
-        self.assertTrue(os.path.exists(self.error_log_file))
+        assert os.path.exists(self.error_log_file)
         with open(self.error_log_file, 'r') as f:
             content = f.read()
         
-        self.assertIn('ERROR:', content)
-        self.assertIn('timed out', content.lower())
+        assert 'ERROR:' in content
+        assert 'timed out' in content.lower()
     
     def test_command_executor_logs_command_failure(self):
         """Test that CommandExecutor logs command failures."""
@@ -157,13 +157,13 @@ error_log_file = "{self.error_log_file}"
         )
         
         # Verify error was logged
-        self.assertTrue(os.path.exists(self.error_log_file))
+        assert os.path.exists(self.error_log_file)
         with open(self.error_log_file, 'r') as f:
             content = f.read()
         
-        self.assertIn('ERROR:', content)
-        self.assertIn('Command failed', content)
-        self.assertIn('exit code 1', content)
+        assert 'ERROR:' in content
+        assert 'Command failed' in content
+        assert 'exit code 1' in content
     
     def test_command_executor_logs_write_log_error(self):
         """Test that CommandExecutor logs errors when writing to log file fails."""
@@ -189,12 +189,12 @@ log_file = "/nonexistent/path/to/log.txt"
         )
         
         # Verify error was logged
-        self.assertTrue(os.path.exists(self.error_log_file))
+        assert os.path.exists(self.error_log_file)
         with open(self.error_log_file, 'r') as f:
             content = f.read()
         
-        self.assertIn('ERROR:', content)
-        self.assertIn('Failed to write to log file', content)
+        assert 'ERROR:' in content
+        assert 'Failed to write to log file' in content
     
     def test_file_watcher_check_files_logs_errors(self):
         """Test that FileWatcher._check_files logs errors when processing files."""
@@ -230,13 +230,13 @@ error_log_file = "{self.error_log_file}"
             watcher._check_files()
             
             # Verify error was logged
-            self.assertTrue(os.path.exists(self.error_log_file))
+            assert os.path.exists(self.error_log_file)
             with open(self.error_log_file, 'r') as f:
                 content = f.read()
             
-            self.assertIn('ERROR:', content)
-            self.assertIn('Error processing file', content)
-            self.assertIn('Simulated command execution error', content)
+            assert 'ERROR:' in content
+            assert 'Error processing file' in content
+            assert 'Simulated command execution error' in content
         finally:
             # Restore original function
             CommandExecutor.execute_command = original_execute
@@ -264,12 +264,12 @@ error_log_file = "{self.error_log_file}"
         watcher._check_config_file()
         
         # Verify error was logged
-        self.assertTrue(os.path.exists(self.error_log_file))
+        assert os.path.exists(self.error_log_file)
         with open(self.error_log_file, 'r') as f:
             content = f.read()
         
-        self.assertIn('ERROR:', content)
-        self.assertIn('error', content.lower())
+        assert 'ERROR:' in content
+        assert 'error' in content.lower()
     
     def test_error_log_timestamp_format(self):
         """Test that error log entries have correct timestamp format."""
@@ -279,14 +279,10 @@ error_log_file = "{self.error_log_file}"
             content = f.read()
         
         # Should start with [YYYY-MM-DD HH:MM:SS]
-        self.assertTrue(content.startswith('['))
+        assert content.startswith('[')
         first_line = content.split('\n')[0]
-        self.assertIn(']', first_line)
+        assert ']' in first_line
         # Verify format: [YYYY-MM-DD HH:MM:SS]
         import re
         pattern = r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]'
-        self.assertTrue(re.match(pattern, first_line))
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert re.match(pattern, first_line)

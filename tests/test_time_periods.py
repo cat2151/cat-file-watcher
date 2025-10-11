@@ -6,7 +6,7 @@ import os
 import sys
 import tempfile
 import time
-import unittest
+import shutil
 from datetime import datetime, time as dt_time
 from pathlib import Path
 
@@ -16,7 +16,7 @@ from cat_file_watcher import FileWatcher
 from time_period_checker import TimePeriodChecker
 
 
-class TestTimePeriodChecker(unittest.TestCase):
+class TestTimePeriodChecker:
     """Test cases for TimePeriodChecker class."""
     
     def test_parse_time_valid(self):
@@ -29,9 +29,8 @@ class TestTimePeriodChecker(unittest.TestCase):
             ("  14:25  ", dt_time(14, 25)),  # With whitespace
         ]
         for time_str, expected in test_cases:
-            with self.subTest(time_str=time_str):
-                result = TimePeriodChecker.parse_time(time_str)
-                self.assertEqual(result, expected)
+            result = TimePeriodChecker.parse_time(time_str)
+            assert result == expected
     
     def test_parse_time_invalid(self):
         """Test parsing invalid time strings."""
@@ -49,9 +48,8 @@ class TestTimePeriodChecker(unittest.TestCase):
             "12:30:00", # Too many parts
         ]
         for time_str in invalid_times:
-            with self.subTest(time_str=time_str):
-                result = TimePeriodChecker.parse_time(time_str)
-                self.assertIsNone(result)
+            result = TimePeriodChecker.parse_time(time_str)
+            assert result is None
     
     def test_is_in_time_period_normal(self):
         """Test time period check for normal periods (not spanning midnight)."""
@@ -59,14 +57,14 @@ class TestTimePeriodChecker(unittest.TestCase):
         end = dt_time(17, 0)    # 17:00
         
         # Times within period
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(9, 0)))
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(12, 0)))
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(17, 0)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(9, 0)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(12, 0)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(17, 0)))
         
         # Times outside period
-        self.assertFalse(TimePeriodChecker.is_in_time_period(start, end, dt_time(8, 59)))
-        self.assertFalse(TimePeriodChecker.is_in_time_period(start, end, dt_time(17, 1)))
-        self.assertFalse(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 0)))
+        assert not(TimePeriodChecker.is_in_time_period(start, end, dt_time(8, 59)))
+        assert not(TimePeriodChecker.is_in_time_period(start, end, dt_time(17, 1)))
+        assert not(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 0)))
     
     def test_is_in_time_period_spanning_midnight(self):
         """Test time period check for periods spanning midnight."""
@@ -74,18 +72,18 @@ class TestTimePeriodChecker(unittest.TestCase):
         end = dt_time(1, 0)     # 01:00
         
         # Times within period (before midnight)
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 0)))
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 30)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 0)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 30)))
         
         # Times within period (after midnight)
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 0)))
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 30)))
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(1, 0)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 0)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 30)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(1, 0)))
         
         # Times outside period
-        self.assertFalse(TimePeriodChecker.is_in_time_period(start, end, dt_time(1, 1)))
-        self.assertFalse(TimePeriodChecker.is_in_time_period(start, end, dt_time(12, 0)))
-        self.assertFalse(TimePeriodChecker.is_in_time_period(start, end, dt_time(22, 59)))
+        assert not(TimePeriodChecker.is_in_time_period(start, end, dt_time(1, 1)))
+        assert not(TimePeriodChecker.is_in_time_period(start, end, dt_time(12, 0)))
+        assert not(TimePeriodChecker.is_in_time_period(start, end, dt_time(22, 59)))
     
     def test_is_in_time_period_edge_case_23_59_to_00_01(self):
         """Test specific edge case mentioned in requirements: 23:59 to 00:01."""
@@ -93,13 +91,13 @@ class TestTimePeriodChecker(unittest.TestCase):
         end = dt_time(0, 1)      # 00:01
         
         # Times within period
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 59)))
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 0)))
-        self.assertTrue(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 1)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 59)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 0)))
+        assert(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 1)))
         
         # Times outside period
-        self.assertFalse(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 58)))
-        self.assertFalse(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 2)))
+        assert not(TimePeriodChecker.is_in_time_period(start, end, dt_time(23, 58)))
+        assert not(TimePeriodChecker.is_in_time_period(start, end, dt_time(0, 2)))
     
     def test_get_time_period_config_valid(self):
         """Test retrieving valid time period configuration."""
@@ -118,15 +116,15 @@ class TestTimePeriodChecker(unittest.TestCase):
         
         # Test business hours
         period = TimePeriodChecker.get_time_period_config(config, 'business_hours')
-        self.assertIsNotNone(period)
-        self.assertEqual(period['start'], dt_time(9, 0))
-        self.assertEqual(period['end'], dt_time(17, 0))
+        assert period is not None
+        assert period['start'] == dt_time(9, 0)
+        assert period['end'] == dt_time(17, 0)
         
         # Test night shift
         period = TimePeriodChecker.get_time_period_config(config, 'night_shift')
-        self.assertIsNotNone(period)
-        self.assertEqual(period['start'], dt_time(23, 0))
-        self.assertEqual(period['end'], dt_time(1, 0))
+        assert period is not None
+        assert period['start'] == dt_time(23, 0)
+        assert period['end'] == dt_time(1, 0)
     
     def test_get_time_period_config_invalid(self):
         """Test retrieving invalid or non-existent time period configuration."""
@@ -147,16 +145,16 @@ class TestTimePeriodChecker(unittest.TestCase):
         }
         
         # Non-existent period
-        self.assertIsNone(TimePeriodChecker.get_time_period_config(config, 'nonexistent'))
+        assert TimePeriodChecker.get_time_period_config(config, 'nonexistent') is None
         
         # Missing end time
-        self.assertIsNone(TimePeriodChecker.get_time_period_config(config, 'missing_end'))
+        assert TimePeriodChecker.get_time_period_config(config, 'missing_end') is None
         
         # Invalid time format
-        self.assertIsNone(TimePeriodChecker.get_time_period_config(config, 'invalid_time'))
+        assert TimePeriodChecker.get_time_period_config(config, 'invalid_time') is None
         
         # No time_periods section
-        self.assertIsNone(TimePeriodChecker.get_time_period_config({}, 'any'))
+        assert TimePeriodChecker.get_time_period_config({}, 'any') is None
     
     def test_should_monitor_file_without_time_period(self):
         """Test that files without time_period setting are always monitored."""
@@ -164,7 +162,7 @@ class TestTimePeriodChecker(unittest.TestCase):
         settings = {'command': 'echo test'}
         
         # Should always return True when no time_period is specified
-        self.assertTrue(TimePeriodChecker.should_monitor_file(config, settings))
+        assert(TimePeriodChecker.should_monitor_file(config, settings))
     
     def test_should_monitor_file_with_valid_period(self):
         """Test file monitoring with valid time period."""
@@ -182,7 +180,7 @@ class TestTimePeriodChecker(unittest.TestCase):
         }
         
         # Should return True for any time within 00:00-23:59 (whole day)
-        self.assertTrue(TimePeriodChecker.should_monitor_file(config, settings))
+        assert(TimePeriodChecker.should_monitor_file(config, settings))
     
     def test_should_monitor_file_with_invalid_period(self):
         """Test that invalid time period defaults to monitoring."""
@@ -200,13 +198,13 @@ class TestTimePeriodChecker(unittest.TestCase):
         }
         
         # Should default to monitoring with a warning
-        self.assertTrue(TimePeriodChecker.should_monitor_file(config, settings))
+        assert(TimePeriodChecker.should_monitor_file(config, settings))
 
 
-class TestFileWatcherWithTimePeriods(unittest.TestCase):
+class TestFileWatcherWithTimePeriods:
     """Test cases for FileWatcher with time period functionality."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.test_dir, 'config.toml')
@@ -216,9 +214,8 @@ class TestFileWatcherWithTimePeriods(unittest.TestCase):
         with open(self.test_file, 'w') as f:
             f.write('Initial content\n')
     
-    def tearDown(self):
+    def teardown_method(self):
         """Clean up test fixtures."""
-        import shutil
         shutil.rmtree(self.test_dir)
     
     def test_file_monitoring_with_active_time_period(self):
@@ -239,7 +236,7 @@ always_active = {{ start = "00:00", end = "23:59" }}
         
         # File should be monitored
         watcher._check_files()
-        self.assertIn(self.test_file, watcher.file_timestamps)
+        assert self.test_file in watcher.file_timestamps
     
     def test_file_monitoring_without_time_period(self):
         """Test that files without time_period are monitored normally."""
@@ -255,7 +252,7 @@ always_active = {{ start = "00:00", end = "23:59" }}
         
         # File should be monitored
         watcher._check_files()
-        self.assertIn(self.test_file, watcher.file_timestamps)
+        assert self.test_file in watcher.file_timestamps
     
     def test_config_with_multiple_time_periods(self):
         """Test configuration with multiple time period definitions."""
@@ -274,9 +271,5 @@ night = {{ start = "22:00", end = "02:00" }}
         
         # Should load without errors
         watcher = FileWatcher(self.config_file)
-        self.assertIsNotNone(watcher.config.get('time_periods'))
-        self.assertEqual(len(watcher.config['time_periods']), 3)
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert watcher.config.get('time_periods') is not None
+        assert len(watcher.config['time_periods']) == 3

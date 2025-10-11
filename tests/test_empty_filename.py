@@ -7,24 +7,23 @@ import os
 import sys
 import tempfile
 import time
-import unittest
+import shutil
 
 # Add src directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 from cat_file_watcher import FileWatcher
 
 
-class TestEmptyFilename(unittest.TestCase):
+class TestEmptyFilename:
     """Test cases for empty filename functionality (command-only execution)."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.test_dir, 'test_config.toml')
     
-    def tearDown(self):
+    def teardown_method(self):
         """Clean up test fixtures."""
-        import shutil
         shutil.rmtree(self.test_dir, ignore_errors=True)
     
     def test_empty_filename_executes_command(self):
@@ -47,14 +46,14 @@ class TestEmptyFilename(unittest.TestCase):
         watcher._check_files()
         
         # Output file should be created
-        self.assertTrue(os.path.exists(test_output), 
-                       "Command should have executed for empty filename")
+        assert os.path.exists(test_output), \
+            "Command should have executed for empty filename"
         
         # Read the content to verify
         with open(test_output, 'r') as f:
             content = f.read().strip()
-        self.assertEqual(content, 'executed', 
-                        "Command output should match expected value")
+        assert content == 'executed', \
+            "Command output should match expected value"
     
     def test_empty_filename_respects_interval(self):
         """Test that empty filename respects interval timing."""
@@ -89,8 +88,8 @@ class TestEmptyFilename(unittest.TestCase):
         if os.path.exists(counter_file):
             with open(counter_file, 'r') as f:
                 lines = f.readlines()
-            self.assertEqual(len(lines), 2, 
-                           "Command should execute twice (once at start, once after interval)")
+            assert len(lines) == 2, \
+            "Command should execute twice (once at start, once after interval)"
     
     def test_empty_filename_with_suppress_if_process(self):
         """Test empty filename with process suppression for health monitoring."""
@@ -112,8 +111,8 @@ class TestEmptyFilename(unittest.TestCase):
         watcher._check_files()
         
         # Output file should NOT exist because command was suppressed
-        self.assertFalse(os.path.exists(test_output), 
-                        "Command should be suppressed when process exists")
+        assert not os.path.exists(test_output), \
+            "Command should be suppressed when process exists"
     
     def test_empty_filename_combined_with_regular_files(self):
         """Test that empty filename can coexist with regular file monitoring."""
@@ -140,10 +139,10 @@ class TestEmptyFilename(unittest.TestCase):
         # First check - empty filename should execute, regular file should just initialize
         watcher._check_files()
         
-        self.assertTrue(os.path.exists(output1), 
-                       "Empty filename command should execute")
-        self.assertFalse(os.path.exists(output2), 
-                        "Regular file command should not execute on first check")
+        assert os.path.exists(output1), \
+            "Empty filename command should execute"
+        assert not os.path.exists(output2), \
+            "Regular file command should not execute on first check"
         
         # Modify the regular file
         time.sleep(0.1)
@@ -153,9 +152,5 @@ class TestEmptyFilename(unittest.TestCase):
         # Second check - regular file should now execute
         watcher._check_files()
         
-        self.assertTrue(os.path.exists(output2), 
-                       "Regular file command should execute after file change")
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert os.path.exists(output2), \
+            "Regular file command should execute after file change"
