@@ -4,6 +4,9 @@
   "python.analysis.typeCheckingMode": "basic",
   "python.analysis.autoImportCompletions": true,
   "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.extraPaths": [
+    "./src"
+  ],
 
   // Linting with Ruff (modern, fast linter)
   "[python]": {
