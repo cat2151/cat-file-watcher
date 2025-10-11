@@ -74,6 +74,7 @@ night_shift = { start = "23:00", end = "01:00" }
 "src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
 "batch.csv" = { command = "./process.sh", time_period = "night_shift" }
 "important.txt" = { command = "backup.sh", enable_log = true }
+"lib/module.c" = { command = "gcc -c module.c -o module.o", cwd = "./lib" }
 ```
 
 ### 設定フォーマット
@@ -89,6 +90,7 @@ night_shift = { start = "23:00", end = "01:00" }
   - `suppress_if_process` (省略可): 実行中のプロセス名にマッチする正規表現パターン。マッチするプロセスが見つかった場合、コマンド実行をスキップします。エディタなどの特定のプログラムが実行中の場合にアクションをトリガーしないようにする場合に便利です
   - `time_period` (省略可): ファイルまたはディレクトリを監視する時間帯の名前。`[time_periods]` セクションで定義された時間帯名を指定します。指定した時間帯内でのみ監視します
   - `enable_log` (省略可): `true` に設定すると、コマンド実行の詳細をログファイルに記録します（デフォルト: `false`）。グローバル設定で `log_file` の設定が必要です
+  - `cwd` (省略可): コマンドを実行する前に指定されたパスに作業ディレクトリを変更します。これにより、コマンド内の相対パスが指定されたディレクトリから解決されます
 
 ### グローバル設定
 

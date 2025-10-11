@@ -47,8 +47,11 @@ class CommandExecutor:
 
         error_log_file = config.get("error_log_file") if config else None
 
+        # Get cwd setting if specified
+        cwd = settings.get("cwd")
+
         try:
-            result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30)
+            result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30, cwd=cwd)
             if result.returncode == 0:
                 if result.stdout:
                     print(f"Output: {result.stdout.strip()}")

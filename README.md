@@ -74,6 +74,7 @@ night_shift = { start = "23:00", end = "01:00" }
 "src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
 "batch.csv" = { command = "./process.sh", time_period = "night_shift" }
 "important.txt" = { command = "backup.sh", enable_log = true }
+"lib/module.c" = { command = "gcc -c module.c -o module.o", cwd = "./lib" }
 ```
 
 ### Configuration Format
@@ -89,6 +90,7 @@ The configuration file requires a `[files]` section where each entry maps a file
   - `suppress_if_process` (optional): A regex pattern that matches running process names. If a matching process is found, command execution will be skipped. Useful for preventing actions from being triggered when certain programs like editors are running.
   - `time_period` (optional): The name of a time period during which the file or directory should be monitored. Specify a time period name defined in the `[time_periods]` section. Monitoring will only occur within the specified time period.
   - `enable_log` (optional): If set to `true`, command execution details will be logged to a file (default: `false`). The `log_file` setting in global configuration is required.
+  - `cwd` (optional): Change the working directory to the specified path before executing the command. This allows relative paths in the command to be resolved from the specified directory.
 
 ### Global Settings
 
