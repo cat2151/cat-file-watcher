@@ -186,7 +186,11 @@ after_hours = { start = "18:00", end = "08:00" }  # Spanning across midnight
 - If other files are updated during this time, they will not be detected until after the running command completes (they will be detected in the next main loop iteration).
 - The current implementation does not support parallel monitoring and execution of multiple files.
 
-If you need long-running commands, consider using background execution (with `&`) within the command, or launching it as a separate process.
+If you need long-running commands, consider using background execution within the command, or launching it as a separate process.
+
+**Non-blocking execution methods**:
+- **Linux/macOS**: Append `&` at the end of the command (e.g., `command = "long_task.sh &"`)
+- **Windows**: Prepend `start ` at the beginning of the command (e.g., `command = "start long_task.bat"`)
 
 ### Command Execution Output
 
