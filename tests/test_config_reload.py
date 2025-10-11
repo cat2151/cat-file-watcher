@@ -28,8 +28,8 @@ class TestConfigReload:
             f.write("Initial content\n")
 
         # Create initial config
-        config_content = f'''default_interval = 1000
-config_check_interval = 100
+        config_content = f'''default_interval = "1s"
+config_check_interval = "0.1s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}
@@ -46,13 +46,13 @@ config_check_interval = 100
         watcher = FileWatcher(self.config_file)
 
         # Check initial config
-        assert watcher.config.get("default_interval") == 1000
-        assert watcher.config.get("config_check_interval") == 100
+        assert watcher.config.get("default_interval") == "1s"
+        assert watcher.config.get("config_check_interval") == "0.1s"
 
         # Wait a bit and modify the config file
         time.sleep(0.2)
-        new_config_content = f'''default_interval = 2000
-config_check_interval = 200
+        new_config_content = f'''default_interval = "2s"
+config_check_interval = "0.2s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed - updated'" }}
@@ -65,13 +65,13 @@ config_check_interval = 200
         watcher._check_config_file()
 
         # Verify config was reloaded
-        assert watcher.config.get("default_interval") == 2000
-        assert watcher.config.get("config_check_interval") == 200
+        assert watcher.config.get("default_interval") == "2s"
+        assert watcher.config.get("config_check_interval") == "0.2s"
 
     def test_config_check_interval_default(self):
         """Test that default config check interval is 1000ms when not specified."""
         # Create config without config_check_interval
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}
@@ -134,8 +134,8 @@ config_check_interval = 200
     def test_custom_config_check_interval(self):
         """Test that custom config_check_interval is respected."""
         # Create config with custom config_check_interval
-        config_content = f'''default_interval = 1000
-config_check_interval = 500
+        config_content = f'''default_interval = "1s"
+config_check_interval = "0.5s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}
@@ -145,5 +145,5 @@ config_check_interval = 500
 
         watcher = FileWatcher(self.config_file)
 
-        # Custom interval should be 500ms
-        assert watcher.config.get("config_check_interval") == 500
+        # Custom interval should be "0.5s"
+        assert watcher.config.get("config_check_interval") == "0.5s"

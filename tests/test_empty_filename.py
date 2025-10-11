@@ -33,7 +33,7 @@ class TestEmptyFilename:
         test_output = os.path.join(self.test_dir, "output.txt")
 
         # Create config with empty filename
-        config_content = f"""default_interval = 50
+        config_content = f"""default_interval = "0.05s"
 
 [files]
 "" = {{ command = "echo 'executed' > {test_output}" }}
@@ -60,7 +60,7 @@ class TestEmptyFilename:
         counter_file = os.path.join(self.test_dir, "counter.txt")
 
         # Create config with empty filename and custom interval (100ms)
-        config_content = f"""default_interval = 100
+        config_content = f"""default_interval = "0.1s"
 
 [files]
 "" = {{ command = "echo 'x' >> {counter_file}" }}
@@ -95,7 +95,7 @@ class TestEmptyFilename:
         test_output = os.path.join(self.test_dir, "health_check.txt")
 
         # Create config that checks if python is running, and only executes if NOT running
-        config_content = f"""default_interval = 50
+        config_content = f"""default_interval = "0.05s"
 
 [files]
 "" = {{ command = "echo 'process_not_found' > {test_output}", suppress_if_process = "python" }}
@@ -122,7 +122,7 @@ class TestEmptyFilename:
             f.write("Initial content\n")
 
         # Create config with both empty filename and regular file
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "" = {{ command = "echo 'periodic' > {output1}" }}

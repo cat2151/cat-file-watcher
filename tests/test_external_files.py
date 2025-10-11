@@ -45,7 +45,7 @@ class TestExternalFiles:
             f.write(external_content)
 
         # Create main config that references external file
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 '''
         with open(self.config_file, "w") as f:
@@ -75,7 +75,7 @@ external_files = ["{self.external_file1}"]
             f.write(external2_content)
 
         # Create main config that references both external files
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}", "{self.external_file2}"]
 '''
         with open(self.config_file, "w") as f:
@@ -100,7 +100,7 @@ external_files = ["{self.external_file1}", "{self.external_file2}"]
 
         # Create main config with its own files section
         test_file2 = os.path.join(self.test_dir, "test2.txt")
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 
 [files]
@@ -132,7 +132,7 @@ external_files = ["{self.external_file1}"]
             f.write(external_content)
 
         # Create main config with relative path
-        config_content = """default_interval = 1000
+        config_content = """default_interval = "1s"
 external_files = ["configs/external.toml"]
 """
         with open(self.config_file, "w") as f:
@@ -156,7 +156,7 @@ business_hours = {{ start = "09:00", end = "17:00" }}
             f.write(external_content)
 
         # Create main config
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 '''
         with open(self.config_file, "w") as f:
@@ -179,7 +179,7 @@ external_files = ["{self.external_file1}"]
             f.write(external_content)
 
         # Create main config
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 '''
         with open(self.config_file, "w") as f:
@@ -193,7 +193,7 @@ external_files = ["{self.external_file1}"]
     def test_external_files_not_found_error(self):
         """Test that missing external file raises an error."""
         # Create main config with non-existent external file
-        config_content = """default_interval = 1000
+        config_content = """default_interval = "1s"
 external_files = ["/nonexistent/file.toml"]
 """
         with open(self.config_file, "w") as f:
@@ -211,7 +211,7 @@ external_files = ["/nonexistent/file.toml"]
             f.write("this is not valid toml [[[")
 
         # Create main config
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 '''
         with open(self.config_file, "w") as f:
@@ -225,7 +225,7 @@ external_files = ["{self.external_file1}"]
     def test_external_files_empty_list(self):
         """Test that empty external_files list works correctly."""
         # Create main config with empty external_files list
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = []
 
 [files]
@@ -242,7 +242,7 @@ external_files = []
     def test_external_files_not_list_error(self):
         """Test that external_files must be a list."""
         # Create main config with external_files as string instead of list
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = "{self.external_file1}"
 '''
         with open(self.config_file, "w") as f:
@@ -263,7 +263,7 @@ external_files = "{self.external_file1}"
             f.write(external_content)
 
         # Create main config
-        config_content = f'''default_interval = 100
+        config_content = f'''default_interval = "0.1s"
 external_files = ["{self.external_file1}"]
 '''
         with open(self.config_file, "w") as f:
@@ -283,7 +283,7 @@ external_files = ["{self.external_file1}"]
             f.write(external_content)
 
         # Create main config
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 
 [files]
@@ -308,7 +308,7 @@ external_files = ["{self.external_file1}"]
 
         # Create main config with same file
         # Note: external_files must be before [files] section to be at top level
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 
 [files]

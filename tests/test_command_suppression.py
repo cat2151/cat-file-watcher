@@ -31,7 +31,7 @@ class TestCommandSuppression:
     def test_command_suppression_when_process_exists(self):
         """Test that command execution is suppressed when specified process exists."""
         test_output = os.path.join(self.test_dir, "output.txt")
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "python" }}
@@ -52,7 +52,7 @@ class TestCommandSuppression:
     def test_command_execution_when_process_not_exists(self):
         """Test that command executes normally when specified process doesn't exist."""
         test_output = os.path.join(self.test_dir, "output.txt")
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "nonexistent_process_xyz123" }}
@@ -73,7 +73,7 @@ class TestCommandSuppression:
     def test_command_execution_without_suppress_if_process(self):
         """Test that commands execute normally when suppress_if_process is not specified."""
         test_output = os.path.join(self.test_dir, "output.txt")
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'executed' > {test_output}" }}

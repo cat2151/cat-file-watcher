@@ -87,13 +87,13 @@ class TestFileWatcher:
         watcher = FileWatcher(self.config_file)
         settings = {}
         interval = watcher._get_interval_for_file(settings)
-        # Default is 1000ms = 1 second
+        # Default is "1s" = 1 second
         assert interval == 1.0
 
     def test_custom_default_interval(self):
         """Test that custom default interval is respected."""
         # Create config with custom default interval
-        config_content = f'''default_interval = 500
+        config_content = f'''default_interval = "0.5s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}
@@ -104,16 +104,16 @@ class TestFileWatcher:
         watcher = FileWatcher(self.config_file)
         settings = {}
         interval = watcher._get_interval_for_file(settings)
-        # Custom default is 500ms = 0.5 second
+        # Custom default is "0.5s" = 0.5 second
         assert interval == 0.5
 
     def test_per_file_interval(self):
         """Test that per-file interval overrides default."""
         # Create config with per-file interval
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 
 [files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = 250 }}
+"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.25s" }}
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -121,13 +121,13 @@ class TestFileWatcher:
         watcher = FileWatcher(self.config_file)
         settings = watcher.config["files"][self.test_file]
         interval = watcher._get_interval_for_file(settings)
-        # Per-file interval is 250ms = 0.25 second
+        # Per-file interval is "0.25s" = 0.25 second
         assert interval == 0.25
 
     def test_interval_throttling(self):
         """Test that files are not checked more frequently than their interval."""
         # Create config with a longer interval
-        config_content = f'''default_interval = 500
+        config_content = f'''default_interval = "0.5s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}
@@ -143,66 +143,16 @@ class TestFileWatcher:
         first_check_time = watcher.file_last_check[self.test_file]
 
         # Immediate second check should skip the file (not enough time passed)
-        time.sleep(0.05)  # Much less than 500ms
+        time.sleep(0.05)  # Much less than 0.5s
         watcher._check_files()
         # Check time should not have changed
         assert watcher.file_last_check[self.test_file] == first_check_time
 
         # After waiting for the interval, file should be checked again
-        time.sleep(0.5)  # Wait for 500ms interval
+        time.sleep(0.5)  # Wait for 0.5s interval
         watcher._check_files()
         # Check time should have been updated
         assert watcher.file_last_check[self.test_file] > first_check_time
-
-    def test_interval_division_by_1000_various_values(self):
-        """Test that interval division by 1000 works correctly for various values.
-
-        This test clarifies that dividing milliseconds by 1000.0 produces correct
-        float values in seconds for all common use cases.
-        """
-        watcher = FileWatcher(self.config_file)
-
-        # Test various millisecond values and their expected second equivalents
-        test_cases = [
-            # (interval_ms, expected_seconds)
-            (1000, 1.0),  # 1 second
-            (500, 0.5),  # Half second (mentioned in issue)
-            (250, 0.25),  # Quarter second
-            (100, 0.1),  # 100 milliseconds
-            (1, 0.001),  # 1 millisecond
-            (2000, 2.0),  # 2 seconds
-            (5000, 5.0),  # 5 seconds
-            (10000, 10.0),  # 10 seconds
-            (333, 0.333),  # Odd value
-            (1500, 1.5),  # 1.5 seconds
-        ]
-
-        for interval_ms, expected_seconds in test_cases:
-            settings = {"interval": interval_ms}
-            result = watcher._get_interval_for_file(settings)
-            assert result == expected_seconds, (
-                f"Failed for {interval_ms}ms: expected {expected_seconds}s, got {result}s"
-            )
-
-    def test_interval_division_returns_float(self):
-        """Test that interval division always returns a float type.
-
-        This ensures that even integer millisecond values produce float results,
-        which is important for time.sleep() and time comparison operations.
-        """
-        watcher = FileWatcher(self.config_file)
-
-        # Test with integer input
-        settings = {"interval": 1000}
-        result = watcher._get_interval_for_file(settings)
-        assert isinstance(result, float), "Result should be a float type"
-        assert result == 1.0
-
-        # Test with another integer that should produce a fractional result
-        settings = {"interval": 500}
-        result = watcher._get_interval_for_file(settings)
-        assert isinstance(result, float), "Result should be a float type"
-        assert result == 0.5
 
     def test_process_detection(self):
         """Test that process detection works correctly."""
@@ -245,7 +195,7 @@ class TestFileWatcher:
 
         # Create config with suppress_if_process for a running process (python)
         # Use short interval to speed up test
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "python" }}
@@ -276,7 +226,7 @@ class TestFileWatcher:
 
         # Create config with suppress_if_process for a non-existent process
         # Use short interval to speed up test
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "nonexistent_process_xyz123" }}
@@ -307,7 +257,7 @@ class TestFileWatcher:
 
         # Create config without suppress_if_process
         # Use short interval to speed up test
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'executed' > {test_output}" }}

@@ -109,7 +109,7 @@ class TestErrorLogging:
 
     def test_command_executor_logs_timeout_error(self):
         """Test that CommandExecutor logs timeout errors."""
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
 [files]
@@ -134,7 +134,7 @@ error_log_file = "{self.error_log_file}"
 
     def test_command_executor_logs_command_failure(self):
         """Test that CommandExecutor logs command failures."""
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
 [files]
@@ -160,7 +160,7 @@ error_log_file = "{self.error_log_file}"
     def test_command_executor_logs_write_log_error(self):
         """Test that CommandExecutor logs errors when writing to log file fails."""
         # Create config with logging enabled but invalid log file path
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 log_file = "/nonexistent/path/to/log.txt"
 
@@ -188,7 +188,7 @@ log_file = "/nonexistent/path/to/log.txt"
     def test_file_watcher_check_files_logs_errors(self):
         """Test that FileWatcher._check_files logs errors when processing files."""
         # Create a config with a file that will cause an error
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
 [files]
@@ -234,7 +234,7 @@ error_log_file = "{self.error_log_file}"
     def test_file_watcher_config_reload_logs_errors(self):
         """Test that FileWatcher logs errors when config reload fails."""
         # Create initial valid config
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
 [files]

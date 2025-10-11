@@ -34,7 +34,7 @@ class TestSuppressionLogging:
     def test_suppression_logging_enabled(self):
         """Test that suppression logging works when enabled."""
         # Create config with suppression_log_file
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 suppression_log_file = "{self.suppression_log_file}"
 
 [files]
@@ -73,7 +73,7 @@ suppression_log_file = "{self.suppression_log_file}"
     def test_suppression_logging_disabled(self):
         """Test that suppression logging is not created when not configured."""
         # Create config without suppression_log_file
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'test'", suppress_if_process = "python" }}
@@ -100,7 +100,7 @@ suppression_log_file = "{self.suppression_log_file}"
     def test_suppression_logging_no_suppression(self):
         """Test that no log is written when command is not suppressed."""
         # Create config with suppression_log_file but process that won't match
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 suppression_log_file = "{self.suppression_log_file}"
 
 [files]
@@ -128,7 +128,7 @@ suppression_log_file = "{self.suppression_log_file}"
     def test_suppression_logging_multiple_suppressions(self):
         """Test that multiple suppressions are logged correctly."""
         # Create config with suppression_log_file
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 suppression_log_file = "{self.suppression_log_file}"
 
 [files]
@@ -163,7 +163,7 @@ suppression_log_file = "{self.suppression_log_file}"
     def test_suppression_logging_timestamp_format(self):
         """Test that log entries include properly formatted timestamps."""
         # Create config with suppression_log_file
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 suppression_log_file = "{self.suppression_log_file}"
 
 [files]

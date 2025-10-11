@@ -144,27 +144,6 @@ config_check_interval = "5s"
         main_interval = watcher._calculate_main_loop_interval()
         assert main_interval == 1.0  # default_interval is the minimum
 
-    def test_mixed_formats_backward_compatibility(self):
-        """Test that old format (milliseconds) and new format (time strings) work together."""
-        config_content = f'''default_interval = 1000
-
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "2s" }}
-'''
-        with open(self.config_file, "w") as f:
-            f.write(config_content)
-
-        watcher = FileWatcher(self.config_file)
-        # Default interval should be 1000ms = 1.0s
-        default_settings = {}
-        default_interval = watcher._get_interval_for_file(default_settings)
-        assert default_interval == 1.0
-
-        # File-specific interval should be 2s
-        file_settings = watcher.config["files"][self.test_file]
-        file_interval = watcher._get_interval_for_file(file_settings)
-        assert file_interval == 2.0
-
     def test_main_loop_interval_with_new_format(self):
         """Test that main loop interval calculation works with new format."""
         config_content = f'''default_interval = "2s"
