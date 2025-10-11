@@ -15,6 +15,11 @@ config_check_interval = 1000
 # When specified, files with enable_log=true will log command execution details here
 # log_file = "command_execution.log"
 
+# Optional: Error log file path for error and exception logging
+# When specified, all errors and exceptions will be logged here with timestamps and stack traces
+# This implements a fail-fast system that logs errors before re-raising or exiting
+# error_log_file = "error.log"
+
 # Optional: Define time periods for file monitoring
 # Files can specify a time_period to only be monitored during certain hours
 # Time periods support spanning across midnight (e.g., 23:00-01:00)

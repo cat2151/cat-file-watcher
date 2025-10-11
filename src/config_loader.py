@@ -5,6 +5,12 @@ Configuration loader for File Watcher
 import sys
 import toml
 
+# Support both relative and absolute imports
+try:
+    from .error_logger import ErrorLogger
+except ImportError:
+    from error_logger import ErrorLogger
+
 
 class ConfigLoader:
     """Handles loading and parsing TOML configuration files."""
@@ -22,15 +28,27 @@ class ConfigLoader:
         Raises:
             SystemExit: If configuration file is not found or cannot be parsed
         """
+        error_log_file = None
         try:
             with open(config_path, 'r') as f:
                 config = toml.load(f)
+            # Get error_log_file from config if it exists
+            error_log_file = config.get('error_log_file')
             return config
-        except FileNotFoundError:
-            print(f"Error: Configuration file '{config_path}' not found.")
+        except FileNotFoundError as e:
+            error_msg = f"Configuration file '{config_path}' not found."
+            print(f"Error: {error_msg}")
+            ErrorLogger.log_error(error_log_file, error_msg, e)
             sys.exit(1)
         except toml.TomlDecodeError as e:
-            print(f"Error: Failed to parse TOML configuration: {e}")
+            error_msg = f"Failed to parse TOML configuration: {e}"
+            print(f"Error: {error_msg}")
+            ErrorLogger.log_error(error_log_file, error_msg, e)
+            sys.exit(1)
+        except Exception as e:
+            error_msg = f"Unexpected error loading config file '{config_path}'"
+            print(f"Error: {error_msg}: {e}")
+            ErrorLogger.log_error(error_log_file, error_msg, e)
             sys.exit(1)
     
     @staticmethod

@@ -8,8 +8,10 @@ from datetime import datetime
 # Support both relative and absolute imports
 try:
     from .process_detector import ProcessDetector
+    from .error_logger import ErrorLogger
 except ImportError:
     from process_detector import ProcessDetector
+    from error_logger import ErrorLogger
 
 
 class CommandExecutor:
@@ -38,6 +40,8 @@ class CommandExecutor:
         if settings.get('enable_log', False) and config and config.get('log_file'):
             CommandExecutor._write_to_log(filepath, settings, config)
         
+        error_log_file = config.get('error_log_file') if config else None
+        
         try:
             result = subprocess.run(
                 command,
@@ -50,11 +54,24 @@ class CommandExecutor:
                 if result.stdout:
                     print(f"Output: {result.stdout.strip()}")
             else:
+                error_msg = f"Command failed for '{filepath}' with exit code {result.returncode}"
                 print(f"Error (exit code {result.returncode}): {result.stderr.strip()}")
-        except subprocess.TimeoutExpired:
-            print(f"Error: Command timed out after 30 seconds")
+                # Log command execution error
+                if error_log_file:
+                    ErrorLogger.log_error(
+                        error_log_file,
+                        f"{error_msg}\nCommand: {command}\nStderr: {result.stderr.strip()}"
+                    )
+        except subprocess.TimeoutExpired as e:
+            error_msg = f"Command timed out after 30 seconds for '{filepath}'"
+            print(f"Error: {error_msg}")
+            ErrorLogger.log_error(error_log_file, error_msg, e)
+            raise
         except Exception as e:
-            print(f"Error executing command: {e}")
+            error_msg = f"Error executing command for '{filepath}'"
+            print(f"{error_msg}: {e}")
+            ErrorLogger.log_error(error_log_file, error_msg, e)
+            raise
     
     @staticmethod
     def _write_to_log(filepath, settings, config):
@@ -65,6 +82,7 @@ class CommandExecutor:
             settings: Dictionary containing file-specific settings
             config: Global configuration dictionary containing 'log_file'
         """
+        error_log_file = config.get('error_log_file') if config else None
         try:
             log_file = config.get('log_file')
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -75,4 +93,6 @@ class CommandExecutor:
                     f.write(f"  {key}: {value}\n")
                 f.write("\n")
         except Exception as e:
-            print(f"Warning: Failed to write to log file: {e}")
+            error_msg = f"Failed to write to log file for '{filepath}'"
+            print(f"Warning: {error_msg}: {e}")
+            ErrorLogger.log_error(error_log_file, error_msg, e)
