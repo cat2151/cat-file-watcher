@@ -20,6 +20,12 @@ config_check_interval = 1000
 # This implements a fail-fast system that logs errors before re-raising or exiting
 # error_log_file = "error.log"
 
+# Optional: Suppression log file path for process suppression logging
+# When specified, logs when command execution is suppressed due to matching processes
+# Useful for detecting regex pattern mistakes in suppress_if_process settings
+# Log includes: timestamp, process pattern regex, and the actual matched process name
+# suppression_log_file = "suppression.log"
+
 # Optional: Define time periods for file monitoring
 # Files can specify a time_period to only be monitored during certain hours
 # Time periods support spanning across midnight (e.g., 23:00-01:00)

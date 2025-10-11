@@ -30,8 +30,12 @@ class CommandExecutor:
         # Check if command execution should be suppressed based on running processes
         if 'suppress_if_process' in settings:
             process_pattern = settings['suppress_if_process']
-            if ProcessDetector.is_process_running(process_pattern):
+            matched_process = ProcessDetector.get_matching_process(process_pattern)
+            if matched_process:
                 print(f"Skipping command for '{filepath}': process matching '{process_pattern}' is running")
+                # Write to suppression log file if configured
+                if config and config.get('suppression_log_file'):
+                    CommandExecutor._write_to_suppression_log(filepath, process_pattern, matched_process, config)
                 return
         
         print(f"Executing command for '{filepath}': {command}")
@@ -94,5 +98,30 @@ class CommandExecutor:
                 f.write("\n")
         except Exception as e:
             error_msg = f"Failed to write to log file for '{filepath}'"
+            print(f"Warning: {error_msg}: {e}")
+            ErrorLogger.log_error(error_log_file, error_msg, e)
+    
+    @staticmethod
+    def _write_to_suppression_log(filepath, process_pattern, matched_process, config):
+        """Write command suppression information to suppression log file.
+        
+        Args:
+            filepath: The path to the file that changed
+            process_pattern: The regex pattern used to match processes
+            matched_process: The actual process name that matched
+            config: Global configuration dictionary containing 'suppression_log_file'
+        """
+        error_log_file = config.get('error_log_file') if config else None
+        try:
+            suppression_log_file = config.get('suppression_log_file')
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            with open(suppression_log_file, 'a') as f:
+                f.write(f"[{timestamp}] File: {filepath}\n")
+                f.write(f"  Process pattern: {process_pattern}\n")
+                f.write(f"  Matched process: {matched_process}\n")
+                f.write("\n")
+        except Exception as e:
+            error_msg = f"Failed to write to suppression log file for '{filepath}'"
             print(f"Warning: {error_msg}: {e}")
             ErrorLogger.log_error(error_log_file, error_msg, e)
