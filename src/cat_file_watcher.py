@@ -50,31 +50,31 @@ class FileWatcher:
 
     def _calculate_main_loop_interval(self):
         """Calculate the main loop interval from config settings.
-        
+
         Returns the minimum interval to ensure adequate polling granularity
         for all configured checks (default_interval, config_check_interval,
         and all per-file intervals).
-        
+
         Returns:
             float: Interval in seconds
         """
         intervals = []
-        
+
         # Add default_interval (in milliseconds)
         default_interval_ms = self.config.get("default_interval", 1000)
         intervals.append(default_interval_ms / 1000.0)
-        
+
         # Add config_check_interval (in milliseconds)
         config_check_interval_ms = self.config.get("config_check_interval", 1000)
         intervals.append(config_check_interval_ms / 1000.0)
-        
+
         # Add all per-file intervals
         if "files" in self.config:
             for filename, settings in self.config["files"].items():
                 if "interval" in settings:
                     file_interval_ms = settings["interval"]
                     intervals.append(file_interval_ms / 1000.0)
-        
+
         # Return the minimum interval to ensure we poll frequently enough
         return min(intervals)
 
@@ -178,7 +178,7 @@ class FileWatcher:
 
     def run(self, interval=None):
         """Run the file watcher with the specified check interval (in seconds).
-        
+
         Args:
             interval: Optional interval in seconds. If not specified, calculates the
                      minimum interval from config settings to ensure adequate polling
@@ -187,7 +187,7 @@ class FileWatcher:
         # If interval not specified, calculate from config
         if interval is None:
             interval = self._calculate_main_loop_interval()
-        
+
         print(f"Starting file watcher with config: {self.config_path}")
         print(f"Checking for changes every {interval} second(s)...")
         print("Press Ctrl+C to stop.")
