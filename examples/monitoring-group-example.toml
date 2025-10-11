@@ -8,7 +8,8 @@
 
 [files]
 # Example: Monitor development files
-"src/main.py" = { command = "python -m pytest tests/", interval = 2000 }
+# Interval can be specified using time format: "1s", "2m", "3h", "0.5s"
+"src/main.py" = { command = "python -m pytest tests/", interval = "2s" }
 "src/utils.py" = { command = "python -m pylint src/utils.py" }
 "tests/test_main.py" = { command = "python -m pytest tests/test_main.py -v" }
 

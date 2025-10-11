@@ -11,12 +11,14 @@ try:
     from .command_executor import CommandExecutor
     from .config_loader import ConfigLoader
     from .error_logger import ErrorLogger
+    from .interval_parser import IntervalParser
     from .process_detector import ProcessDetector
     from .time_period_checker import TimePeriodChecker
 except ImportError:
     from command_executor import CommandExecutor
     from config_loader import ConfigLoader
     from error_logger import ErrorLogger
+    from interval_parser import IntervalParser
     from process_detector import ProcessDetector
     from time_period_checker import TimePeriodChecker
 
@@ -60,20 +62,20 @@ class FileWatcher:
         """
         intervals = []
 
-        # Add default_interval (in milliseconds)
-        default_interval_ms = self.config.get("default_interval", 1000)
-        intervals.append(default_interval_ms / 1000.0)
+        # Add default_interval (supports both old format and new format)
+        default_interval = self.config.get("default_interval", "1s")
+        intervals.append(IntervalParser.parse_interval(default_interval))
 
-        # Add config_check_interval (in milliseconds)
-        config_check_interval_ms = self.config.get("config_check_interval", 1000)
-        intervals.append(config_check_interval_ms / 1000.0)
+        # Add config_check_interval (supports both old format and new format)
+        config_check_interval = self.config.get("config_check_interval", "1s")
+        intervals.append(IntervalParser.parse_interval(config_check_interval))
 
         # Add all per-file intervals
         if "files" in self.config:
             for filename, settings in self.config["files"].items():
                 if "interval" in settings:
-                    file_interval_ms = settings["interval"]
-                    intervals.append(file_interval_ms / 1000.0)
+                    file_interval = settings["interval"]
+                    intervals.append(IntervalParser.parse_interval(file_interval))
 
         # Return the minimum interval to ensure we poll frequently enough
         return min(intervals)
@@ -82,9 +84,9 @@ class FileWatcher:
         """Check if config file has been modified and reload if needed."""
         current_time = time.time()
 
-        # Get config check interval (in milliseconds), default to 1000ms (1 second)
-        config_check_interval_ms = self.config.get("config_check_interval", 1000)
-        config_check_interval = config_check_interval_ms / 1000.0
+        # Get config check interval (supports both old and new format), default to "1s"
+        config_check_interval_value = self.config.get("config_check_interval", "1s")
+        config_check_interval = IntervalParser.parse_interval(config_check_interval_value)
 
         # Check if enough time has passed since last check
         if current_time - self.config_last_check < config_check_interval:
