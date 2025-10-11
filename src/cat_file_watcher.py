@@ -14,6 +14,7 @@ try:
     from .interval_parser import IntervalParser
     from .process_detector import ProcessDetector
     from .time_period_checker import TimePeriodChecker
+    from .timestamp_printer import TimestampPrinter
 except ImportError:
     from command_executor import CommandExecutor
     from config_loader import ConfigLoader
@@ -21,6 +22,7 @@ except ImportError:
     from interval_parser import IntervalParser
     from process_detector import ProcessDetector
     from time_period_checker import TimePeriodChecker
+    from timestamp_printer import TimestampPrinter
 
 
 class FileWatcher:
@@ -34,6 +36,10 @@ class FileWatcher:
         self.file_last_check = {}
         self.config_last_check = 0
         self.config_timestamp = self._get_file_timestamp(config_path)
+
+        # Configure timestamp display from config (default: True)
+        enable_timestamp = self.config.get("enable_timestamp", True)
+        TimestampPrinter.set_enable_timestamp(enable_timestamp)
 
     def _get_file_timestamp(self, filepath):
         """Get the modification timestamp of a file."""
@@ -96,33 +102,33 @@ class FileWatcher:
         current_timestamp = self._get_file_timestamp(self.config_path)
 
         if current_timestamp is None:
-            print(f"Warning: Config file '{self.config_path}' is no longer accessible")
+            TimestampPrinter.print(f"Warning: Config file '{self.config_path}' is no longer accessible")
             return
 
         # Check if the config file has been modified
         if current_timestamp != self.config_timestamp:
-            print(f"Detected change in config file '{self.config_path}', reloading...")
+            TimestampPrinter.print(f"Detected change in config file '{self.config_path}', reloading...")
             error_log_file = self.config.get("error_log_file")
             try:
                 new_config = ConfigLoader.load_config(self.config_path)
                 self.config = new_config
                 self.config_timestamp = current_timestamp
-                print("Config reloaded successfully")
+                TimestampPrinter.print("Config reloaded successfully")
             except SystemExit as e:
                 error_msg = f"Fatal error reloading config file '{self.config_path}'"
-                print(f"Error reloading config: {e}")
+                TimestampPrinter.print(f"Error reloading config: {e}")
                 ErrorLogger.log_error(error_log_file, error_msg, e)
-                print("Continuing with previous config")
+                TimestampPrinter.print("Continuing with previous config")
             except Exception as e:
                 error_msg = f"Error reloading config file '{self.config_path}'"
-                print(f"Error reloading config: {e}")
+                TimestampPrinter.print(f"Error reloading config: {e}")
                 ErrorLogger.log_error(error_log_file, error_msg, e)
-                print("Continuing with previous config")
+                TimestampPrinter.print("Continuing with previous config")
 
     def _check_files(self):
         """Check all files for timestamp changes and execute commands if needed."""
         if "files" not in self.config:
-            print("Warning: No 'files' section found in configuration.")
+            TimestampPrinter.print("Warning: No 'files' section found in configuration.")
             return
 
         error_log_file = self.config.get("error_log_file")
@@ -130,7 +136,7 @@ class FileWatcher:
         files_config = self.config["files"]
         for filename, settings in files_config.items():
             if "command" not in settings:
-                print(f"Warning: No command specified for file '{filename}'")
+                TimestampPrinter.print(f"Warning: No command specified for file '{filename}'")
                 continue
 
             try:
@@ -158,22 +164,22 @@ class FileWatcher:
 
                 if current_timestamp is None:
                     if filename in self.file_timestamps:
-                        print(f"Warning: File '{filename}' is no longer accessible")
+                        TimestampPrinter.print(f"Warning: File '{filename}' is no longer accessible")
                         del self.file_timestamps[filename]
                     continue
 
                 # Check if this is the first time we're seeing this file
                 if filename not in self.file_timestamps:
                     self.file_timestamps[filename] = current_timestamp
-                    print(f"Started monitoring '{filename}'")
+                    TimestampPrinter.print(f"Started monitoring '{filename}'")
                 # Check if the timestamp has changed
                 elif current_timestamp != self.file_timestamps[filename]:
-                    print(f"Detected change in '{filename}'")
+                    TimestampPrinter.print(f"Detected change in '{filename}'")
                     CommandExecutor.execute_command(settings["command"], filename, settings, self.config)
                     self.file_timestamps[filename] = current_timestamp
             except Exception as e:
                 error_msg = f"Error processing file '{filename}'"
-                print(f"{error_msg}: {e}")
+                TimestampPrinter.print(f"{error_msg}: {e}")
                 ErrorLogger.log_error(error_log_file, error_msg, e)
                 # Continue processing other files despite error
                 continue
@@ -190,9 +196,9 @@ class FileWatcher:
         if interval is None:
             interval = self._calculate_main_loop_interval()
 
-        print(f"Starting file watcher with config: {self.config_path}")
-        print(f"Checking for changes every {interval} second(s)...")
-        print("Press Ctrl+C to stop.")
+        TimestampPrinter.print(f"Starting file watcher with config: {self.config_path}")
+        TimestampPrinter.print(f"Checking for changes every {interval} second(s)...")
+        TimestampPrinter.print("Press Ctrl+C to stop.")
 
         try:
             while True:
@@ -200,4 +206,4 @@ class FileWatcher:
                 self._check_files()
                 time.sleep(interval)
         except KeyboardInterrupt:
-            print("\nStopping file watcher...")
+            TimestampPrinter.print("\nStopping file watcher...")
