@@ -19,6 +19,19 @@ class ProcessDetector:
         Returns:
             bool: True if a matching process is found, False otherwise
         """
+        result = ProcessDetector.get_matching_process(process_pattern)
+        return result is not None
+    
+    @staticmethod
+    def get_matching_process(process_pattern):
+        """Get the first process matching the given regex pattern.
+        
+        Args:
+            process_pattern: Regular expression pattern to match against process names
+            
+        Returns:
+            str: Name of the matched process, or None if no match found
+        """
         try:
             # Compile the regex pattern
             pattern = re.compile(process_pattern)
@@ -28,21 +41,21 @@ class ProcessDetector:
                 try:
                     # Check process name
                     if proc.info['name'] and pattern.search(proc.info['name']):
-                        return True
+                        return proc.info['name']
                     
                     # Check command line arguments
                     if proc.info['cmdline']:
                         cmdline = ' '.join(proc.info['cmdline'])
                         if pattern.search(cmdline):
-                            return True
+                            return cmdline
                 except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                     # Process may have terminated or we don't have access
                     continue
             
-            return False
+            return None
         except re.error as e:
             print(f"Warning: Invalid regex pattern '{process_pattern}': {e}")
-            return False
+            return None
         except Exception as e:
             print(f"Warning: Error checking for process '{process_pattern}': {e}")
-            return False
+            return None
