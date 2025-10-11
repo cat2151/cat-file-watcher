@@ -6,7 +6,7 @@ import os
 import sys
 import tempfile
 import time
-import unittest
+import shutil
 from pathlib import Path
 
 # Add src directory to path to import the module
@@ -16,10 +16,10 @@ from config_loader import ConfigLoader
 from process_detector import ProcessDetector
 
 
-class TestFileWatcher(unittest.TestCase):
+class TestFileWatcher:
     """Test cases for FileWatcher class."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.test_dir, 'test_config.toml')
@@ -36,37 +36,36 @@ class TestFileWatcher(unittest.TestCase):
         with open(self.config_file, 'w') as f:
             f.write(config_content)
     
-    def tearDown(self):
+    def teardown_method(self):
         """Clean up test fixtures."""
-        import shutil
         shutil.rmtree(self.test_dir, ignore_errors=True)
     
     def test_load_config(self):
         """Test that configuration is loaded correctly."""
         watcher = FileWatcher(self.config_file)
-        self.assertIn('files', watcher.config)
-        self.assertIn(self.test_file, watcher.config['files'])
+        assert 'files' in watcher.config
+        assert self.test_file in watcher.config['files']
     
     def test_get_file_timestamp(self):
         """Test that file timestamps are retrieved correctly."""
         watcher = FileWatcher(self.config_file)
         timestamp = watcher._get_file_timestamp(self.test_file)
-        self.assertIsNotNone(timestamp)
-        self.assertIsInstance(timestamp, float)
+        assert timestamp is not None
+        assert isinstance(timestamp, float)
     
     def test_get_nonexistent_file_timestamp(self):
         """Test that nonexistent files return None for timestamp."""
         watcher = FileWatcher(self.config_file)
         timestamp = watcher._get_file_timestamp('/nonexistent/file.txt')
-        self.assertIsNone(timestamp)
+        assert timestamp is None
     
     def test_check_files_initializes_timestamps(self):
         """Test that checking files initializes timestamp tracking."""
         watcher = FileWatcher(self.config_file)
-        self.assertEqual(len(watcher.file_timestamps), 0)
+        assert len(watcher.file_timestamps) == 0
         watcher._check_files()
-        self.assertEqual(len(watcher.file_timestamps), 1)
-        self.assertIn(self.test_file, watcher.file_timestamps)
+        assert len(watcher.file_timestamps) == 1
+        assert self.test_file in watcher.file_timestamps
     
     def test_detect_file_change(self):
         """Test that file changes are detected."""
@@ -83,7 +82,7 @@ class TestFileWatcher(unittest.TestCase):
         
         # Check again - timestamp should be different
         new_timestamp = watcher._get_file_timestamp(self.test_file)
-        self.assertNotEqual(initial_timestamp, new_timestamp)
+        assert initial_timestamp != new_timestamp
     
     def test_default_interval(self):
         """Test that default interval is used when not specified."""
@@ -91,7 +90,7 @@ class TestFileWatcher(unittest.TestCase):
         settings = {}
         interval = watcher._get_interval_for_file(settings)
         # Default is 1000ms = 1 second
-        self.assertEqual(interval, 1.0)
+        assert interval == 1.0
     
     def test_custom_default_interval(self):
         """Test that custom default interval is respected."""
@@ -108,7 +107,7 @@ class TestFileWatcher(unittest.TestCase):
         settings = {}
         interval = watcher._get_interval_for_file(settings)
         # Custom default is 500ms = 0.5 second
-        self.assertEqual(interval, 0.5)
+        assert interval == 0.5
     
     def test_per_file_interval(self):
         """Test that per-file interval overrides default."""
@@ -125,7 +124,7 @@ class TestFileWatcher(unittest.TestCase):
         settings = watcher.config['files'][self.test_file]
         interval = watcher._get_interval_for_file(settings)
         # Per-file interval is 250ms = 0.25 second
-        self.assertEqual(interval, 0.25)
+        assert interval == 0.25
     
     def test_interval_throttling(self):
         """Test that files are not checked more frequently than their interval."""
@@ -142,20 +141,20 @@ class TestFileWatcher(unittest.TestCase):
         
         # First check should process the file
         watcher._check_files()
-        self.assertIn(self.test_file, watcher.file_last_check)
+        assert self.test_file in watcher.file_last_check
         first_check_time = watcher.file_last_check[self.test_file]
         
         # Immediate second check should skip the file (not enough time passed)
         time.sleep(0.05)  # Much less than 500ms
         watcher._check_files()
         # Check time should not have changed
-        self.assertEqual(watcher.file_last_check[self.test_file], first_check_time)
+        assert watcher.file_last_check[self.test_file] == first_check_time
         
         # After waiting for the interval, file should be checked again
         time.sleep(0.5)  # Wait for 500ms interval
         watcher._check_files()
         # Check time should have been updated
-        self.assertGreater(watcher.file_last_check[self.test_file], first_check_time)
+        assert watcher.file_last_check[self.test_file] > first_check_time
     
     def test_interval_division_by_1000_various_values(self):
         """Test that interval division by 1000 works correctly for various values.
@@ -183,8 +182,8 @@ class TestFileWatcher(unittest.TestCase):
         for interval_ms, expected_seconds in test_cases:
             settings = {'interval': interval_ms}
             result = watcher._get_interval_for_file(settings)
-            self.assertEqual(result, expected_seconds,
-                           f"Failed for {interval_ms}ms: expected {expected_seconds}s, got {result}s")
+            assert result == expected_seconds, \
+                f"Failed for {interval_ms}ms: expected {expected_seconds}s, got {result}s"
     
     def test_interval_division_returns_float(self):
         """Test that interval division always returns a float type.
@@ -197,14 +196,14 @@ class TestFileWatcher(unittest.TestCase):
         # Test with integer input
         settings = {'interval': 1000}
         result = watcher._get_interval_for_file(settings)
-        self.assertIsInstance(result, float, "Result should be a float type")
-        self.assertEqual(result, 1.0)
+        assert isinstance(result, float), "Result should be a float type"
+        assert result == 1.0
         
         # Test with another integer that should produce a fractional result
         settings = {'interval': 500}
         result = watcher._get_interval_for_file(settings)
-        self.assertIsInstance(result, float, "Result should be a float type")
-        self.assertEqual(result, 0.5)
+        assert isinstance(result, float), "Result should be a float type"
+        assert result == 0.5
     
     def test_process_detection(self):
         """Test that process detection works correctly."""
@@ -213,11 +212,11 @@ class TestFileWatcher(unittest.TestCase):
         # Test that current python process is detected
         # The process name should be "python" or "python3"
         result = watcher._is_process_running(r'python')
-        self.assertTrue(result, "Should detect running python process")
+        assert result, "Should detect running python process"
         
         # Test with a non-existent process
         result = watcher._is_process_running(r'nonexistent_process_xyz123')
-        self.assertFalse(result, "Should not detect non-existent process")
+        assert not result, "Should not detect non-existent process"
     
     def test_process_detection_with_regex(self):
         """Test that process detection works with regex patterns."""
@@ -225,12 +224,12 @@ class TestFileWatcher(unittest.TestCase):
         
         # Test regex pattern matching
         result = watcher._is_process_running(r'python[23]?')
-        self.assertTrue(result, "Should detect python process with regex")
+        assert result, "Should detect python process with regex"
         
         # Test case-insensitive matching (just ensure it doesn't crash)
         result = watcher._is_process_running(r'(?i)PYTHON')
         # Result may vary based on process name case, but should not crash
-        self.assertIsInstance(result, bool)
+        assert isinstance(result, bool)
     
     def test_process_detection_invalid_regex(self):
         """Test that invalid regex patterns are handled gracefully."""
@@ -238,7 +237,7 @@ class TestFileWatcher(unittest.TestCase):
         
         # Invalid regex pattern
         result = watcher._is_process_running(r'[invalid(regex')
-        self.assertFalse(result, "Should return False for invalid regex")
+        assert not result, "Should return False for invalid regex"
     
     def test_command_suppression_when_process_exists(self):
         """Test that command execution is suppressed when specified process exists."""
@@ -269,8 +268,8 @@ class TestFileWatcher(unittest.TestCase):
         watcher._check_files()
         
         # Output file should NOT be created because command was suppressed
-        self.assertFalse(os.path.exists(test_output), 
-                        "Command should have been suppressed, output file should not exist")
+        assert not os.path.exists(test_output), \
+            "Command should have been suppressed, output file should not exist"
     
     def test_command_execution_when_process_not_exists(self):
         """Test that command executes normally when specified process doesn't exist."""
@@ -301,8 +300,8 @@ class TestFileWatcher(unittest.TestCase):
         watcher._check_files()
         
         # Output file should be created because process doesn't exist
-        self.assertTrue(os.path.exists(test_output), 
-                       "Command should have executed, output file should exist")
+        assert os.path.exists(test_output), \
+            "Command should have executed, output file should exist"
     
     def test_command_execution_without_suppress_if_process(self):
         """Test that commands execute normally when suppress_if_process is not specified."""
@@ -333,9 +332,5 @@ class TestFileWatcher(unittest.TestCase):
         watcher._check_files()
         
         # Output file should be created
-        self.assertTrue(os.path.exists(test_output), 
-                       "Command should have executed, output file should exist")
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert os.path.exists(test_output), \
+            "Command should have executed, output file should exist"

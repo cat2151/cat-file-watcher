@@ -2,7 +2,7 @@
 """
 Tests for command execution logging functionality
 """
-import unittest
+import shutil
 import tempfile
 import os
 import time
@@ -13,10 +13,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from cat_file_watcher import FileWatcher
 
 
-class TestCommandLogging(unittest.TestCase):
+class TestCommandLogging:
     """Test cases for command execution logging."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.test_dir, 'config.toml')
@@ -27,9 +27,8 @@ class TestCommandLogging(unittest.TestCase):
         with open(self.test_file, 'w') as f:
             f.write('Initial content\n')
     
-    def tearDown(self):
+    def teardown_method(self):
         """Clean up test fixtures."""
-        import shutil
         shutil.rmtree(self.test_dir)
     
     def test_logging_disabled_by_default(self):
@@ -58,7 +57,7 @@ log_file = "{self.log_file}"
         watcher._check_files()
         
         # Log file should not be created
-        self.assertFalse(os.path.exists(self.log_file))
+        assert not os.path.exists(self.log_file)
     
     def test_logging_enabled(self):
         """Test that logging works when enabled."""
@@ -86,16 +85,16 @@ log_file = "{self.log_file}"
         watcher._check_files()
         
         # Log file should be created
-        self.assertTrue(os.path.exists(self.log_file))
+        assert os.path.exists(self.log_file)
         
         # Check log file content
         with open(self.log_file, 'r') as f:
             log_content = f.read()
         
         # Should contain timestamp, file path, and command
-        self.assertIn(self.test_file, log_content)
-        self.assertIn("command: echo 'test'", log_content)
-        self.assertIn("enable_log: True", log_content)
+        assert self.test_file in log_content
+        assert "command: echo 'test'" in log_content
+        assert "enable_log: True" in log_content
     
     def test_logging_without_log_file_config(self):
         """Test that logging is skipped when log_file is not configured."""
@@ -122,7 +121,7 @@ log_file = "{self.log_file}"
         watcher._check_files()
         
         # Log file should not be created
-        self.assertFalse(os.path.exists(self.log_file))
+        assert not os.path.exists(self.log_file)
     
     def test_logging_with_multiple_settings(self):
         """Test that all file settings are logged."""
@@ -153,10 +152,10 @@ log_file = "{self.log_file}"
         with open(self.log_file, 'r') as f:
             log_content = f.read()
         
-        self.assertIn("command: echo 'test'", log_content)
-        self.assertIn("interval: 50", log_content)
-        self.assertIn("enable_log: True", log_content)
-        self.assertIn("suppress_if_process: vim", log_content)
+        assert "command: echo 'test'" in log_content
+        assert "interval: 50" in log_content
+        assert "enable_log: True" in log_content
+        assert "suppress_if_process: vim" in log_content
     
     def test_logging_appends_to_existing_log(self):
         """Test that logging appends to existing log file."""
@@ -193,7 +192,7 @@ log_file = "{self.log_file}"
         
         # Count occurrences of the file path (should be 2)
         occurrences = log_content.count(f"File: {self.test_file}")
-        self.assertEqual(occurrences, 2)
+        assert occurrences == 2
     
     def test_logging_timestamp_format(self):
         """Test that log entries include properly formatted timestamps."""
@@ -223,9 +222,5 @@ log_file = "{self.log_file}"
             log_content = f.read()
         
         # Should start with timestamp in brackets
-        self.assertTrue(log_content.startswith('['))
-        self.assertIn(']', log_content.split('\n')[0])
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert log_content.startswith('[')
+        assert ']' in log_content.split('\n')[0]
