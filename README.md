@@ -64,6 +64,12 @@ config_check_interval = "1s"
 # Path to the command execution log file (optional)
 log_file = "command_execution.log"
 
+# Path to the error log file (optional)
+# error_log_file = "error.log"
+
+# Path to the command execution suppression log file (optional)
+# suppression_log_file = "suppression.log"
+
 # Time period definitions (optional)
 [time_periods]
 business_hours = { start = "09:00", end = "17:00" }
@@ -98,6 +104,9 @@ The configuration file requires a `[files]` section where each entry maps a file
 - `default_interval` (optional): The default monitoring interval for all files and directories. Specified in time format ("1s", "2m", "3h", "0.5s"). Decimal values are also supported (e.g., "0.5s" for 0.5 seconds). If omitted, "1s" (1 second) will be used.
 - `config_check_interval` (optional): The interval for checking changes to the configuration file itself. Specified in time format ("1s", "2m", "3h", "0.5s"). If the configuration file changes, it will be automatically reloaded. If omitted, "1s" (1 second) will be used.
 - `log_file` (optional): The path to the log file where details of command execution will be recorded. If set, command execution information (timestamp, path, TOML configuration content) for files or directories with `enable_log = true` will be logged to this file.
+- `error_log_file` (optional): The path to the error log file where detailed error information will be recorded. If set, when a command fails, detailed information (error message, executed command, stderr output, stack trace) will be logged to this file.
+- `suppression_log_file` (optional): The path to the suppression log file where command execution suppression details will be recorded. If set, when command execution is skipped due to `suppress_if_process`, information (timestamp, file path, process pattern, matched process) will be logged to this file.
+
 
 ### Time Period Settings
 
@@ -129,6 +138,12 @@ config_check_interval = "1s"
 
 # Log file for detailed command execution (optional)
 log_file = "command_execution.log"
+
+# Error log file (optional)
+# error_log_file = "error.log"
+
+# Command execution suppression log file (optional)
+# suppression_log_file = "suppression.log"
 
 # Define time periods
 [time_periods]
@@ -162,6 +177,16 @@ after_hours = { start = "18:00", end = "08:00" }  # Spans across midnight
 3. When a file's timestamp changes, the associated command is executed.
 4. The configuration file itself is also monitored and automatically reloaded if changes are detected.
 5. This process continuously repeats until stopped with Ctrl+C.
+
+### Command Output
+
+The standard output and standard error output of executed commands are displayed **in real-time** in the console:
+
+- **Output display**: Command stdout and stderr are streamed directly to the console as they are generated. For long-running commands, you can see intermediate output in real-time
+- **On failure**: When a command fails (non-zero exit code), an error message `Error: Command failed for '<filepath>' with exit code <code>` is displayed
+- **Error log file**: If `error_log_file` is configured, the error message and executed command will be logged to the file when a command fails
+
+Command execution has a timeout of 30 seconds, after which a timeout error will occur.
 
 ## Concept
 

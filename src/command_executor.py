@@ -51,17 +51,15 @@ class CommandExecutor:
         cwd = settings.get("cwd")
 
         try:
-            result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30, cwd=cwd)
-            if result.returncode == 0:
-                if result.stdout:
-                    print(f"Output: {result.stdout.strip()}")
-            else:
+            # Use capture_output=False to allow real-time output for long-running commands
+            result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
+            if result.returncode != 0:
                 error_msg = f"Command failed for '{filepath}' with exit code {result.returncode}"
-                print(f"Error (exit code {result.returncode}): {result.stderr.strip()}")
-                # Log command execution error
+                print(f"Error: {error_msg}")
+                # Log command execution error (without stderr since we're not capturing it)
                 if error_log_file:
                     ErrorLogger.log_error(
-                        error_log_file, f"{error_msg}\nCommand: {command}\nStderr: {result.stderr.strip()}"
+                        error_log_file, f"{error_msg}\nCommand: {command}"
                     )
         except subprocess.TimeoutExpired as e:
             error_msg = f"Command timed out after 30 seconds for '{filepath}'"
