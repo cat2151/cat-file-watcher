@@ -35,7 +35,7 @@ class TestCommandLogging:
     def test_logging_disabled_by_default(self):
         """Test that logging is disabled by default."""
         # Create config without enable_log
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
 [files]
@@ -63,7 +63,7 @@ log_file = "{self.log_file}"
     def test_logging_enabled(self):
         """Test that logging works when enabled."""
         # Create config with enable_log=true
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
 [files]
@@ -100,7 +100,7 @@ log_file = "{self.log_file}"
     def test_logging_without_log_file_config(self):
         """Test that logging is skipped when log_file is not configured."""
         # Create config with enable_log=true but no log_file
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'test'", enable_log = true }}
@@ -127,11 +127,11 @@ log_file = "{self.log_file}"
     def test_logging_with_multiple_settings(self):
         """Test that all file settings are logged."""
         # Create config with multiple settings
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
 [files]
-"{self.test_file}" = {{ command = "echo 'test'", interval = 50, enable_log = true, suppress_if_process = "vim" }}
+"{self.test_file}" = {{ command = "echo 'test'", interval = "0.05s", enable_log = true, suppress_if_process = "vim" }}
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -154,14 +154,14 @@ log_file = "{self.log_file}"
             log_content = f.read()
 
         assert "command: echo 'test'" in log_content
-        assert "interval: 50" in log_content
+        assert "interval: 0.05s" in log_content
         assert "enable_log: True" in log_content
         assert "suppress_if_process: vim" in log_content
 
     def test_logging_appends_to_existing_log(self):
         """Test that logging appends to existing log file."""
         # Create config with logging enabled
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
 [files]
@@ -198,7 +198,7 @@ log_file = "{self.log_file}"
     def test_logging_timestamp_format(self):
         """Test that log entries include properly formatted timestamps."""
         # Create config with logging enabled
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
 [files]

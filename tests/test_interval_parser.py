@@ -58,20 +58,6 @@ class TestIntervalParser:
             result = IntervalParser.parse_interval(interval_str)
             assert result == expected, f"Failed for {interval_str}: expected {expected}, got {result}"
 
-    def test_parse_milliseconds_backward_compatibility(self):
-        """Test backward compatibility with milliseconds (integer format)."""
-        test_cases = [
-            (1000, 1.0),
-            (500, 0.5),
-            (250, 0.25),
-            (2000, 2.0),
-            (5000, 5.0),
-            (100, 0.1),
-        ]
-        for interval_ms, expected in test_cases:
-            result = IntervalParser.parse_interval(interval_ms)
-            assert result == expected, f"Failed for {interval_ms}ms: expected {expected}s, got {result}s"
-
     def test_parse_with_whitespace(self):
         """Test parsing with leading/trailing whitespace."""
         test_cases = [
@@ -121,6 +107,8 @@ class TestIntervalParser:
             [],
             {},
             True,
+            1000,  # Integer not supported anymore
+            500,   # Integer not supported anymore
         ]
         for invalid_value in invalid_types:
             with pytest.raises(ValueError, match="Invalid interval"):
@@ -128,7 +116,7 @@ class TestIntervalParser:
 
     def test_parse_returns_float(self):
         """Test that all parsing returns float type."""
-        test_values = ["1s", "2m", "3h", 1000, 500]
+        test_values = ["1s", "2m", "3h"]
         for value in test_values:
             result = IntervalParser.parse_interval(value)
             assert isinstance(result, float), f"Expected float, got {type(result).__name__}"

@@ -3,7 +3,6 @@
 
 # Default interval for checking files
 # Supports time format: "1s" (1 second), "2m" (2 minutes), "3h" (3 hours), "0.5s" (0.5 seconds)
-# Also supports old format: integer milliseconds (e.g., 1000 for 1 second) for backward compatibility
 # Default: "1s" (1 second)
 default_interval = "1s"
 
@@ -59,7 +58,6 @@ midnight_window = { start = "23:59", end = "00:01" }
 # Each entry defines a file or directory to monitor and a command to execute when it changes
 # Directories: Command executes when directory modification time changes (files added/removed/etc.)
 # Optional: specify 'interval' with time format ("1s", "2m", "3h", "0.5s") to override the default
-#           Also supports old format: integer milliseconds for backward compatibility
 # Optional: specify 'suppress_if_process' with a regex pattern to skip command execution
 #           when a process matching the pattern is running
 # Optional: specify 'time_period' to only monitor during that time period

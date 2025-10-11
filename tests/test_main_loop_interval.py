@@ -29,8 +29,8 @@ class TestMainLoopInterval:
 
     def test_main_loop_interval_uses_default_interval(self):
         """Test that main loop interval uses default_interval when it's the smallest."""
-        config_content = f'''default_interval = 1000
-config_check_interval = 2000
+        config_content = f'''default_interval = "1s"
+config_check_interval = "2s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}
@@ -44,8 +44,8 @@ config_check_interval = 2000
 
     def test_main_loop_interval_uses_config_check_interval(self):
         """Test that main loop interval uses config_check_interval when it's the smallest."""
-        config_content = f'''default_interval = 2000
-config_check_interval = 500
+        config_content = f'''default_interval = "2s"
+config_check_interval = "0.5s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}
@@ -59,11 +59,11 @@ config_check_interval = 500
 
     def test_main_loop_interval_uses_per_file_interval(self):
         """Test that main loop interval uses per-file interval when it's the smallest."""
-        config_content = f'''default_interval = 2000
-config_check_interval = 2000
+        config_content = f'''default_interval = "2s"
+config_check_interval = "2s"
 
 [files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = 250 }}
+"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.25s" }}
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -78,12 +78,12 @@ config_check_interval = 2000
         with open(test_file2, "w") as f:
             f.write("Content\n")
 
-        config_content = f'''default_interval = 2000
-config_check_interval = 2000
+        config_content = f'''default_interval = "2s"
+config_check_interval = "2s"
 
 [files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = 500 }}
-"{test_file2}" = {{ command = "echo 'File2 changed'", interval = 100 }}
+"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.5s" }}
+"{test_file2}" = {{ command = "echo 'File2 changed'", interval = "0.1s" }}
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -102,12 +102,12 @@ config_check_interval = 2000
 
         watcher = FileWatcher(self.config_file)
         interval = watcher._calculate_main_loop_interval()
-        # Both default_interval and config_check_interval default to 1000ms
+        # Both default_interval and config_check_interval default to "1s"
         assert interval == 1.0
 
     def test_main_loop_interval_with_only_config_check_interval(self):
         """Test main loop interval when only config_check_interval is specified."""
-        config_content = f'''config_check_interval = 3000
+        config_content = f'''config_check_interval = "3s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}
@@ -117,16 +117,16 @@ config_check_interval = 2000
 
         watcher = FileWatcher(self.config_file)
         interval = watcher._calculate_main_loop_interval()
-        # default_interval defaults to 1000ms, config_check_interval is 3000ms
+        # default_interval defaults to "1s", config_check_interval is "3s"
         assert interval == 1.0
 
     def test_main_loop_interval_very_small(self):
         """Test main loop interval with very small value."""
-        config_content = f'''default_interval = 5000
-config_check_interval = 5000
+        config_content = f'''default_interval = "5s"
+config_check_interval = "5s"
 
 [files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = 50 }}
+"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.05s" }}
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

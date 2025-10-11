@@ -132,12 +132,10 @@ class ConfigLoader:
     def get_interval_for_file(config, settings):
         """Get the interval for a file in seconds.
 
-        Supports both old format (milliseconds as integer) and new format
-        (time strings like "1s", "2m", "3h", "0.5s").
+        Supports time strings like "1s", "2m", "3h", "0.5s".
 
         Examples:
-        - Old format: 1000 -> 1.0s, 500 -> 0.5s
-        - New format: "1s" -> 1.0s, "2m" -> 120.0s, "0.5s" -> 0.5s
+        - "1s" -> 1.0s, "2m" -> 120.0s, "0.5s" -> 0.5s
 
         Args:
             config: Global configuration dictionary
@@ -147,11 +145,10 @@ class ConfigLoader:
             float: Interval in seconds
         """
         # Get default interval from config, default to "1s" (1 second)
-        # Support both old format (integer milliseconds) and new format (time strings)
         default_interval = config.get("default_interval", "1s")
 
         # Get file-specific interval, or use default
         interval_value = settings.get("interval", default_interval)
 
-        # Parse interval using IntervalParser which handles both formats
+        # Parse interval using IntervalParser
         return IntervalParser.parse_interval(interval_value)

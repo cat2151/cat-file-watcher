@@ -42,7 +42,7 @@ class TestCwd:
 
         # Create config with cwd setting
         # The command will execute 'pwd > output.txt' in the subdir
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "pwd > output.txt", cwd = "{self.subdir}" }}
@@ -84,7 +84,7 @@ class TestCwd:
         output_file = os.path.join(self.subdir, "output.txt")
 
         # Command will use relative path 'input.txt' because it runs in subdir
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "cat input.txt > output.txt", cwd = "{self.subdir}" }}
@@ -112,7 +112,7 @@ class TestCwd:
         """Test that commands work normally when cwd is not specified."""
         output_file = os.path.join(self.test_dir, "output.txt")
 
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'no cwd' > {output_file}" }}
@@ -136,7 +136,7 @@ class TestCwd:
         """Test error handling when cwd path doesn't exist."""
         invalid_dir = os.path.join(self.test_dir, "nonexistent")
 
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'test'", cwd = "{invalid_dir}" }}
@@ -162,11 +162,11 @@ class TestCwd:
         output_file = os.path.join(self.subdir, "output.txt")
         log_file = os.path.join(self.test_dir, "command.log")
 
-        config_content = f'''default_interval = 50
+        config_content = f'''default_interval = "0.05s"
 log_file = "{log_file}"
 
 [files]
-"{self.test_file}" = {{ command = "pwd > output.txt", cwd = "{self.subdir}", interval = 100, enable_log = true }}
+"{self.test_file}" = {{ command = "pwd > output.txt", cwd = "{self.subdir}", interval = "0.1s", enable_log = true }}
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

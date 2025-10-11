@@ -32,7 +32,7 @@ class TestDirectoryMonitoring:
 
     def test_directory_monitoring_basic(self):
         """Test that directories can be monitored like files."""
-        config_content = f'''default_interval = 100
+        config_content = f'''default_interval = "0.1s"
 
 [files]
 "{self.monitor_dir}" = {{ command = "echo 'Directory changed!'" }}
@@ -48,7 +48,7 @@ class TestDirectoryMonitoring:
 
     def test_directory_change_detection(self):
         """Test that directory changes are detected when files are added."""
-        config_content = f'''default_interval = 100
+        config_content = f'''default_interval = "0.1s"
 
 [files]
 "{self.monitor_dir}" = {{ command = "echo 'Directory changed!'" }}
@@ -81,10 +81,10 @@ class TestDirectoryMonitoring:
 
     def test_directory_with_custom_interval(self):
         """Test that custom intervals work for directories."""
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 
 [files]
-"{self.monitor_dir}" = {{ command = "echo 'Directory changed!'", interval = 500 }}
+"{self.monitor_dir}" = {{ command = "echo 'Directory changed!'", interval = "0.5s" }}
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -98,7 +98,7 @@ class TestDirectoryMonitoring:
 
     def test_directory_with_suppress_if_process(self):
         """Test that process suppression works for directories."""
-        config_content = f'''default_interval = 100
+        config_content = f'''default_interval = "0.1s"
 
 [files]
 "{self.monitor_dir}" = {{ command = "echo 'Directory changed!'", suppress_if_process = "nonexistent_process_12345" }}
@@ -118,7 +118,7 @@ class TestDirectoryMonitoring:
         with open(test_file, "w") as f:
             f.write("initial")
 
-        config_content = f'''default_interval = 100
+        config_content = f'''default_interval = "0.1s"
 
 [files]
 "{test_file}" = {{ command = "echo 'File changed!'" }}

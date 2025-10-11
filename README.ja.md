@@ -56,7 +56,6 @@ python -m src --config-filename config.toml
 ```toml
 # デフォルトの監視間隔
 # 時間フォーマット: "1s"（1秒）、"2m"（2分）、"3h"（3時間）、"0.5s"（0.5秒）
-# 旧フォーマット（ミリ秒の整数値、例: 1000）も後方互換性のためサポート
 default_interval = "1s"
 
 # 設定ファイル自体の変更チェック間隔
@@ -88,7 +87,7 @@ night_shift = { start = "23:00", end = "01:00" }
   - ディレクトリの場合: ディレクトリの変更時刻が変わったとき（ファイルの追加・削除など）にコマンドを実行
 - **値**: 実行するシェルコマンドを含む `command` フィールドを持つオブジェクト
   - `command` (必須): ファイルまたはディレクトリ変更時に実行するシェルコマンド
-  - `interval` (省略可): このファイルまたはディレクトリの監視間隔。時間フォーマット（"1s", "2m", "3h", "0.5s"）で指定します。小数点も使用可能です（例: "0.5s"は0.5秒）。旧フォーマット（ミリ秒の整数値）も後方互換性のためサポートされます。省略した場合は `default_interval` が使用されます
+  - `interval` (省略可): このファイルまたはディレクトリの監視間隔。時間フォーマット（"1s", "2m", "3h", "0.5s"）で指定します。小数点も使用可能です（例: "0.5s"は0.5秒）。省略した場合は `default_interval` が使用されます
   - `suppress_if_process` (省略可): 実行中のプロセス名にマッチする正規表現パターン。マッチするプロセスが見つかった場合、コマンド実行をスキップします。エディタなどの特定のプログラムが実行中の場合にアクションをトリガーしないようにする場合に便利です
   - `time_period` (省略可): ファイルまたはディレクトリを監視する時間帯の名前。`[time_periods]` セクションで定義された時間帯名を指定します。指定した時間帯内でのみ監視します
   - `enable_log` (省略可): `true` に設定すると、コマンド実行の詳細をログファイルに記録します（デフォルト: `false`）。グローバル設定で `log_file` の設定が必要です
@@ -96,7 +95,7 @@ night_shift = { start = "23:00", end = "01:00" }
 
 ### グローバル設定
 
-- `default_interval` (省略可): すべてのファイルおよびディレクトリのデフォルト監視間隔。時間フォーマット（"1s", "2m", "3h", "0.5s"）で指定します。小数点も使用可能です（例: "0.5s"は0.5秒）。旧フォーマット（ミリ秒の整数値、例: 1000）も後方互換性のためサポートされます。省略した場合は"1s"（1秒）が使用されます
+- `default_interval` (省略可): すべてのファイルおよびディレクトリのデフォルト監視間隔。時間フォーマット（"1s", "2m", "3h", "0.5s"）で指定します。小数点も使用可能です（例: "0.5s"は0.5秒）。省略した場合は"1s"（1秒）が使用されます
 - `config_check_interval` (省略可): 設定ファイル自体の変更チェック間隔。時間フォーマット（"1s", "2m", "3h", "0.5s"）で指定します。設定ファイルが変更されると自動的に再読み込みされます。省略した場合は"1s"（1秒）が使用されます
 - `log_file` (省略可): コマンド実行の詳細を記録するログファイルのパス。設定すると、`enable_log = true` が指定されたファイルまたはディレクトリのコマンド実行情報（タイムスタンプ、パス、TOML設定内容）がこのファイルに記録されます
 
@@ -123,10 +122,10 @@ night_shift = { start = "23:00", end = "01:00" }     # 日をまたぐ時間帯
 
 ```toml
 # デフォルトの監視間隔を1秒に設定
-default_interval = 1000
+default_interval = "1s"
 
 # 設定ファイル自体の変更チェック間隔を1秒に設定
-config_check_interval = 1000
+config_check_interval = "1s"
 
 # コマンド実行の詳細を記録するログファイル（省略可）
 log_file = "command_execution.log"
@@ -140,11 +139,11 @@ after_hours = { start = "18:00", end = "08:00" }  # 日をまたぐ
 # デフォルト間隔を使用（1秒ごとにチェック）
 "document.txt" = { command = "cp document.txt document.txt.bak" }
 
-# カスタム間隔を指定（500msごとにチェック）
-"app.log" = { command = "notify-send 'Log Updated' 'New entries in app.log'", interval = 500 }
+# カスタム間隔を指定（0.5秒ごとにチェック）
+"app.log" = { command = "notify-send 'Log Updated' 'New entries in app.log'", interval = "0.5s" }
 
 # カスタム間隔を指定（5秒ごとにチェック）
-"config.ini" = { command = "systemctl reload myapp", interval = 5000 }
+"config.ini" = { command = "systemctl reload myapp", interval = "5s" }
 
 # 営業時間のみ監視
 "report.txt" = { command = "python generate_report.py", time_period = "business_hours" }

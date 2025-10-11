@@ -189,7 +189,7 @@ class TestFileWatcherWithTimePeriods:
     def test_file_monitoring_with_active_time_period(self):
         """Test that files are monitored when within active time period."""
         # Create config with a time period that is always active (whole day)
-        config_content = f'''default_interval = 100
+        config_content = f'''default_interval = "0.1s"
 
 [time_periods]
 always_active = {{ start = "00:00", end = "23:59" }}
@@ -208,7 +208,7 @@ always_active = {{ start = "00:00", end = "23:59" }}
 
     def test_file_monitoring_without_time_period(self):
         """Test that files without time_period are monitored normally."""
-        config_content = f'''default_interval = 100
+        config_content = f'''default_interval = "0.1s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'test'" }}
@@ -224,7 +224,7 @@ always_active = {{ start = "00:00", end = "23:59" }}
 
     def test_config_with_multiple_time_periods(self):
         """Test configuration with multiple time period definitions."""
-        config_content = f'''default_interval = 100
+        config_content = f'''default_interval = "0.1s"
 
 [time_periods]
 morning = {{ start = "06:00", end = "12:00" }}

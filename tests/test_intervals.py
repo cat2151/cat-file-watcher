@@ -42,7 +42,7 @@ class TestFileWatcherIntervals:
 
     def test_custom_default_interval(self):
         """Test that custom default interval is respected."""
-        config_content = f'''default_interval = 500
+        config_content = f'''default_interval = "0.5s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}
@@ -56,10 +56,10 @@ class TestFileWatcherIntervals:
 
     def test_per_file_interval(self):
         """Test that per-file interval overrides default."""
-        config_content = f'''default_interval = 1000
+        config_content = f'''default_interval = "1s"
 
 [files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = 250 }}
+"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.25s" }}
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -71,7 +71,7 @@ class TestFileWatcherIntervals:
 
     def test_interval_throttling(self):
         """Test that files are not checked more frequently than their interval."""
-        config_content = f'''default_interval = 500
+        config_content = f'''default_interval = "0.5s"
 
 [files]
 "{self.test_file}" = {{ command = "echo 'File changed'" }}

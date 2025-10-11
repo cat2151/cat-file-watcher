@@ -14,12 +14,10 @@ class IntervalParser:
     def parse_interval(interval_value):
         """Parse interval value to seconds.
 
-        Supports both old format (milliseconds as integer) and new format
-        (time strings like "1s", "2m", "3h", "0.5s").
+        Supports time strings like "1s", "2m", "3h", "0.5s".
 
         Args:
-            interval_value: Either an integer (milliseconds, old format) or
-                          a string with time unit ("1s", "2m", "3h", "0.5s")
+            interval_value: A string with time unit ("1s", "2m", "3h", "0.5s")
 
         Returns:
             float: Interval in seconds
@@ -27,19 +25,7 @@ class IntervalParser:
         Raises:
             ValueError: If the interval format is invalid
         """
-        # Handle old format: integer milliseconds
-        # Note: bool is a subclass of int in Python, so check for bool first
-        if isinstance(interval_value, bool):
-            raise ValueError(
-                f"Invalid interval type: {type(interval_value).__name__}. "
-                f"Expected integer (milliseconds) or string (time format)"
-            )
-
-        if isinstance(interval_value, (int, float)):
-            # Convert milliseconds to seconds
-            return interval_value / 1000.0
-
-        # Handle new format: time string
+        # Handle time string format
         if isinstance(interval_value, str):
             # Parse time string format: number + unit (s/m/h)
             # Supports decimal numbers like "0.5s"
@@ -63,5 +49,5 @@ class IntervalParser:
 
         raise ValueError(
             f"Invalid interval type: {type(interval_value).__name__}. "
-            f"Expected integer (milliseconds) or string (time format)"
+            f"Expected string (time format)"
         )
