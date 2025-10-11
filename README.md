@@ -180,11 +180,11 @@ after_hours = { start = "18:00", end = "08:00" }  # Spans across midnight
 
 ### Command Output
 
-The standard output and standard error output of executed commands are displayed in the console:
+The standard output and standard error output of executed commands are displayed **in real-time** in the console:
 
-- **On success (exit code 0)**: If there is stdout output, it will be displayed as `Output: <output content>`
-- **On failure (non-zero exit code)**: The stderr output will be displayed as `Error (exit code <code>): <error content>`
-- **Error log file**: If `error_log_file` is configured, detailed error information (error message, executed command, stderr output, stack trace) will be logged to the file when a command fails
+- **Output display**: Command stdout and stderr are streamed directly to the console as they are generated. For long-running commands, you can see intermediate output in real-time
+- **On failure**: When a command fails (non-zero exit code), an error message `Error: Command failed for '<filepath>' with exit code <code>` is displayed
+- **Error log file**: If `error_log_file` is configured, the error message and executed command will be logged to the file when a command fails
 
 Command execution has a timeout of 30 seconds, after which a timeout error will occur.
 
