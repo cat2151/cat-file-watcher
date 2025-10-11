@@ -7,7 +7,7 @@
   <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
 </p>
 
-*Note: This document is mostly AI-generated. Issues were submitted to an agent for generation. Some sections (Concept, Usage Scenarios) were written manually.*
+*Note: This document is largely AI-generated. I fed issues to an agent to generate it. Some parts (concepts, usage distinctions) were written manually.*
 
 ## Quick Links
 | Item | Link |
@@ -20,8 +20,8 @@ This is a file monitoring tool that watches for changes in file timestamps and e
 
 ## Features
 
-- Monitor multiple files simultaneously
-- Execute custom commands on file changes
+- Monitors multiple files simultaneously
+- Executes custom commands on file changes
 - Configurable via TOML configuration file
 - Lightweight and easy to use
 
@@ -51,23 +51,23 @@ Arguments:
 
 ## Configuration
 
-Create a TOML configuration file to define the files to monitor and the commands to execute:
+Create a TOML configuration file that defines the files to monitor and the commands to execute:
 
 ```toml
 # Default monitoring interval
 # Time format: "1s" (1 second), "2m" (2 minutes), "3h" (3 hours), "0.5s" (0.5 seconds)
 default_interval = "1s"
 
-# Interval for checking changes to the configuration file itself
+# Configuration file self-check interval
 config_check_interval = "1s"
 
-# Path to the command execution log file (optional)
+# Command execution log file path (optional)
 log_file = "command_execution.log"
 
-# Path to the error log file (optional)
+# Error log file path (optional)
 # error_log_file = "error.log"
 
-# Path to the command execution suppression log file (optional)
+# Suppression log file path (optional)
 # suppression_log_file = "suppression.log"
 
 # Time period definitions (optional)
@@ -86,27 +86,26 @@ night_shift = { start = "23:00", end = "01:00" }
 
 ### Configuration Format
 
-The configuration file requires a `[files]` section where each entry maps a filename (or directory) to a command:
+The configuration file requires a `[files]` section where each entry maps a filename to a command:
 
-- **Key**: Path to the file or directory to monitor (relative or absolute path)
-  - For files: Executes the command when the file's modification time changes.
-  - For directories: Executes the command when the directory's modification time changes (e.g., files added/deleted).
-- **Value**: An object containing a `command` field that specifies the shell command to execute.
-  - `command` (required): The shell command to execute when the file or directory changes.
-  - `interval` (optional): The monitoring interval for this file or directory. Specified in time format ("1s", "2m", "3h", "0.5s"). Decimal values are also supported (e.g., "0.5s" for 0.5 seconds). If omitted, `default_interval` will be used.
-  - `suppress_if_process` (optional): A regular expression pattern to match against running process names. If a matching process is found, command execution will be skipped. This is useful for avoiding triggering actions when specific programs like editors are running.
+- **Key**: The path to the file or directory to monitor (relative or absolute path)
+  - For files: Executes the command when the file's modification timestamp changes
+  - For directories: Executes the command when the directory's modification timestamp changes (e.g., adding or deleting files)
+- **Value**: An object with a `command` field containing the shell command to execute
+  - `command` (required): The shell command to execute when the file or directory changes
+  - `interval` (optional): The monitoring interval for this specific file or directory. Specified in time format ("1s", "2m", "3h", "0.5s"). Decimal values are also supported (e.g., "0.5s" for 0.5 seconds). If omitted, `default_interval` will be used.
+  - `suppress_if_process` (optional): A regular expression pattern to match against running process names. If a matching process is found, command execution will be skipped. This is useful for preventing actions from being triggered while specific programs like editors are running.
   - `time_period` (optional): The name of a time period during which the file or directory should be monitored. Specify a time period name defined in the `[time_periods]` section. Monitoring will only occur within the specified time period.
-  - `enable_log` (optional): If set to `true`, details of command execution will be recorded in the log file (default: `false`). The `log_file` must be configured in global settings.
-  - `cwd` (optional): Changes the working directory to the specified path before executing the command. This allows relative paths within the command to be resolved from the specified directory.
+  - `enable_log` (optional): When set to `true`, detailed command execution information will be logged to a file (default: `false`). The `log_file` setting must be configured in the global settings.
+  - `cwd` (optional): Changes the working directory to the specified path before executing the command. This ensures that relative paths within the command are resolved from the specified directory.
 
 ### Global Settings
 
 - `default_interval` (optional): The default monitoring interval for all files and directories. Specified in time format ("1s", "2m", "3h", "0.5s"). Decimal values are also supported (e.g., "0.5s" for 0.5 seconds). If omitted, "1s" (1 second) will be used.
 - `config_check_interval` (optional): The interval for checking changes to the configuration file itself. Specified in time format ("1s", "2m", "3h", "0.5s"). If the configuration file changes, it will be automatically reloaded. If omitted, "1s" (1 second) will be used.
-- `log_file` (optional): The path to the log file where details of command execution will be recorded. If set, command execution information (timestamp, path, TOML configuration content) for files or directories with `enable_log = true` will be logged to this file.
-- `error_log_file` (optional): The path to the error log file where detailed error information will be recorded. If set, when a command fails, detailed information (error message, executed command, stderr output, stack trace) will be logged to this file.
-- `suppression_log_file` (optional): The path to the suppression log file where command execution suppression details will be recorded. If set, when command execution is skipped due to `suppress_if_process`, information (timestamp, file path, process pattern, matched process) will be logged to this file.
-
+- `log_file` (optional): The path to the log file where detailed command execution information will be recorded. If set, command execution details (timestamp, path, TOML configuration content) for files or directories with `enable_log = true` will be recorded in this file.
+- `error_log_file` (optional): The path to the error log file where detailed command execution errors will be recorded. If set, detailed information such as error messages, executed commands, standard error output, and stack traces on command failures will be recorded in this file.
+- `suppression_log_file` (optional): The path to the log file where details of command execution suppression will be recorded. If set, information (timestamp, file path, process pattern, matched process) when command execution is skipped due to `suppress_if_process` will be recorded in this file.
 
 ### Time Period Settings
 
@@ -116,24 +115,24 @@ You can define time periods in the `[time_periods]` section (optional):
 - `start`: Start time (HH:MM format, e.g., "09:00")
 - `end`: End time (HH:MM format, e.g., "17:00")
 - Time periods spanning across midnight are also supported (e.g., `start = "23:00", end = "01:00"`).
-- If you specify a time period name using the `time_period` parameter for a file, that file or directory will only be monitored within that time period.
+- If you specify a time period name using the `time_period` parameter for each file, that file or directory will only be monitored within that time period.
 
 Example:
 ```toml
 [time_periods]
 business_hours = { start = "09:00", end = "17:00" }  # Regular business hours
-night_shift = { start = "23:00", end = "01:00" }     # Time period spanning midnight
+night_shift = { start = "23:00", end = "01:00" }     # Time period spanning across midnight
 ```
 
-### Configuration Examples
+### Configuration Example
 
-For complete examples of various use cases, please refer to `examples/config.example.toml`.
+Refer to `examples/config.example.toml` for a complete example of various use cases.
 
 ```toml
 # Set default monitoring interval to 1 second
 default_interval = "1s"
 
-# Set configuration file check interval to 1 second
+# Set configuration file self-check interval to 1 second
 config_check_interval = "1s"
 
 # Log file for detailed command execution (optional)
@@ -142,31 +141,31 @@ log_file = "command_execution.log"
 # Error log file (optional)
 # error_log_file = "error.log"
 
-# Command execution suppression log file (optional)
+# Command suppression log file (optional)
 # suppression_log_file = "suppression.log"
 
-# Define time periods
+# Time period definitions
 [time_periods]
 business_hours = { start = "09:00", end = "17:00" }
-after_hours = { start = "18:00", end = "08:00" }  # Spans across midnight
+after_hours = { start = "18:00", end = "08:00" }  # Spanning across midnight
 
 [files]
-# Uses default interval (checks every 1 second)
+# Use default interval (check every 1 second)
 "document.txt" = { command = "cp document.txt document.txt.bak" }
 
-# Custom interval specified (checks every 0.5 seconds)
+# Specify custom interval (check every 0.5 seconds)
 "app.log" = { command = "notify-send 'Log Updated' 'New entries in app.log'", interval = "0.5s" }
 
-# Custom interval specified (checks every 5 seconds)
+# Specify custom interval (check every 5 seconds)
 "config.ini" = { command = "systemctl reload myapp", interval = "5s" }
 
-# Monitored only during business hours
+# Monitor only during business hours
 "report.txt" = { command = "python generate_report.py", time_period = "business_hours" }
 
-# Monitored only after hours (e.g., for batch processing)
+# Monitor only outside business hours (e.g., batch processing)
 "batch.csv" = { command = "./process_batch.sh", time_period = "after_hours" }
 
-# Enable logging for important files (records timestamp, file path, and config details)
+# Enable logging for important files (records timestamp, file path, and configuration content)
 "important.txt" = { command = "backup.sh", enable_log = true }
 ```
 
@@ -175,18 +174,18 @@ after_hours = { start = "18:00", end = "08:00" }  # Spans across midnight
 1. The tool reads the TOML configuration file.
 2. It monitors the modification timestamps of all specified files.
 3. When a file's timestamp changes, the associated command is executed.
-4. The configuration file itself is also monitored and automatically reloaded if changes are detected.
+4. It also monitors the configuration file itself and automatically reloads it if changes are detected.
 5. This process continuously repeats until stopped with Ctrl+C.
 
-### Command Output
+### Command Execution Output
 
-The standard output and standard error output of executed commands are displayed **in real-time** in the console:
+The standard output and standard error of executed commands are displayed on the console **in real-time**:
 
-- **Output display**: Command stdout and stderr are streamed directly to the console as they are generated. For long-running commands, you can see intermediate output in real-time
-- **On failure**: When a command fails (non-zero exit code), an error message `Error: Command failed for '<filepath>' with exit code <code>` is displayed
-- **Error log file**: If `error_log_file` is configured, the error message and executed command will be logged to the file when a command fails
+- **Output Display**: The standard output and standard error of commands are progressively displayed on the console during execution. Even for long-running commands, you can observe the progress in real-time.
+- **On Failure**: If a command fails (exit code other than 0), a message like `Error: Command failed for '<file path>' with exit code <code_value>` will be displayed.
+- **Error Log File**: If `error_log_file` is configured, error messages and executed commands on command failures will be recorded in the log file.
 
-Command execution has a timeout of 30 seconds, after which a timeout error will occur.
+Command execution timeout is set to 30 seconds; if exceeded, a timeout error will occur.
 
 ## Concept
 
@@ -194,18 +193,18 @@ Prioritizes simple and maintainable TOML descriptions.
 
 ## Usage Scenarios
 
-Use cat-file-watcher when you want to easily monitor file updates and maintain effortless operation.
+For easy file change monitoring and straightforward operation, use cat-file-watcher.
 
-Use cat-file-watcher when you need to quickly toggle update monitoring on/off for scattered files.
+For quickly enabling/disabling change monitoring on scattered files, use cat-file-watcher.
 
-Use cat-file-watcher when you want to leverage its unique features.
+To utilize its unique features, use cat-file-watcher.
 
 For more advanced features, consider other applications.
 
-For TypeScript application development and similar tasks, a standard task runner is recommended.
+For TypeScript app development, use standard task runners.
 
 ## License
 
 MIT License - See the LICENSE file for details.
 
-*Note: This README.md is automatically generated from README.ja.md using Gemini's translation via GitHub Actions.*
+*Note: This README.md is automatically generated from README.ja.md via GitHub Actions using Gemini's translation.*
