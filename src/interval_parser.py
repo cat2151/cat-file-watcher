@@ -34,7 +34,7 @@ class IntervalParser:
                 f"Invalid interval type: {type(interval_value).__name__}. "
                 f"Expected integer (milliseconds) or string (time format)"
             )
-        
+
         if isinstance(interval_value, (int, float)):
             # Convert milliseconds to seconds
             return interval_value / 1000.0
