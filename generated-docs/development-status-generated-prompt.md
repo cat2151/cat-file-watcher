@@ -196,7 +196,8 @@ Last updated: 2025-10-11
 - LICENSE
 - README.ja.md
 - README.md
-- config.example.toml
+- examples/config.example.toml
+- examples/monitoring-group-example.toml
 - issue-notes/11.md
 - issue-notes/13.md
 - issue-notes/15.md
