@@ -1,0 +1,44 @@
+# Ruff configuration for cat-file-watcher
+# Documentation: https://docs.astral.sh/ruff/
+
+# Line length
+line-length = 120
+
+# Exclude files
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "build",
+    "dist",
+    ".pytest_cache",
+    ".ruff_cache",
+]
+
+[lint]
+# Enable pycodestyle (E), Pyflakes (F), pycodestyle warnings (W), isort (I)
+select = ["E", "F", "W", "I"]
+
+# Ignore rules
+ignore = [
+    "E501",  # Line too long (handled by formatter)
+]
+
+# Allow autofix for all enabled rules
+fixable = ["ALL"]
+unfixable = []
+
+[format]
+# Use double quotes for strings
+quote-style = "double"
+
+# Indent with spaces
+indent-style = "space"
+
+# Use Unix line endings
+line-ending = "lf"
+
+[lint.isort]
+# Treat imports from src as first-party
+known-first-party = ["src"]
