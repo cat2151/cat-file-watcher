@@ -11,6 +11,17 @@ default_interval = 1000
 # Default: 1000 (1 second)
 config_check_interval = 1000
 
+# Optional: Load external TOML files containing [files] sections
+# This allows you to organize your file configurations into groups
+# You can quickly enable/disable entire groups by commenting/uncommenting the path
+# Paths can be relative (to this config file) or absolute
+# External files can ONLY contain [files] sections - other sections will cause an error
+# external_files = [
+#     "monitoring-group1.toml",
+#     "monitoring-group2.toml",
+#     "/absolute/path/to/monitoring-group3.toml"
+# ]
+
 # Optional: Log file path for command execution logging
 # When specified, files with enable_log=true will log command execution details here
 # log_file = "command_execution.log"
