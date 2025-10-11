@@ -1,0 +1,17 @@
+# Example external files configuration
+# This file demonstrates how to group related file monitoring configurations
+# You can include this file in your main config using:
+#   external_files = ["monitoring-group-example.toml"]
+
+# External files can ONLY contain the [files] section
+# Other sections (like time_periods, default_interval, etc.) are not allowed
+
+[files]
+# Example: Monitor development files
+"src/main.py" = { command = "python -m pytest tests/", interval = 2000 }
+"src/utils.py" = { command = "python -m pylint src/utils.py" }
+"tests/test_main.py" = { command = "python -m pytest tests/test_main.py -v" }
+
+# Example: Monitor configuration files
+"config/settings.json" = { command = "python validate_config.py" }
+"config/database.yml" = { command = "systemctl reload myapp" }
