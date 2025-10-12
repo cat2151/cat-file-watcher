@@ -137,7 +137,22 @@ class FileWatcher:
         current_time = time.time()
         files_config = self.config["files"]
         for filename, settings in files_config.items():
-            if "command" not in settings:
+            # Validate terminate_if_process configuration early
+            if "terminate_if_process" in settings:
+                if filename != "":
+                    error_msg = f"Fatal configuration error: terminate_if_process can only be used with empty filename, but filename is '{filename}'"
+                    TimestampPrinter.print(error_msg, Fore.RED)
+                    ErrorLogger.log_error(error_log_file, error_msg)
+                    continue  # Skip this entry
+
+                if "command" in settings and settings["command"]:
+                    error_msg = "Fatal configuration error: terminate_if_process cannot be used with command field (command must be empty)"
+                    TimestampPrinter.print(error_msg, Fore.RED)
+                    ErrorLogger.log_error(error_log_file, error_msg)
+                    continue  # Skip this entry
+
+            # Allow missing command if terminate_if_process is specified
+            if "command" not in settings and "terminate_if_process" not in settings:
                 TimestampPrinter.print(f"Warning: No command specified for file '{filename}'", Fore.YELLOW)
                 continue
 
@@ -157,9 +172,10 @@ class FileWatcher:
                 self.file_last_check[filename] = current_time
 
                 # Special case: empty filename means execute command without file monitoring
-                # This is useful for process health monitoring or periodic tasks
+                # This is useful for process health monitoring or periodic tasks (including terminate_if_process)
                 if filename == "":
-                    CommandExecutor.execute_command(settings["command"], filename, settings, self.config)
+                    command = settings.get("command", "")
+                    CommandExecutor.execute_command(command, filename, settings, self.config)
                     continue
 
                 current_timestamp = self._get_file_timestamp(filename)
