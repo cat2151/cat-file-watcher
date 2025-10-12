@@ -37,7 +37,9 @@ class CommandExecutor:
             process_pattern = settings["suppress_if_process"]
             matched_process = ProcessDetector.get_matching_process(process_pattern)
             if matched_process:
-                TimestampPrinter.print(f"Skipping command for '{filepath}': process matching '{process_pattern}' is running", Style.DIM)
+                TimestampPrinter.print(
+                    f"Skipping command for '{filepath}': process matching '{process_pattern}' is running", Style.DIM
+                )
                 # Write to suppression log file if configured
                 if config and config.get("suppression_log_file"):
                     CommandExecutor._write_to_suppression_log(filepath, process_pattern, matched_process, config)
@@ -62,9 +64,7 @@ class CommandExecutor:
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 # Log command execution error (without stderr since we're not capturing it)
                 if error_log_file:
-                    ErrorLogger.log_error(
-                        error_log_file, f"{error_msg}\nCommand: {command}"
-                    )
+                    ErrorLogger.log_error(error_log_file, f"{error_msg}\nCommand: {command}")
         except subprocess.TimeoutExpired as e:
             error_msg = f"Command timed out after 30 seconds for '{filepath}'"
             TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)

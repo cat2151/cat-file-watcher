@@ -29,7 +29,7 @@ class IntervalParser:
         if isinstance(interval_value, str):
             # Parse time string format: number + unit (s/m/h)
             # Supports decimal numbers like "0.5s"
-            match = re.match(r'^(\d+\.?\d*|\.\d+)(s|m|h)$', interval_value.strip())
+            match = re.match(r"^(\d+\.?\d*|\.\d+)(s|m|h)$", interval_value.strip())
             if not match:
                 raise ValueError(
                     f"Invalid interval format: '{interval_value}'. "
@@ -40,14 +40,11 @@ class IntervalParser:
             number = float(number_str)
 
             # Convert to seconds based on unit
-            if unit == 's':
+            if unit == "s":
                 return number
-            elif unit == 'm':
+            elif unit == "m":
                 return number * 60.0
-            elif unit == 'h':
+            elif unit == "h":
                 return number * 3600.0
 
-        raise ValueError(
-            f"Invalid interval type: {type(interval_value).__name__}. "
-            f"Expected string (time format)"
-        )
+        raise ValueError(f"Invalid interval type: {type(interval_value).__name__}. Expected string (time format)")

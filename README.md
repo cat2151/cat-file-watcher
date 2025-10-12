@@ -220,6 +220,59 @@ For more advanced features, consider other applications.
 
 For TypeScript app development, standard task runners are typically used.
 
+## Development
+
+### Environment Setup
+
+To set up the development environment:
+
+```bash
+# Install runtime dependencies
+pip install -r requirements.txt
+
+# Install development dependencies (including Ruff)
+pip install -r dev-requirements.txt
+```
+
+### Code Quality Checks
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) to maintain code quality.
+
+#### Running Ruff
+
+```bash
+# Lint checking
+ruff check src/
+
+# Automatically fix fixable issues
+ruff check --fix src/
+
+# Check code formatting
+ruff format --check src/
+
+# Apply code formatting
+ruff format src/
+```
+
+#### Automated CI/CD Checks
+
+When you create a Pull Request, GitHub Actions automatically runs the following checks:
+
+- `ruff check src/` - Linter checks for code quality
+- `ruff format --check src/` - Code formatting verification
+
+If these checks fail, the PR will be blocked from merging. It is recommended to run Ruff locally and format your code before creating a PR.
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run tests with verbose output
+pytest -v
+```
+
 ## License
 
 MIT License - See the LICENSE file for details.
