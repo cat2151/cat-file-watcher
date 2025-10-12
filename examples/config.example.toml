@@ -1,6 +1,11 @@
 # Example configuration for cat-file-watcher
 # This file demonstrates how to configure file monitoring and command execution
 
+# Enable timestamp display in print statements
+# When enabled, all console output will be prefixed with [YYYY-MM-DD HH:MM:SS]
+# Default: true (timestamps are shown)
+# enable_timestamp = true
+
 # Default interval for checking files
 # Supports time format: "1s" (1 second), "2m" (2 minutes), "3h" (3 hours), "0.5s" (0.5 seconds)
 # Default: "1s" (1 second)

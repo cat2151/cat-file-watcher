@@ -10,9 +10,11 @@ from datetime import datetime
 try:
     from .error_logger import ErrorLogger
     from .process_detector import ProcessDetector
+    from .timestamp_printer import TimestampPrinter
 except ImportError:
     from error_logger import ErrorLogger
     from process_detector import ProcessDetector
+    from timestamp_printer import TimestampPrinter
 
 
 class CommandExecutor:
@@ -33,13 +35,13 @@ class CommandExecutor:
             process_pattern = settings["suppress_if_process"]
             matched_process = ProcessDetector.get_matching_process(process_pattern)
             if matched_process:
-                print(f"Skipping command for '{filepath}': process matching '{process_pattern}' is running")
+                TimestampPrinter.print(f"Skipping command for '{filepath}': process matching '{process_pattern}' is running")
                 # Write to suppression log file if configured
                 if config and config.get("suppression_log_file"):
                     CommandExecutor._write_to_suppression_log(filepath, process_pattern, matched_process, config)
                 return
 
-        print(f"Executing command for '{filepath}': {command}")
+        TimestampPrinter.print(f"Executing command for '{filepath}': {command}")
 
         # Write to log file if enabled
         if settings.get("enable_log", False) and config and config.get("log_file"):
@@ -55,7 +57,7 @@ class CommandExecutor:
             result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
             if result.returncode != 0:
                 error_msg = f"Command failed for '{filepath}' with exit code {result.returncode}"
-                print(f"Error: {error_msg}")
+                TimestampPrinter.print(f"Error: {error_msg}")
                 # Log command execution error (without stderr since we're not capturing it)
                 if error_log_file:
                     ErrorLogger.log_error(
@@ -63,12 +65,12 @@ class CommandExecutor:
                     )
         except subprocess.TimeoutExpired as e:
             error_msg = f"Command timed out after 30 seconds for '{filepath}'"
-            print(f"Error: {error_msg}")
+            TimestampPrinter.print(f"Error: {error_msg}")
             ErrorLogger.log_error(error_log_file, error_msg, e)
             raise
         except Exception as e:
             error_msg = f"Error executing command for '{filepath}'"
-            print(f"{error_msg}: {e}")
+            TimestampPrinter.print(f"{error_msg}: {e}")
             ErrorLogger.log_error(error_log_file, error_msg, e)
             raise
 
@@ -93,7 +95,7 @@ class CommandExecutor:
                 f.write("\n")
         except Exception as e:
             error_msg = f"Failed to write to log file for '{filepath}'"
-            print(f"Warning: {error_msg}: {e}")
+            TimestampPrinter.print(f"Warning: {error_msg}: {e}")
             ErrorLogger.log_error(error_log_file, error_msg, e)
 
     @staticmethod
@@ -118,5 +120,5 @@ class CommandExecutor:
                 f.write("\n")
         except Exception as e:
             error_msg = f"Failed to write to suppression log file for '{filepath}'"
-            print(f"Warning: {error_msg}: {e}")
+            TimestampPrinter.print(f"Warning: {error_msg}: {e}")
             ErrorLogger.log_error(error_log_file, error_msg, e)

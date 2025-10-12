@@ -75,7 +75,7 @@ class TestDirectoryMonitoring:
         # Check again - should detect the change
         watcher._check_files()
         new_timestamp = watcher.file_timestamps.get(self.monitor_dir)
-        
+
         assert new_timestamp is not None, "Directory should still have a timestamp"
         assert new_timestamp != old_timestamp, "Directory timestamp should have changed after file addition"
 
@@ -90,7 +90,7 @@ class TestDirectoryMonitoring:
             f.write(config_content)
 
         watcher = FileWatcher(self.config_file)
-        
+
         # Verify the interval is set correctly (500ms = 0.5 seconds)
         settings = watcher.config["files"][self.monitor_dir]
         interval = watcher._get_interval_for_file(settings)
@@ -107,7 +107,7 @@ class TestDirectoryMonitoring:
             f.write(config_content)
 
         watcher = FileWatcher(self.config_file)
-        
+
         # Directory should be monitored normally since the process doesn't exist
         watcher._check_files()
         assert self.monitor_dir in watcher.file_timestamps, "Directory should be monitored"
@@ -138,7 +138,7 @@ class TestDirectoryMonitoring:
         time.sleep(0.1)
         with open(test_file, "a") as f:
             f.write("modified")
-        
+
         new_file = os.path.join(self.monitor_dir, "new.txt")
         with open(new_file, "w") as f:
             f.write("new")
@@ -148,8 +148,8 @@ class TestDirectoryMonitoring:
         # Both changes should be detected
         file_old_ts = watcher.file_timestamps[test_file]
         dir_old_ts = watcher.file_timestamps[self.monitor_dir]
-        
+
         watcher._check_files()
-        
+
         assert watcher.file_timestamps[test_file] != file_old_ts, "File change should be detected"
         assert watcher.file_timestamps[self.monitor_dir] != dir_old_ts, "Directory change should be detected"
