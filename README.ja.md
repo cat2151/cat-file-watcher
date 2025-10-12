@@ -219,6 +219,59 @@ toml記述内容がシンプルでメンテしやすいことを優先します
 
 TypeScriptアプリ開発等には、スタンダードにタスクランナー
 
+## 開発
+
+### 環境構築
+
+開発環境のセットアップ:
+
+```bash
+# 依存パッケージのインストール（実行環境用）
+pip install -r requirements.txt
+
+# 開発用依存パッケージのインストール（Ruffを含む）
+pip install -r dev-requirements.txt
+```
+
+### コード品質チェック
+
+このプロジェクトでは、コード品質を保つために[Ruff](https://docs.astral.sh/ruff/)を使用しています。
+
+#### Ruffの実行
+
+```bash
+# リンターチェック
+ruff check src/
+
+# 自動修正可能な問題を修正
+ruff check --fix src/
+
+# コードフォーマットのチェック
+ruff format --check src/
+
+# コードフォーマットを適用
+ruff format src/
+```
+
+#### CI/CDでの自動チェック
+
+Pull Requestを作成すると、GitHub Actionsが自動的に以下をチェックします:
+
+- `ruff check src/` - コード品質のリンターチェック
+- `ruff format --check src/` - コードフォーマットの確認
+
+これらのチェックが失敗すると、PRのマージがブロックされます。PRを作成する前に、ローカルでRuffを実行してコードを整形することを推奨します。
+
+### テストの実行
+
+```bash
+# 全テストの実行
+pytest
+
+# 詳細出力付きでテストを実行
+pytest -v
+```
+
 ## ライセンス
 
 MIT License - 詳細はLICENSEファイルを参照してください
