@@ -12,7 +12,7 @@
 ## Quick Links
 | 項目 | リンク |
 |------|--------|
-| 📊 開発状況 | [generated-docs/daily-summaries](generated-docs/daily-summaries) |
+| 📊 開発状況 | [generated-docs/development-status](generated-docs/development-status.md) |
 
 ## 概要
 
