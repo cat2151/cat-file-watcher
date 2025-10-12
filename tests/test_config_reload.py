@@ -31,8 +31,9 @@ class TestConfigReload:
         config_content = f'''default_interval = "1s"
 config_check_interval = "0.1s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -54,8 +55,9 @@ config_check_interval = "0.1s"
         new_config_content = f'''default_interval = "2s"
 config_check_interval = "0.2s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed - updated'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed - updated'"
 '''
         with open(self.config_file, "w") as f:
             f.write(new_config_content)
@@ -73,8 +75,9 @@ config_check_interval = "0.2s"
         # Create config without config_check_interval
         config_content = f'''default_interval = "1s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -137,8 +140,9 @@ config_check_interval = "0.2s"
         config_content = f'''default_interval = "1s"
 config_check_interval = "0.5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

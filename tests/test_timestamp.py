@@ -105,7 +105,6 @@ class TestTimestampConfig:
         # Create config without enable_timestamp setting
         config_content = f'''default_interval = "0.05s"
 
-[files]
 "{self.test_file}" = {{ command = "echo 'test'" }}
 '''
         with open(self.config_file, "w") as f:
@@ -131,7 +130,6 @@ class TestTimestampConfig:
         config_content = f'''default_interval = "0.05s"
 enable_timestamp = true
 
-[files]
 "{self.test_file}" = {{ command = "echo 'test'" }}
 '''
         with open(self.config_file, "w") as f:
@@ -157,7 +155,6 @@ enable_timestamp = true
         config_content = f'''default_interval = "0.05s"
 enable_timestamp = false
 
-[files]
 "{self.test_file}" = {{ command = "echo 'test'" }}
 '''
         with open(self.config_file, "w") as f:
@@ -184,7 +181,6 @@ enable_timestamp = false
         config_content = f'''default_interval = "0.05s"
 enable_timestamp = true
 
-[files]
 "{self.test_file}" = {{ command = "echo 'test'" }}
 '''
         with open(self.config_file, "w") as f:

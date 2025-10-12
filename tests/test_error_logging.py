@@ -112,8 +112,10 @@ class TestErrorLogging:
         config_content = f'''default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "sleep 60" }}
+[[files]]
+path = "{self.test_file}"
+command = "sleep 60"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -137,8 +139,10 @@ error_log_file = "{self.error_log_file}"
         config_content = f'''default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "exit 1" }}
+[[files]]
+path = "{self.test_file}"
+command = "exit 1"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -164,8 +168,11 @@ error_log_file = "{self.error_log_file}"
 error_log_file = "{self.error_log_file}"
 log_file = "/nonexistent/path/to/log.txt"
 
-[files]
-"{self.test_file}" = {{ command = "echo test", enable_log = true }}
+[[files]]
+path = "{self.test_file}"
+command = "echo test"
+enable_log = true
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -191,8 +198,10 @@ log_file = "/nonexistent/path/to/log.txt"
         config_content = f'''default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo test" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo test"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -237,8 +246,10 @@ error_log_file = "{self.error_log_file}"
         config_content = f'''default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo test" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo test"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

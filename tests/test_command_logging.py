@@ -38,8 +38,10 @@ class TestCommandLogging:
         config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -66,8 +68,11 @@ log_file = "{self.log_file}"
         config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", enable_log = true }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+enable_log = true
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -102,8 +107,11 @@ log_file = "{self.log_file}"
         # Create config with enable_log=true but no log_file
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", enable_log = true }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+enable_log = true
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -130,8 +138,13 @@ log_file = "{self.log_file}"
         config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", interval = "0.05s", enable_log = true, suppress_if_process = "vim" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+interval = "0.05s"
+enable_log = true
+suppress_if_process = "vim"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -164,8 +177,11 @@ log_file = "{self.log_file}"
         config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", enable_log = true }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+enable_log = true
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -201,8 +217,11 @@ log_file = "{self.log_file}"
         config_content = f'''default_interval = "0.05s"
 log_file = "{self.log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", enable_log = true }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+enable_log = true
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

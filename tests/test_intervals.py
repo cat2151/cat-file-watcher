@@ -31,7 +31,10 @@ class TestFileWatcherIntervals:
     def test_default_interval(self):
         """Test that default interval is used when not specified."""
         config_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -44,8 +47,10 @@ class TestFileWatcherIntervals:
         """Test that custom default interval is respected."""
         config_content = f'''default_interval = "0.5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -58,8 +63,11 @@ class TestFileWatcherIntervals:
         """Test that per-file interval overrides default."""
         config_content = f'''default_interval = "1s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.25s" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+interval = "0.25s"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -73,8 +81,10 @@ class TestFileWatcherIntervals:
         """Test that files are not checked more frequently than their interval."""
         config_content = f'''default_interval = "0.5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

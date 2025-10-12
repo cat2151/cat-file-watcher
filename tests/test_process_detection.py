@@ -26,7 +26,10 @@ class TestProcessDetection:
             f.write("Initial content\n")
 
         config_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

@@ -28,8 +28,10 @@ class TestFileWatcher:
             f.write("Initial content\n")
 
         # Create a test config
-        config_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+        config_content = f'''[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -95,8 +97,9 @@ class TestFileWatcher:
         # Create config with custom default interval
         config_content = f'''default_interval = "0.5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -112,8 +115,10 @@ class TestFileWatcher:
         # Create config with per-file interval
         config_content = f'''default_interval = "1s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.25s" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -129,8 +134,9 @@ class TestFileWatcher:
         # Create config with a longer interval
         config_content = f'''default_interval = "0.5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -197,8 +203,9 @@ class TestFileWatcher:
         # Use short interval to speed up test
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "python" }}
+[[files]]
+path = "{self.test_file}"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -228,8 +235,9 @@ class TestFileWatcher:
         # Use short interval to speed up test
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "nonexistent_process_xyz123" }}
+[[files]]
+path = "{self.test_file}"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -259,8 +267,9 @@ class TestFileWatcher:
         # Use short interval to speed up test
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'executed' > {test_output}" }}
+[[files]]
+path = "{self.test_file}"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

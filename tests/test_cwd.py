@@ -44,8 +44,10 @@ class TestCwd:
         # The command will execute 'pwd > output.txt' in the subdir
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "pwd > output.txt", cwd = "{self.subdir}" }}
+[[files]]
+path = "{self.test_file}"
+command = "pwd > output.txt"
+cwd = "{self.subdir}"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -86,8 +88,10 @@ class TestCwd:
         # Command will use relative path 'input.txt' because it runs in subdir
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "cat input.txt > output.txt", cwd = "{self.subdir}" }}
+[[files]]
+path = "{self.test_file}"
+command = "cat input.txt > output.txt"
+cwd = "{self.subdir}"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -114,8 +118,9 @@ class TestCwd:
 
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'no cwd' > {output_file}" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'no cwd' > {output_file}"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -138,8 +143,10 @@ class TestCwd:
 
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", cwd = "{invalid_dir}" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+cwd = "{invalid_dir}"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -165,8 +172,12 @@ class TestCwd:
         config_content = f'''default_interval = "0.05s"
 log_file = "{log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "pwd > output.txt", cwd = "{self.subdir}", interval = "0.1s", enable_log = true }}
+[[files]]
+path = "{self.test_file}"
+command = "pwd > output.txt"
+cwd = "{self.subdir}"
+interval = "0.1s"
+enable_log = true
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
