@@ -38,7 +38,7 @@ class ConfigLoader:
         """
         error_log_file = None
         try:
-            with open(config_path, "r") as f:
+            with open(config_path, "r", encoding="utf-8") as f:
                 config = toml.load(f)
             # Get error_log_file from config if it exists
             error_log_file = config.get("error_log_file")
@@ -255,7 +255,7 @@ class ConfigLoader:
                 external_file = os.path.join(main_config_dir, external_file)
 
             try:
-                with open(external_file, "r") as f:
+                with open(external_file, "r", encoding="utf-8") as f:
                     external_config = toml.load(f)
 
                 # Validate that external file only contains 'files', 'commands', or 'processes' sections
