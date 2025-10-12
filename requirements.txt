@@ -1,3 +1,4 @@
 toml>=0.10.2
 psutil>=5.9.0
 pytest>=8.0.0
+colorama>=0.4.6

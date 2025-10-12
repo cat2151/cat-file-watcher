@@ -6,6 +6,8 @@ Validates if current time is within configured time periods
 
 from datetime import datetime, time
 
+from colorama import Fore
+
 # Support both relative and absolute imports
 try:
     from .timestamp_printer import TimestampPrinter
@@ -114,7 +116,7 @@ class TimePeriodChecker:
 
         # If time period config is invalid, default to monitoring
         if period_config is None:
-            TimestampPrinter.print(f"Warning: Time period '{period_name}' not found or invalid, monitoring anyway")
+            TimestampPrinter.print(f"Warning: Time period '{period_name}' not found or invalid, monitoring anyway", Fore.YELLOW)
             return True
 
         return TimePeriodChecker.is_in_time_period(period_config["start"], period_config["end"])

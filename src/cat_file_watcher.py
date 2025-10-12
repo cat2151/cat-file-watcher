@@ -6,6 +6,8 @@ File Watcher - Monitor files and execute commands on timestamp changes
 import os
 import time
 
+from colorama import Fore
+
 # Support both relative and absolute imports
 try:
     from .command_executor import CommandExecutor
@@ -102,33 +104,33 @@ class FileWatcher:
         current_timestamp = self._get_file_timestamp(self.config_path)
 
         if current_timestamp is None:
-            TimestampPrinter.print(f"Warning: Config file '{self.config_path}' is no longer accessible")
+            TimestampPrinter.print(f"Warning: Config file '{self.config_path}' is no longer accessible", Fore.YELLOW)
             return
 
         # Check if the config file has been modified
         if current_timestamp != self.config_timestamp:
-            TimestampPrinter.print(f"Detected change in config file '{self.config_path}', reloading...")
+            TimestampPrinter.print(f"Detected change in config file '{self.config_path}', reloading...", Fore.GREEN)
             error_log_file = self.config.get("error_log_file")
             try:
                 new_config = ConfigLoader.load_config(self.config_path)
                 self.config = new_config
                 self.config_timestamp = current_timestamp
-                TimestampPrinter.print("Config reloaded successfully")
+                TimestampPrinter.print("Config reloaded successfully", Fore.GREEN)
             except SystemExit as e:
                 error_msg = f"Fatal error reloading config file '{self.config_path}'"
-                TimestampPrinter.print(f"Error reloading config: {e}")
+                TimestampPrinter.print(f"Error reloading config: {e}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, e)
-                TimestampPrinter.print("Continuing with previous config")
+                TimestampPrinter.print("Continuing with previous config", Fore.YELLOW)
             except Exception as e:
                 error_msg = f"Error reloading config file '{self.config_path}'"
-                TimestampPrinter.print(f"Error reloading config: {e}")
+                TimestampPrinter.print(f"Error reloading config: {e}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, e)
-                TimestampPrinter.print("Continuing with previous config")
+                TimestampPrinter.print("Continuing with previous config", Fore.YELLOW)
 
     def _check_files(self):
         """Check all files for timestamp changes and execute commands if needed."""
         if "files" not in self.config:
-            TimestampPrinter.print("Warning: No 'files' section found in configuration.")
+            TimestampPrinter.print("Warning: No 'files' section found in configuration.", Fore.YELLOW)
             return
 
         error_log_file = self.config.get("error_log_file")
@@ -136,7 +138,7 @@ class FileWatcher:
         files_config = self.config["files"]
         for filename, settings in files_config.items():
             if "command" not in settings:
-                TimestampPrinter.print(f"Warning: No command specified for file '{filename}'")
+                TimestampPrinter.print(f"Warning: No command specified for file '{filename}'", Fore.YELLOW)
                 continue
 
             try:
@@ -164,22 +166,22 @@ class FileWatcher:
 
                 if current_timestamp is None:
                     if filename in self.file_timestamps:
-                        TimestampPrinter.print(f"Warning: File '{filename}' is no longer accessible")
+                        TimestampPrinter.print(f"Warning: File '{filename}' is no longer accessible", Fore.YELLOW)
                         del self.file_timestamps[filename]
                     continue
 
                 # Check if this is the first time we're seeing this file
                 if filename not in self.file_timestamps:
                     self.file_timestamps[filename] = current_timestamp
-                    TimestampPrinter.print(f"Started monitoring '{filename}'")
+                    TimestampPrinter.print(f"Started monitoring '{filename}'", Fore.GREEN)
                 # Check if the timestamp has changed
                 elif current_timestamp != self.file_timestamps[filename]:
-                    TimestampPrinter.print(f"Detected change in '{filename}'")
+                    TimestampPrinter.print(f"Detected change in '{filename}'", Fore.GREEN)
                     CommandExecutor.execute_command(settings["command"], filename, settings, self.config)
                     self.file_timestamps[filename] = current_timestamp
             except Exception as e:
                 error_msg = f"Error processing file '{filename}'"
-                TimestampPrinter.print(f"{error_msg}: {e}")
+                TimestampPrinter.print(f"{error_msg}: {e}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, e)
                 # Continue processing other files despite error
                 continue
@@ -196,7 +198,7 @@ class FileWatcher:
         if interval is None:
             interval = self._calculate_main_loop_interval()
 
-        TimestampPrinter.print(f"Starting file watcher with config: {self.config_path}")
+        TimestampPrinter.print(f"Starting file watcher with config: {self.config_path}", Fore.GREEN)
         TimestampPrinter.print(f"Checking for changes every {interval} second(s)...")
         TimestampPrinter.print("Press Ctrl+C to stop.")
 
