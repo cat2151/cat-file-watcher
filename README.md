@@ -254,12 +254,18 @@ ruff format src/
 
 #### Automatic Checks in CI/CD
 
-When you create a Pull Request, GitHub Actions automatically checks the following:
+When you create a Pull Request, GitHub Actions automatically performs the following:
 
-- `ruff check src/` - Code quality linter check
-- `ruff format --check src/` - Code formatting verification
+1. **Automatic Code Formatting**:
+   - `ruff format src/` - Automatically formats code (removes trailing spaces, etc.)
+   - `ruff check --fix src/` - Fixes auto-fixable linting issues
+   - If there are formatting changes, they are automatically committed and pushed
 
-If these checks fail, PR merging will be blocked. It is recommended to run Ruff locally and format your code before creating a PR.
+2. **Quality Checks**:
+   - `ruff check src/` - Code quality linter check
+   - `ruff format --check src/` - Code formatting verification
+
+If checks still fail after automatic formatting, PR merging will be blocked. It is recommended to run Ruff locally and format your code before creating a PR.
 
 ### Running Tests
 
