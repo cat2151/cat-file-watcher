@@ -7,6 +7,7 @@ import os
 import sys
 
 import toml
+from colorama import Fore
 
 # Support both relative and absolute imports
 try:
@@ -49,17 +50,17 @@ class ConfigLoader:
             return config
         except FileNotFoundError as e:
             error_msg = f"Configuration file '{config_path}' not found."
-            TimestampPrinter.print(f"Error: {error_msg}")
+            TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             sys.exit(1)
         except toml.TomlDecodeError as e:
             error_msg = f"Failed to parse TOML configuration: {e}"
-            TimestampPrinter.print(f"Error: {error_msg}")
+            TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             sys.exit(1)
         except Exception as e:
             error_msg = f"Unexpected error loading config file '{config_path}'"
-            TimestampPrinter.print(f"Error: {error_msg}: {e}")
+            TimestampPrinter.print(f"Error: {error_msg}: {e}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             sys.exit(1)
 
@@ -78,7 +79,7 @@ class ConfigLoader:
         external_files = config.get("external_files", [])
         if not isinstance(external_files, list):
             error_msg = "external_files must be a list of file paths"
-            TimestampPrinter.print(f"Error: {error_msg}")
+            TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, None)
             sys.exit(1)
 
@@ -105,7 +106,7 @@ class ConfigLoader:
 
                 if invalid_sections:
                     error_msg = f"External file '{external_file}' contains invalid sections: {', '.join(invalid_sections)}. Only [files] section is allowed."
-                    TimestampPrinter.print(f"Error: {error_msg}")
+                    TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                     ErrorLogger.log_error(error_log_file, error_msg, None)
                     sys.exit(1)
 
@@ -116,17 +117,17 @@ class ConfigLoader:
 
             except FileNotFoundError as e:
                 error_msg = f"External configuration file '{external_file}' not found."
-                TimestampPrinter.print(f"Error: {error_msg}")
+                TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, e)
                 sys.exit(1)
             except toml.TomlDecodeError as e:
                 error_msg = f"Failed to parse external TOML configuration '{external_file}': {e}"
-                TimestampPrinter.print(f"Error: {error_msg}")
+                TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, e)
                 sys.exit(1)
             except Exception as e:
                 error_msg = f"Unexpected error loading external config file '{external_file}'"
-                TimestampPrinter.print(f"Error: {error_msg}: {e}")
+                TimestampPrinter.print(f"Error: {error_msg}: {e}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, e)
                 sys.exit(1)
 

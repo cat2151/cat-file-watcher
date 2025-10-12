@@ -5,10 +5,14 @@ Provides timestamped printing functionality
 """
 
 from datetime import datetime
+from colorama import Fore, Style, init
+
+# Initialize colorama for cross-platform colored terminal output
+init(autoreset=True)
 
 
 class TimestampPrinter:
-    """Handles printing with optional timestamps."""
+    """Handles printing with optional timestamps and colors."""
 
     # Global configuration for timestamp display
     _enable_timestamp = True
@@ -23,14 +27,23 @@ class TimestampPrinter:
         TimestampPrinter._enable_timestamp = enable
 
     @staticmethod
-    def print(message):
-        """Print a message with optional timestamp prefix.
+    def print(message, color=None):
+        """Print a message with optional timestamp prefix and color.
 
         Args:
             message: The message to print
+            color: Optional color code from colorama.Fore (e.g., Fore.GREEN, Fore.RED)
+                   If None, uses default terminal color
         """
+        # Construct the message with timestamp if enabled
         if TimestampPrinter._enable_timestamp:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print(f"[{timestamp}] {message}")
+            output = f"[{timestamp}] {message}"
         else:
-            print(message)
+            output = message
+        
+        # Apply color if specified
+        if color:
+            print(f"{color}{output}{Style.RESET_ALL}")
+        else:
+            print(output)
