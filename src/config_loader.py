@@ -145,7 +145,9 @@ class ConfigLoader:
                 sys.exit(1)
 
             if "path" in entry:
-                error_msg = f"[commands] entry #{i + 1} must NOT have 'path' field (path is forbidden in [[commands]] section)"
+                error_msg = (
+                    f"[commands] entry #{i + 1} must NOT have 'path' field (path is forbidden in [[commands]] section)"
+                )
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, None)
                 sys.exit(1)
