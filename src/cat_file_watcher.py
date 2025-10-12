@@ -84,14 +84,14 @@ class FileWatcher:
                 if "interval" in entry:
                     file_interval = entry["interval"]
                     intervals.append(IntervalParser.parse_interval(file_interval))
-        
+
         # Add all per-command intervals (from commands section before merging)
         if "commands" in self.config:
             for entry in self.config["commands"]:
                 if "interval" in entry:
                     command_interval = entry["interval"]
                     intervals.append(IntervalParser.parse_interval(command_interval))
-        
+
         # Add all per-process intervals (from processes section before merging)
         if "processes" in self.config:
             for entry in self.config["processes"]:
