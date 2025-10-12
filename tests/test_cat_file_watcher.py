@@ -44,7 +44,8 @@ command = "echo 'File changed'"
         """Test that configuration is loaded correctly."""
         watcher = FileWatcher(self.config_file)
         assert "files" in watcher.config
-        assert self.test_file in watcher.config["files"]
+        # Check that the test file path is in the files list (as array of tables)
+        assert any(entry.get("path") == self.test_file for entry in watcher.config["files"])
 
     def test_get_file_timestamp(self):
         """Test that file timestamps are retrieved correctly."""
