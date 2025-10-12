@@ -59,95 +59,167 @@ night_shift = { start = "23:00", end = "01:00" }
 # Midnight transition example from requirements: 23:59 to 00:01
 midnight_window = { start = "23:59", end = "00:01" }
 
-[files]
-# Each entry defines a file or directory to monitor and a command to execute when it changes
-# Directories: Command executes when directory modification time changes (files added/removed/etc.)
-# Optional: specify 'interval' with time format ("1s", "2m", "3h", "0.5s") to override the default
-# Optional: specify 'suppress_if_process' with a regex pattern to skip command execution
-#           when a process matching the pattern is running
-# Optional: specify 'time_period' to only monitor during that time period
-# Optional: specify 'enable_log = true' to log command execution to the log file (default: false)
-# Optional: specify 'cwd' to change the working directory before executing the command
+# NOTE: The [[files]] section uses array of tables format
+# This allows multiple entries with the same path (useful for empty path entries)
 
 # Example 1: Monitor a text file and display a message (uses default interval)
-# "example.txt" = { command = "echo 'example.txt has been modified!'" }
+# [[files]]
+# path = "example.txt"
+# command = "echo 'example.txt has been modified!'"
 
 # Example 2: Monitor a Python file and run tests (check every 2 seconds)
-# "my_script.py" = { command = "python -m pytest tests/", interval = "2s" }
+# [[files]]
+# path = "my_script.py"
+# command = "python -m pytest tests/"
+# interval = "2s"
 
 # Example 3: Monitor a config file and reload a service (check every 5 seconds)
-# "/etc/myapp/config.ini" = { command = "systemctl reload myapp", interval = "5s" }
+# [[files]]
+# path = "/etc/myapp/config.ini"
+# command = "systemctl reload myapp"
+# interval = "5s"
 
 # Example 4: Monitor a log file frequently and send a notification (check every 500ms)
-# "app.log" = { command = "notify-send 'Log Updated' 'app.log has new entries'", interval = "0.5s" }
+# [[files]]
+# path = "app.log"
+# command = "notify-send 'Log Updated' 'app.log has new entries'"
+# interval = "0.5s"
 
 # Example 5: Monitor a document and create a backup (uses default interval)
-# "document.txt" = { command = "cp document.txt document.txt.bak" }
+# [[files]]
+# path = "document.txt"
+# command = "cp document.txt document.txt.bak"
 
 # Example 6: Monitor a directory for changes (files added/removed/modified)
 # Triggers when files are added, removed, or renamed in the directory
-# "src/" = { command = "echo 'Source directory changed!'", interval = "1s" }
+# [[files]]
+# path = "src/"
+# command = "echo 'Source directory changed!'"
+# interval = "1s"
 
 # Example 7: Monitor a directory and rebuild on changes (check every 2 seconds)
-# "/path/to/project/src/" = { command = "make build", interval = "2s" }
+# [[files]]
+# path = "/path/to/project/src/"
+# command = "make build"
+# interval = "2s"
 
 # Example 8: Only run build when editor is not running (process suppression)
 # Suppress command execution if a process matching the regex pattern is running
 # This is useful to avoid rebuilding while you're actively editing
-# "src/main.py" = { command = "make build", suppress_if_process = "vim|emacs|code" }
+# [[files]]
+# path = "src/main.py"
+# command = "make build"
+# suppress_if_process = "vim|emacs|code"
 
 # Example 9: Only sync when specific sync process is not running
-# "data.json" = { command = "rsync -av data.json backup/", suppress_if_process = "rsync" }
+# [[files]]
+# path = "data.json"
+# command = "rsync -av data.json backup/"
+# suppress_if_process = "rsync"
 
 # Example 10: Monitor only during business hours
-# "work_report.txt" = { command = "python generate_report.py", time_period = "business_hours" }
+# [[files]]
+# path = "work_report.txt"
+# command = "python generate_report.py"
+# time_period = "business_hours"
 
 # Example 11: Monitor only during after hours (night time)
-# "batch_data.csv" = { command = "./process_batch.sh", time_period = "after_hours" }
+# [[files]]
+# path = "batch_data.csv"
+# command = "./process_batch.sh"
+# time_period = "after_hours"
 
 # Example 12: Combine time period with process suppression
-# "code.py" = { command = "python -m pytest", time_period = "business_hours", suppress_if_process = "vim|code" }
+# [[files]]
+# path = "code.py"
+# command = "python -m pytest"
+# time_period = "business_hours"
+# suppress_if_process = "vim|code"
 
 # Example 13: Enable logging for a critical file (requires log_file to be set globally)
-# "important.txt" = { command = "backup.sh", enable_log = true }
+# [[files]]
+# path = "important.txt"
+# command = "backup.sh"
+# enable_log = true
 
 # Example 14: Monitor with logging and custom interval (check every 2 seconds)
-# "config.json" = { command = "validate_config.sh", interval = "2s", enable_log = true }
+# [[files]]
+# path = "config.json"
+# command = "validate_config.sh"
+# interval = "2s"
+# enable_log = true
 
-# Example 15: Process health monitoring without file watching (empty filename)
+# Example 15: Process health monitoring without file watching (empty path)
 # Executes command every second (default_interval) without monitoring any file
 # Useful for process health checks, auto-restart, or periodic tasks
-# "" = { command = "echo 'Health check at' $(date)" }
+# [[files]]
+# path = ""
+# command = "echo 'Health check at' $(date)"
 
 # Example 16: Auto-restart process when it's not running
-# Using empty filename with suppress_if_process for process health monitoring
+# Using empty path with suppress_if_process for process health monitoring
 # Command only executes when the process is NOT running (suppressed when running)
-# "" = { command = "./start_myapp.sh", suppress_if_process = "myapp", interval = "5s" }
+# [[files]]
+# path = ""
+# command = "./start_myapp.sh"
+# suppress_if_process = "myapp"
+# interval = "5s"
 
 # Example 17: Periodic cleanup task (runs every 10 seconds)
-# "" = { command = "find /tmp -type f -mtime +7 -delete", interval = "10s" }
+# [[files]]
+# path = ""
+# command = "find /tmp -type f -mtime +7 -delete"
+# interval = "10s"
 
 # Example 18: Execute command in a different directory (cwd)
 # Run build script from the build directory
-# "src/main.py" = { command = "make", cwd = "./build" }
+# [[files]]
+# path = "src/main.py"
+# command = "make"
+# cwd = "./build"
 
 # Example 19: Execute command with relative paths using cwd
 # Compile code in the project directory
-# "lib/module.c" = { command = "gcc -c module.c -o module.o", cwd = "./lib" }
+# [[files]]
+# path = "lib/module.c"
+# command = "gcc -c module.c -o module.o"
+# cwd = "./lib"
 
 # Example 20: Process termination without file watching (terminate_if_process)
 # Monitors and terminates processes matching the regex pattern
-# IMPORTANT: Can ONLY be used with empty filename ("") and NO command field
+# IMPORTANT: Can ONLY be used with empty path ("") and NO command field
 # Only terminates when exactly ONE process matches (safety feature)
 # Warns and does NOT terminate when multiple processes match (safety first)
 # Useful for scheduled process termination during specific time periods
-# "" = { terminate_if_process = "unwanted_process", interval = "60s" }
+# [[files]]
+# path = ""
+# terminate_if_process = "unwanted_process"
+# interval = "60s"
 
 # Example 21: Terminate process only during specific time period
 # Check every minute and terminate matching process only during night shift
-# "" = { terminate_if_process = "batch_cleanup", interval = "60s", time_period = "night_shift" }
+# [[files]]
+# path = ""
+# terminate_if_process = "batch_cleanup"
+# interval = "60s"
+# time_period = "night_shift"
 
 # Example 22: Monitor and terminate rogue process every 5 minutes
-# "" = { terminate_if_process = "memory_hog_app", interval = "5m" }
+# [[files]]
+# path = ""
+# terminate_if_process = "memory_hog_app"
+# interval = "5m"
+
+# Example 23: Multiple empty path entries for different periodic tasks
+# With the new array format, you can have multiple entries with empty paths
+# [[files]]
+# path = ""
+# command = "echo 'Task 1' >> /tmp/task1.log"
+# interval = "10s"
+#
+# [[files]]
+# path = ""
+# command = "echo 'Task 2' >> /tmp/task2.log"
+# interval = "20s"
 
 

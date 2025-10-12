@@ -207,7 +207,8 @@ time_period = "always_active"
 
         # File should be monitored
         watcher._check_files()
-        assert self.test_file in watcher.file_timestamps
+        assert len(watcher.file_timestamps) == 1
+        assert "#0" in watcher.file_timestamps
 
     def test_file_monitoring_without_time_period(self):
         """Test that files without time_period are monitored normally."""
@@ -225,7 +226,8 @@ command = "echo 'test'"
 
         # File should be monitored
         watcher._check_files()
-        assert self.test_file in watcher.file_timestamps
+        assert len(watcher.file_timestamps) == 1
+        assert "#0" in watcher.file_timestamps
 
     def test_config_with_multiple_time_periods(self):
         """Test configuration with multiple time period definitions."""
