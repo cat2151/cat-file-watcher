@@ -33,7 +33,7 @@ class TestTimestampPrinter:
 
             output = captured_output.getvalue()
             # Should contain timestamp pattern [YYYY-MM-DD HH:MM:SS]
-            assert re.search(r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]', output)
+            assert re.search(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]", output)
             assert "Test message" in output
         finally:
             sys.stdout = sys.__stdout__
@@ -50,7 +50,7 @@ class TestTimestampPrinter:
 
             output = captured_output.getvalue()
             # Should not contain timestamp pattern
-            assert not re.search(r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]', output)
+            assert not re.search(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]", output)
             assert "Test message without timestamp" in output
         finally:
             sys.stdout = sys.__stdout__
@@ -69,12 +69,13 @@ class TestTimestampPrinter:
 
             output = captured_output.getvalue()
             # Extract timestamp
-            match = re.search(r'\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]', output)
+            match = re.search(r"\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]", output)
             assert match is not None
 
             # Verify timestamp can be parsed
             timestamp_str = match.group(1)
             from datetime import datetime
+
             parsed = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
             assert parsed is not None
         finally:
@@ -120,7 +121,7 @@ class TestTimestampConfig:
 
             output = captured_output.getvalue()
             # Should contain timestamp in "Started monitoring" message
-            assert re.search(r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]', output)
+            assert re.search(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]", output)
         finally:
             sys.stdout = sys.__stdout__
 
@@ -145,7 +146,7 @@ enable_timestamp = true
 
             output = captured_output.getvalue()
             # Should contain timestamp
-            assert re.search(r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]', output)
+            assert re.search(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]", output)
         finally:
             sys.stdout = sys.__stdout__
 
@@ -170,7 +171,7 @@ enable_timestamp = false
 
             output = captured_output.getvalue()
             # Should not contain timestamp pattern
-            assert not re.search(r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]', output)
+            assert not re.search(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]", output)
             assert "Started monitoring" in output
         finally:
             sys.stdout = sys.__stdout__
@@ -208,7 +209,7 @@ enable_timestamp = true
             output = captured_output.getvalue()
 
             # Count timestamp patterns
-            timestamp_count = len(re.findall(r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]', output))
+            timestamp_count = len(re.findall(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]", output))
 
             # Should have at least 3 timestamps:
             # 1. "Started monitoring"

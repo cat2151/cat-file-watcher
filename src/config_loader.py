@@ -93,13 +93,13 @@ class ConfigLoader:
         # Validate each file entry
         for i, entry in enumerate(files_section):
             if not isinstance(entry, dict):
-                error_msg = f"[files] entry #{i+1} is not a valid table"
+                error_msg = f"[files] entry #{i + 1} is not a valid table"
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, None)
                 sys.exit(1)
 
             if "path" not in entry:
-                error_msg = f"[files] entry #{i+1} is missing required 'path' field"
+                error_msg = f"[files] entry #{i + 1} is missing required 'path' field"
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, None)
                 sys.exit(1)

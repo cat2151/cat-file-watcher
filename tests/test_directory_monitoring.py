@@ -27,6 +27,7 @@ class TestDirectoryMonitoring:
     def teardown_method(self):
         """Clean up test fixtures."""
         import shutil
+
         if os.path.exists(self.test_dir):
             shutil.rmtree(self.test_dir)
 

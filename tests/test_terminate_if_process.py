@@ -235,7 +235,7 @@ error_log_file = "{self.error_log_file}"
             if proc.poll() is None:
                 proc.kill()
                 proc.wait()
-            if 'proc2' in locals() and proc2.poll() is None:
+            if "proc2" in locals() and proc2.poll() is None:
                 proc2.kill()
                 proc2.wait()
 

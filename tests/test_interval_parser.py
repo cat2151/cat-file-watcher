@@ -108,7 +108,7 @@ class TestIntervalParser:
             {},
             True,
             1000,  # Integer not supported anymore
-            500,   # Integer not supported anymore
+            500,  # Integer not supported anymore
         ]
         for invalid_value in invalid_types:
             with pytest.raises(ValueError, match="Invalid interval"):

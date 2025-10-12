@@ -205,4 +205,6 @@ command = "echo 'File changed'"
 
             watcher = FileWatcher(self.config_file)
             interval = watcher._get_interval_for_file({})
-            assert interval == expected_seconds, f"Failed for {interval_str}: expected {expected_seconds}, got {interval}"
+            assert interval == expected_seconds, (
+                f"Failed for {interval_str}: expected {expected_seconds}, got {interval}"
+            )
