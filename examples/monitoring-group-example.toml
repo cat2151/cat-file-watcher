@@ -3,7 +3,7 @@
 # You can include this file in your main config using:
 #   external_files = ["monitoring-group-example.toml"]
 
-# External files can ONLY contain the [[files]] section (array of tables format)
+# External files can contain [[files]], [[commands]], and [[processes]] sections
 # Other sections (like time_periods, default_interval, etc.) are not allowed
 
 # Example: Monitor development files
@@ -29,3 +29,19 @@ command = "python validate_config.py"
 [[files]]
 path = "config/database.yml"
 command = "systemctl reload myapp"
+
+# Example: Periodic commands (using [[commands]] section for clarity)
+# These execute periodically without monitoring any specific file
+[[commands]]
+command = "python cleanup_temp.py"
+interval = "1h"
+
+[[commands]]
+command = "./backup_data.sh"
+interval = "6h"
+
+# Example: Process monitoring (using [[processes]] section for clarity)
+# These monitor and terminate processes without executing commands
+[[processes]]
+terminate_if_process = "runaway_process"
+interval = "5m"

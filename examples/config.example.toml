@@ -222,4 +222,68 @@ midnight_window = { start = "23:59", end = "00:01" }
 # command = "echo 'Task 2' >> /tmp/task2.log"
 # interval = "20s"
 
+# ==================== [[commands]] Section ====================
+# The [[commands]] section is syntactic sugar for [[files]] entries with empty path
+# It reduces cognitive load by making it clear these are periodic commands, not file monitors
+# Key difference: 'path' field is FORBIDDEN in [[commands]] (will cause an error)
+
+# Example 24: Periodic command execution using [[commands]] section
+# This is equivalent to [[files]] with path="" but clearer in intent
+# [[commands]]
+# command = "echo 'Periodic task' >> /tmp/periodic.log"
+# interval = "10s"
+
+# Example 25: Multiple periodic commands with different intervals
+# [[commands]]
+# command = "python /path/to/cleanup.py"
+# interval = "1m"
+#
+# [[commands]]
+# command = "./backup.sh"
+# interval = "1h"
+
+# Example 26: Command with process suppression
+# Only execute when the specified process is NOT running
+# [[commands]]
+# command = "./start_myapp.sh"
+# suppress_if_process = "myapp"
+# interval = "5s"
+
+# Example 27: Command with time period restriction
+# Only run during business hours
+# [[commands]]
+# command = "python generate_report.py"
+# interval = "30s"
+# time_period = "business_hours"
+
+# ==================== [[processes]] Section ====================
+# The [[processes]] section is syntactic sugar for process monitoring/termination
+# It reduces cognitive load by making it clear these are process-related tasks
+# Key differences: 
+#   - 'path' field is FORBIDDEN in [[processes]] (will cause an error)
+#   - 'command' field is FORBIDDEN in [[processes]] (will cause an error)
+# This section is specifically for terminate_if_process functionality
+
+# Example 28: Process termination using [[processes]] section
+# This is equivalent to [[files]] with path="" and terminate_if_process
+# [[processes]]
+# terminate_if_process = "unwanted_process"
+# interval = "60s"
+
+# Example 29: Multiple process monitors
+# [[processes]]
+# terminate_if_process = "memory_hog"
+# interval = "5m"
+#
+# [[processes]]
+# terminate_if_process = "rogue_app"
+# interval = "1m"
+
+# Example 30: Process termination with time period
+# Only terminate during night shift hours
+# [[processes]]
+# terminate_if_process = "batch_cleanup"
+# interval = "60s"
+# time_period = "night_shift"
+
 
