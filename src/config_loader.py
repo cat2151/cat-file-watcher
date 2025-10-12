@@ -82,7 +82,7 @@ class ConfigLoader:
             return
 
         files_section = config["files"]
-        
+
         # Files section must be a list (array of tables)
         if not isinstance(files_section, list):
             error_msg = "[files] section must use array of tables format: [[files]]\\nEach entry should have 'path' and 'command' fields"
@@ -97,7 +97,7 @@ class ConfigLoader:
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, None)
                 sys.exit(1)
-            
+
             if "path" not in entry:
                 error_msg = f"[files] entry #{i+1} is missing required 'path' field"
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)

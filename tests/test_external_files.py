@@ -91,7 +91,7 @@ external_files = ["{self.external_file1}", "{self.external_file2}"]
         assert "files" in config
         assert isinstance(config["files"], list)
         assert len(config["files"]) == 2
-        
+
         # Find entries by path
         files_by_path = {f["path"]: f for f in config["files"]}
         assert self.test_file in files_by_path
@@ -126,7 +126,7 @@ command = "echo 'main'"
         assert "files" in config
         assert isinstance(config["files"], list)
         assert len(config["files"]) == 2
-        
+
         # Find entries by path
         files_by_path = {f["path"]: f for f in config["files"]}
         assert self.test_file in files_by_path

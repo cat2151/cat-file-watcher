@@ -141,7 +141,7 @@ class FileWatcher:
             settings = entry
             # Create a unique key for tracking this entry (index-based)
             entry_key = f"#{index}"
-            
+
             # Validate terminate_if_process configuration early
             if "terminate_if_process" in settings:
                 if filename != "":
