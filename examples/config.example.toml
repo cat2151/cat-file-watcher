@@ -135,4 +135,19 @@ midnight_window = { start = "23:59", end = "00:01" }
 # Compile code in the project directory
 # "lib/module.c" = { command = "gcc -c module.c -o module.o", cwd = "./lib" }
 
+# Example 20: Process termination without file watching (terminate_if_process)
+# Monitors and terminates processes matching the regex pattern
+# IMPORTANT: Can ONLY be used with empty filename ("") and NO command field
+# Only terminates when exactly ONE process matches (safety feature)
+# Warns and does NOT terminate when multiple processes match (safety first)
+# Useful for scheduled process termination during specific time periods
+# "" = { terminate_if_process = "unwanted_process", interval = "60s" }
+
+# Example 21: Terminate process only during specific time period
+# Check every minute and terminate matching process only during night shift
+# "" = { terminate_if_process = "batch_cleanup", interval = "60s", time_period = "night_shift" }
+
+# Example 22: Monitor and terminate rogue process every 5 minutes
+# "" = { terminate_if_process = "memory_hog_app", interval = "5m" }
+
 

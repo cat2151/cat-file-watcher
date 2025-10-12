@@ -29,9 +29,14 @@ class CommandExecutor:
         Args:
             command: The shell command to execute
             filepath: The path to the file that changed
-            settings: Dictionary containing file-specific settings including optional 'suppress_if_process', 'enable_log'
+            settings: Dictionary containing file-specific settings including optional 'suppress_if_process', 'enable_log', 'terminate_if_process'
             config: Optional global configuration dictionary containing 'log_file'
         """
+        # Handle terminate_if_process feature
+        if "terminate_if_process" in settings:
+            CommandExecutor._handle_process_termination(settings, config)
+            return
+
         # Check if command execution should be suppressed based on running processes
         if "suppress_if_process" in settings:
             process_pattern = settings["suppress_if_process"]
@@ -124,3 +129,49 @@ class CommandExecutor:
             error_msg = f"Failed to write to suppression log file for '{filepath}'"
             TimestampPrinter.print(f"Warning: {error_msg}: {e}", Fore.YELLOW)
             ErrorLogger.log_error(error_log_file, error_msg, e)
+
+    @staticmethod
+    def _handle_process_termination(settings, config):
+        """Handle process termination based on terminate_if_process setting.
+
+        Args:
+            settings: Dictionary containing 'terminate_if_process' regex pattern
+            config: Optional global configuration dictionary
+        """
+        process_pattern = settings["terminate_if_process"]
+        error_log_file = config.get("error_log_file") if config else None
+
+        # Get all matching processes
+        matched_processes = ProcessDetector.get_all_matching_processes(process_pattern)
+
+        if len(matched_processes) == 0:
+            # No processes found - this is normal, no action needed
+            return
+
+        if len(matched_processes) == 1:
+            # Exactly one process found - terminate it
+            pid, process_name = matched_processes[0]
+            msg = f"Terminating process (PID: {pid}, Name: {process_name}) matching pattern '{process_pattern}'"
+            TimestampPrinter.print(msg, Fore.YELLOW)
+            ErrorLogger.log_error(error_log_file, msg)
+
+            success = ProcessDetector.terminate_process(pid)
+            if success:
+                success_msg = f"Successfully sent terminate signal to process {pid}"
+                TimestampPrinter.print(success_msg, Fore.GREEN)
+                ErrorLogger.log_error(error_log_file, success_msg)
+            else:
+                error_msg = f"Failed to terminate process {pid}"
+                TimestampPrinter.print(error_msg, Fore.RED)
+                ErrorLogger.log_error(error_log_file, error_msg)
+        else:
+            # Multiple processes found - safety check, don't terminate
+            warning_msg = f"Warning: Found {len(matched_processes)} processes matching pattern '{process_pattern}'. Not terminating for safety."
+            TimestampPrinter.print(warning_msg, Fore.YELLOW)
+            ErrorLogger.log_error(error_log_file, warning_msg)
+
+            # Log details of matched processes
+            for pid, process_name in matched_processes:
+                detail_msg = f"  - PID: {pid}, Name: {process_name}"
+                TimestampPrinter.print(detail_msg, Fore.YELLOW)
+                ErrorLogger.log_error(error_log_file, detail_msg)
