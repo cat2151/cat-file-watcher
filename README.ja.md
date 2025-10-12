@@ -255,12 +255,18 @@ ruff format src/
 
 #### CI/CDでの自動チェック
 
-Pull Requestを作成すると、GitHub Actionsが自動的に以下をチェックします:
+Pull Requestを作成すると、GitHub Actionsが自動的に以下を実行します:
 
-- `ruff check src/` - コード品質のリンターチェック
-- `ruff format --check src/` - コードフォーマットの確認
+1. **コードの自動フォーマット**:
+   - `ruff format src/` - コードを自動的にフォーマット（trailing spaceの除去など）
+   - `ruff check --fix src/` - 自動修正可能なlint問題を修正
+   - フォーマットによる変更があれば、自動的にコミット＆プッシュ
 
-これらのチェックが失敗すると、PRのマージがブロックされます。PRを作成する前に、ローカルでRuffを実行してコードを整形することを推奨します。
+2. **品質チェック**:
+   - `ruff check src/` - コード品質のリンターチェック
+   - `ruff format --check src/` - コードフォーマットの確認
+
+自動フォーマット後もチェックが失敗する場合、PRのマージがブロックされます。ローカルでRuffを実行してコードを整形しておくことを推奨します。
 
 ### テストの実行
 
