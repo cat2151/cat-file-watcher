@@ -32,8 +32,10 @@ class TestMainLoopInterval:
         config_content = f'''default_interval = "1s"
 config_check_interval = "2s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -47,8 +49,10 @@ config_check_interval = "2s"
         config_content = f'''default_interval = "2s"
 config_check_interval = "0.5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -62,8 +66,11 @@ config_check_interval = "0.5s"
         config_content = f'''default_interval = "2s"
 config_check_interval = "2s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.25s" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+interval = "0.25s"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -81,9 +88,16 @@ config_check_interval = "2s"
         config_content = f'''default_interval = "2s"
 config_check_interval = "2s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.5s" }}
-"{test_file2}" = {{ command = "echo 'File2 changed'", interval = "0.1s" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+interval = "0.5s"
+
+[[files]]
+path = "{test_file2}"
+command = "echo 'File2 changed'"
+interval = "0.1s"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -95,7 +109,10 @@ config_check_interval = "2s"
     def test_main_loop_interval_defaults(self):
         """Test that main loop interval works with default values."""
         config_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -109,8 +126,10 @@ config_check_interval = "2s"
         """Test main loop interval when only config_check_interval is specified."""
         config_content = f'''config_check_interval = "3s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -125,8 +144,11 @@ config_check_interval = "2s"
         config_content = f'''default_interval = "5s"
 config_check_interval = "5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.05s" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+interval = "0.05s"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

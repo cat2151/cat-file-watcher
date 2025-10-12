@@ -43,6 +43,9 @@ class ConfigLoader:
             # Get error_log_file from config if it exists
             error_log_file = config.get("error_log_file")
 
+            # Validate files section format
+            ConfigLoader._validate_files_format(config, error_log_file)
+
             # Load external files if specified
             if "external_files" in config:
                 ConfigLoader._merge_external_files(config, config_path, error_log_file)
@@ -63,6 +66,43 @@ class ConfigLoader:
             TimestampPrinter.print(f"Error: {error_msg}: {e}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             sys.exit(1)
+
+    @staticmethod
+    def _validate_files_format(config, error_log_file):
+        """Validate that files section uses the correct format.
+
+        Args:
+            config: Configuration dictionary to validate
+            error_log_file: Error log file path for logging
+
+        Raises:
+            SystemExit: If files section format is invalid
+        """
+        if "files" not in config:
+            return
+
+        files_section = config["files"]
+
+        # Files section must be a list (array of tables)
+        if not isinstance(files_section, list):
+            error_msg = "[files] section must use array of tables format: [[files]]\\nEach entry should have 'path' and 'command' fields"
+            TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
+            ErrorLogger.log_error(error_log_file, error_msg, None)
+            sys.exit(1)
+
+        # Validate each file entry
+        for i, entry in enumerate(files_section):
+            if not isinstance(entry, dict):
+                error_msg = f"[files] entry #{i + 1} is not a valid table"
+                TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
+                ErrorLogger.log_error(error_log_file, error_msg, None)
+                sys.exit(1)
+
+            if "path" not in entry:
+                error_msg = f"[files] entry #{i + 1} is missing required 'path' field"
+                TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
+                ErrorLogger.log_error(error_log_file, error_msg, None)
+                sys.exit(1)
 
     @staticmethod
     def _merge_external_files(config, main_config_path, error_log_file):
@@ -88,7 +128,7 @@ class ConfigLoader:
 
         # Initialize files section if it doesn't exist
         if "files" not in config:
-            config["files"] = {}
+            config["files"] = []
 
         for external_file in external_files:
             # Resolve relative paths relative to main config file
@@ -110,9 +150,12 @@ class ConfigLoader:
                     ErrorLogger.log_error(error_log_file, error_msg, None)
                     sys.exit(1)
 
-                # Merge files section
+                # Validate external file format
+                ConfigLoader._validate_files_format(external_config, error_log_file)
+
+                # Merge files section (extend the list)
                 if "files" in external_config:
-                    config["files"].update(external_config["files"])
+                    config["files"].extend(external_config["files"])
                     TimestampPrinter.print(f"Loaded external files from: {external_file}")
 
             except FileNotFoundError as e:

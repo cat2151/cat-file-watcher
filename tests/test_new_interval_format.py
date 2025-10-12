@@ -31,8 +31,10 @@ class TestNewIntervalFormat:
         """Test default interval with seconds format."""
         config_content = f'''default_interval = "2s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -45,8 +47,10 @@ class TestNewIntervalFormat:
         """Test default interval with minutes format."""
         config_content = f'''default_interval = "2m"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -59,8 +63,10 @@ class TestNewIntervalFormat:
         """Test default interval with hours format."""
         config_content = f'''default_interval = "1h"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -73,8 +79,10 @@ class TestNewIntervalFormat:
         """Test default interval with decimal seconds format."""
         config_content = f'''default_interval = "0.5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -87,8 +95,11 @@ class TestNewIntervalFormat:
         """Test per-file interval with seconds format."""
         config_content = f'''default_interval = "1s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "3s" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+interval = "3s"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -102,8 +113,11 @@ class TestNewIntervalFormat:
         """Test per-file interval with minutes format."""
         config_content = f'''default_interval = "1s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "5m" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+interval = "5m"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -117,8 +131,11 @@ class TestNewIntervalFormat:
         """Test per-file interval with decimal format."""
         config_content = f'''default_interval = "1s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "0.25s" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+interval = "0.25s"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -133,8 +150,10 @@ class TestNewIntervalFormat:
         config_content = f'''default_interval = "1s"
 config_check_interval = "5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -149,8 +168,11 @@ config_check_interval = "5s"
         config_content = f'''default_interval = "2s"
 config_check_interval = "5s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'", interval = "1s" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+interval = "1s"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -173,12 +195,16 @@ config_check_interval = "5s"
         for interval_str, expected_seconds in test_cases:
             config_content = f'''default_interval = "{interval_str}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
+
 '''
             with open(self.config_file, "w") as f:
                 f.write(config_content)
 
             watcher = FileWatcher(self.config_file)
             interval = watcher._get_interval_for_file({})
-            assert interval == expected_seconds, f"Failed for {interval_str}: expected {expected_seconds}, got {interval}"
+            assert interval == expected_seconds, (
+                f"Failed for {interval_str}: expected {expected_seconds}, got {interval}"
+            )

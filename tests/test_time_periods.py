@@ -194,8 +194,11 @@ class TestFileWatcherWithTimePeriods:
 [time_periods]
 always_active = {{ start = "00:00", end = "23:59" }}
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", time_period = "always_active" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+time_period = "always_active"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -204,14 +207,17 @@ always_active = {{ start = "00:00", end = "23:59" }}
 
         # File should be monitored
         watcher._check_files()
-        assert self.test_file in watcher.file_timestamps
+        assert len(watcher.file_timestamps) == 1
+        assert "#0" in watcher.file_timestamps
 
     def test_file_monitoring_without_time_period(self):
         """Test that files without time_period are monitored normally."""
         config_content = f'''default_interval = "0.1s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -220,7 +226,8 @@ always_active = {{ start = "00:00", end = "23:59" }}
 
         # File should be monitored
         watcher._check_files()
-        assert self.test_file in watcher.file_timestamps
+        assert len(watcher.file_timestamps) == 1
+        assert "#0" in watcher.file_timestamps
 
     def test_config_with_multiple_time_periods(self):
         """Test configuration with multiple time period definitions."""
@@ -231,8 +238,11 @@ morning = {{ start = "06:00", end = "12:00" }}
 afternoon = {{ start = "12:00", end = "18:00" }}
 night = {{ start = "22:00", end = "02:00" }}
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", time_period = "morning" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+time_period = "morning"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

@@ -28,8 +28,9 @@ class TestFileWatcherBasics:
             f.write("Initial content\n")
 
         # Create a test config
-        config_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'File changed'" }}
+        config_content = f'''[[files]]
+path = "{self.test_file}"
+command = "echo 'File changed'"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -42,7 +43,9 @@ class TestFileWatcherBasics:
         """Test that configuration is loaded correctly."""
         watcher = FileWatcher(self.config_file)
         assert "files" in watcher.config
-        assert self.test_file in watcher.config["files"]
+        assert isinstance(watcher.config["files"], list)
+        assert len(watcher.config["files"]) == 1
+        assert watcher.config["files"][0]["path"] == self.test_file
 
     def test_get_file_timestamp(self):
         """Test that file timestamps are retrieved correctly."""
@@ -63,7 +66,8 @@ class TestFileWatcherBasics:
         assert len(watcher.file_timestamps) == 0
         watcher._check_files()
         assert len(watcher.file_timestamps) == 1
-        assert self.test_file in watcher.file_timestamps
+        # With array format, we use index-based keys
+        assert "#0" in watcher.file_timestamps
 
     def test_detect_file_change(self):
         """Test that file changes are detected."""
@@ -71,7 +75,7 @@ class TestFileWatcherBasics:
 
         # Initialize tracking
         watcher._check_files()
-        initial_timestamp = watcher.file_timestamps[self.test_file]
+        initial_timestamp = watcher.file_timestamps["#0"]
 
         # Wait a bit and modify the file
         time.sleep(0.1)

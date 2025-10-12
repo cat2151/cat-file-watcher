@@ -37,8 +37,11 @@ class TestSuppressionLogging:
         config_content = f'''default_interval = "0.05s"
 suppression_log_file = "{self.suppression_log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", suppress_if_process = "python" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+suppress_if_process = "python"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -75,8 +78,11 @@ suppression_log_file = "{self.suppression_log_file}"
         # Create config without suppression_log_file
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", suppress_if_process = "python" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+suppress_if_process = "python"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -103,8 +109,11 @@ suppression_log_file = "{self.suppression_log_file}"
         config_content = f'''default_interval = "0.05s"
 suppression_log_file = "{self.suppression_log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", suppress_if_process = "nonexistent_process_xyz123" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+suppress_if_process = "nonexistent_process_xyz123"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -131,8 +140,11 @@ suppression_log_file = "{self.suppression_log_file}"
         config_content = f'''default_interval = "0.05s"
 suppression_log_file = "{self.suppression_log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", suppress_if_process = "python" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+suppress_if_process = "python"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -166,8 +178,11 @@ suppression_log_file = "{self.suppression_log_file}"
         config_content = f'''default_interval = "0.05s"
 suppression_log_file = "{self.suppression_log_file}"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'", suppress_if_process = "python" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
+suppress_if_process = "python"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

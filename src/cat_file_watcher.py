@@ -80,9 +80,9 @@ class FileWatcher:
 
         # Add all per-file intervals
         if "files" in self.config:
-            for filename, settings in self.config["files"].items():
-                if "interval" in settings:
-                    file_interval = settings["interval"]
+            for entry in self.config["files"]:
+                if "interval" in entry:
+                    file_interval = entry["interval"]
                     intervals.append(IntervalParser.parse_interval(file_interval))
 
         # Return the minimum interval to ensure we poll frequently enough
@@ -136,7 +136,12 @@ class FileWatcher:
         error_log_file = self.config.get("error_log_file")
         current_time = time.time()
         files_config = self.config["files"]
-        for filename, settings in files_config.items():
+        for index, entry in enumerate(files_config):
+            filename = entry.get("path", "")
+            settings = entry
+            # Create a unique key for tracking this entry (index-based)
+            entry_key = f"#{index}"
+
             # Validate terminate_if_process configuration early
             if "terminate_if_process" in settings:
                 if filename != "":
@@ -165,11 +170,11 @@ class FileWatcher:
                 interval = ConfigLoader.get_interval_for_file(self.config, settings)
 
                 # Check if enough time has passed since last check
-                if filename in self.file_last_check:
-                    if current_time - self.file_last_check[filename] < interval:
+                if entry_key in self.file_last_check:
+                    if current_time - self.file_last_check[entry_key] < interval:
                         continue
 
-                self.file_last_check[filename] = current_time
+                self.file_last_check[entry_key] = current_time
 
                 # Special case: empty filename means execute command without file monitoring
                 # This is useful for process health monitoring or periodic tasks (including terminate_if_process)
@@ -181,20 +186,20 @@ class FileWatcher:
                 current_timestamp = self._get_file_timestamp(filename)
 
                 if current_timestamp is None:
-                    if filename in self.file_timestamps:
+                    if entry_key in self.file_timestamps:
                         TimestampPrinter.print(f"Warning: File '{filename}' is no longer accessible", Fore.YELLOW)
-                        del self.file_timestamps[filename]
+                        del self.file_timestamps[entry_key]
                     continue
 
                 # Check if this is the first time we're seeing this file
-                if filename not in self.file_timestamps:
-                    self.file_timestamps[filename] = current_timestamp
+                if entry_key not in self.file_timestamps:
+                    self.file_timestamps[entry_key] = current_timestamp
                     TimestampPrinter.print(f"Started monitoring '{filename}'", Fore.GREEN)
                 # Check if the timestamp has changed
-                elif current_timestamp != self.file_timestamps[filename]:
+                elif current_timestamp != self.file_timestamps[entry_key]:
                     TimestampPrinter.print(f"Detected change in '{filename}'", Fore.GREEN)
                     CommandExecutor.execute_command(settings["command"], filename, settings, self.config)
-                    self.file_timestamps[filename] = current_timestamp
+                    self.file_timestamps[entry_key] = current_timestamp
             except Exception as e:
                 error_msg = f"Error processing file '{filename}'"
                 TimestampPrinter.print(f"{error_msg}: {e}", Fore.RED)

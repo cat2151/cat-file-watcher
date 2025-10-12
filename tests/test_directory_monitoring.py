@@ -27,6 +27,7 @@ class TestDirectoryMonitoring:
     def teardown_method(self):
         """Clean up test fixtures."""
         import shutil
+
         if os.path.exists(self.test_dir):
             shutil.rmtree(self.test_dir)
 
@@ -34,8 +35,10 @@ class TestDirectoryMonitoring:
         """Test that directories can be monitored like files."""
         config_content = f'''default_interval = "0.1s"
 
-[files]
-"{self.monitor_dir}" = {{ command = "echo 'Directory changed!'" }}
+[[files]]
+path = "{self.monitor_dir}"
+command = "echo 'Directory changed!'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -50,8 +53,10 @@ class TestDirectoryMonitoring:
         """Test that directory changes are detected when files are added."""
         config_content = f'''default_interval = "0.1s"
 
-[files]
-"{self.monitor_dir}" = {{ command = "echo 'Directory changed!'" }}
+[[files]]
+path = "{self.monitor_dir}"
+command = "echo 'Directory changed!'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -83,8 +88,11 @@ class TestDirectoryMonitoring:
         """Test that custom intervals work for directories."""
         config_content = f'''default_interval = "1s"
 
-[files]
-"{self.monitor_dir}" = {{ command = "echo 'Directory changed!'", interval = "0.5s" }}
+[[files]]
+path = "{self.monitor_dir}"
+command = "echo 'Directory changed!'"
+interval = "0.5s"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -100,8 +108,11 @@ class TestDirectoryMonitoring:
         """Test that process suppression works for directories."""
         config_content = f'''default_interval = "0.1s"
 
-[files]
-"{self.monitor_dir}" = {{ command = "echo 'Directory changed!'", suppress_if_process = "nonexistent_process_12345" }}
+[[files]]
+path = "{self.monitor_dir}"
+command = "echo 'Directory changed!'"
+suppress_if_process = "nonexistent_process_12345"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -120,9 +131,14 @@ class TestDirectoryMonitoring:
 
         config_content = f'''default_interval = "0.1s"
 
-[files]
-"{test_file}" = {{ command = "echo 'File changed!'" }}
-"{self.monitor_dir}" = {{ command = "echo 'Directory changed!'" }}
+[[files]]
+path = "{test_file}"
+command = "echo 'File changed!'"
+
+[[files]]
+path = "{self.monitor_dir}"
+command = "echo 'Directory changed!'"
+
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)

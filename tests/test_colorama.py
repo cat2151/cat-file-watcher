@@ -29,7 +29,7 @@ class TestColoramaSupport:
 
             output = captured_output.getvalue()
             assert "Test message" in output
-            assert re.search(r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]', output)
+            assert re.search(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]", output)
         finally:
             sys.stdout = sys.__stdout__
 
@@ -109,7 +109,7 @@ class TestColoramaSupport:
             output = captured_output.getvalue()
             assert "Colored message" in output
             # Should not have timestamp
-            assert not re.search(r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]', output)
+            assert not re.search(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]", output)
             # Should have color
             assert Fore.BLUE in output or "\x1b[34m" in output
         finally:

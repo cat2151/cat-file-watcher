@@ -48,7 +48,6 @@ class TestTerminateIfProcess:
             config_content = f"""default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-[files]
 "" = {{ terminate_if_process = "test_process\\\\.py" }}
 """
             with open(self.config_file, "w") as f:
@@ -76,7 +75,6 @@ error_log_file = "{self.error_log_file}"
         config_content = f"""default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-[files]
 "" = {{ terminate_if_process = "nonexistent_process_xyz123" }}
 """
         with open(self.config_file, "w") as f:
@@ -106,7 +104,6 @@ error_log_file = "{self.error_log_file}"
             config_content = f"""default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-[files]
 "" = {{ terminate_if_process = "test_multi\\\\.py" }}
 """
             with open(self.config_file, "w") as f:
@@ -146,8 +143,10 @@ error_log_file = "{self.error_log_file}"
         config_content = f"""default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-[files]
-"{test_file}" = {{ terminate_if_process = "python" }}
+[[files]]
+path = "{test_file}"
+terminate_if_process = "python"
+
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -170,7 +169,6 @@ error_log_file = "{self.error_log_file}"
         config_content = f"""default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-[files]
 "" = {{ command = "echo 'test'", terminate_if_process = "python" }}
 """
         with open(self.config_file, "w") as f:
@@ -203,7 +201,6 @@ error_log_file = "{self.error_log_file}"
             config_content = f"""default_interval = "10s"
 error_log_file = "{self.error_log_file}"
 
-[files]
 "" = {{ terminate_if_process = "test_interval\\\\.py", interval = "10s" }}
 """
             with open(self.config_file, "w") as f:
@@ -238,7 +235,7 @@ error_log_file = "{self.error_log_file}"
             if proc.poll() is None:
                 proc.kill()
                 proc.wait()
-            if 'proc2' in locals() and proc2.poll() is None:
+            if "proc2" in locals() and proc2.poll() is None:
                 proc2.kill()
                 proc2.wait()
 

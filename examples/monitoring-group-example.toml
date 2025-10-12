@@ -3,16 +3,29 @@
 # You can include this file in your main config using:
 #   external_files = ["monitoring-group-example.toml"]
 
-# External files can ONLY contain the [files] section
+# External files can ONLY contain the [[files]] section (array of tables format)
 # Other sections (like time_periods, default_interval, etc.) are not allowed
 
-[files]
 # Example: Monitor development files
 # Interval can be specified using time format: "1s", "2m", "3h", "0.5s"
-"src/main.py" = { command = "python -m pytest tests/", interval = "2s" }
-"src/utils.py" = { command = "python -m pylint src/utils.py" }
-"tests/test_main.py" = { command = "python -m pytest tests/test_main.py -v" }
+[[files]]
+path = "src/main.py"
+command = "python -m pytest tests/"
+interval = "2s"
+
+[[files]]
+path = "src/utils.py"
+command = "python -m pylint src/utils.py"
+
+[[files]]
+path = "tests/test_main.py"
+command = "python -m pytest tests/test_main.py -v"
 
 # Example: Monitor configuration files
-"config/settings.json" = { command = "python validate_config.py" }
-"config/database.yml" = { command = "systemctl reload myapp" }
+[[files]]
+path = "config/settings.json"
+command = "python validate_config.py"
+
+[[files]]
+path = "config/database.yml"
+command = "systemctl reload myapp"

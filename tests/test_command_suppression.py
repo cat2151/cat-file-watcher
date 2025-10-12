@@ -33,8 +33,10 @@ class TestCommandSuppression:
         test_output = os.path.join(self.test_dir, "output.txt")
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "python" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'executed' > {test_output}"
+suppress_if_process = "python"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -54,8 +56,10 @@ class TestCommandSuppression:
         test_output = os.path.join(self.test_dir, "output.txt")
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'executed' > {test_output}", suppress_if_process = "nonexistent_process_xyz123" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'executed' > {test_output}"
+suppress_if_process = "nonexistent_process_xyz123"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -75,8 +79,9 @@ class TestCommandSuppression:
         test_output = os.path.join(self.test_dir, "output.txt")
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"{self.test_file}" = {{ command = "echo 'executed' > {test_output}" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'executed' > {test_output}"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
