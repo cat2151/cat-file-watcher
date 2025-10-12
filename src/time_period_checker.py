@@ -116,7 +116,9 @@ class TimePeriodChecker:
 
         # If time period config is invalid, default to monitoring
         if period_config is None:
-            TimestampPrinter.print(f"Warning: Time period '{period_name}' not found or invalid, monitoring anyway", Fore.YELLOW)
+            TimestampPrinter.print(
+                f"Warning: Time period '{period_name}' not found or invalid, monitoring anyway", Fore.YELLOW
+            )
             return True
 
         return TimePeriodChecker.is_in_time_period(period_config["start"], period_config["end"])

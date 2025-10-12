@@ -5,7 +5,8 @@ Provides timestamped printing functionality
 """
 
 from datetime import datetime
-from colorama import Fore, Style, init
+
+from colorama import Style, init
 
 # Initialize colorama for cross-platform colored terminal output
 init(autoreset=True)
@@ -41,7 +42,7 @@ class TimestampPrinter:
             output = f"[{timestamp}] {message}"
         else:
             output = message
-        
+
         # Apply color if specified
         if color:
             print(f"{color}{output}{Style.RESET_ALL}")
