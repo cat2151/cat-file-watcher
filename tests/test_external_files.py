@@ -38,8 +38,9 @@ class TestExternalFiles:
     def test_external_files_basic(self):
         """Test loading a basic external file with files section."""
         # Create external file with files section
-        external_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'external command'" }}
+        external_content = f'''[[files]]
+path = "{self.test_file}"
+command = "echo 'external command'"
 '''
         with open(self.external_file1, "w") as f:
             f.write(external_content)
@@ -54,22 +55,26 @@ external_files = ["{self.external_file1}"]
         # Load config and verify files are merged
         config = ConfigLoader.load_config(self.config_file)
         assert "files" in config
-        assert self.test_file in config["files"]
-        assert config["files"][self.test_file]["command"] == "echo 'external command'"
+        assert isinstance(config["files"], list)
+        assert len(config["files"]) == 1
+        assert config["files"][0]["path"] == self.test_file
+        assert config["files"][0]["command"] == "echo 'external command'"
 
     def test_external_files_multiple(self):
         """Test loading multiple external files."""
         # Create first external file
-        external1_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'file1'" }}
+        external1_content = f'''[[files]]
+path = "{self.test_file}"
+command = "echo 'file1'"
 '''
         with open(self.external_file1, "w") as f:
             f.write(external1_content)
 
         # Create second external file
         test_file2 = os.path.join(self.test_dir, "test2.txt")
-        external2_content = f'''[files]
-"{test_file2}" = {{ command = "echo 'file2'" }}
+        external2_content = f'''[[files]]
+path = "{test_file2}"
+command = "echo 'file2'"
 '''
         with open(self.external_file2, "w") as f:
             f.write(external2_content)
@@ -84,16 +89,22 @@ external_files = ["{self.external_file1}", "{self.external_file2}"]
         # Load config and verify both files are merged
         config = ConfigLoader.load_config(self.config_file)
         assert "files" in config
-        assert self.test_file in config["files"]
-        assert test_file2 in config["files"]
-        assert config["files"][self.test_file]["command"] == "echo 'file1'"
-        assert config["files"][test_file2]["command"] == "echo 'file2'"
+        assert isinstance(config["files"], list)
+        assert len(config["files"]) == 2
+        
+        # Find entries by path
+        files_by_path = {f["path"]: f for f in config["files"]}
+        assert self.test_file in files_by_path
+        assert test_file2 in files_by_path
+        assert files_by_path[self.test_file]["command"] == "echo 'file1'"
+        assert files_by_path[test_file2]["command"] == "echo 'file2'"
 
     def test_external_files_merge_with_main(self):
         """Test that external files are merged with main config files section."""
         # Create external file
-        external_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'external'" }}
+        external_content = f'''[[files]]
+path = "{self.test_file}"
+command = "echo 'external'"
 '''
         with open(self.external_file1, "w") as f:
             f.write(external_content)
@@ -103,8 +114,9 @@ external_files = ["{self.external_file1}", "{self.external_file2}"]
         config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 
-[files]
-"{test_file2}" = {{ command = "echo 'main'" }}
+[[files]]
+path = "{test_file2}"
+command = "echo 'main'"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -112,10 +124,15 @@ external_files = ["{self.external_file1}"]
         # Load config and verify both are present
         config = ConfigLoader.load_config(self.config_file)
         assert "files" in config
-        assert self.test_file in config["files"]
-        assert test_file2 in config["files"]
-        assert config["files"][self.test_file]["command"] == "echo 'external'"
-        assert config["files"][test_file2]["command"] == "echo 'main'"
+        assert isinstance(config["files"], list)
+        assert len(config["files"]) == 2
+        
+        # Find entries by path
+        files_by_path = {f["path"]: f for f in config["files"]}
+        assert self.test_file in files_by_path
+        assert test_file2 in files_by_path
+        assert files_by_path[self.test_file]["command"] == "echo 'external'"
+        assert files_by_path[test_file2]["command"] == "echo 'main'"
 
     def test_external_files_relative_path(self):
         """Test that relative paths in external_files are resolved relative to main config."""
@@ -125,8 +142,9 @@ external_files = ["{self.external_file1}"]
         external_file = os.path.join(subdir, "external.toml")
 
         # Create external file
-        external_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'test'" }}
+        external_content = f'''[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
 '''
         with open(external_file, "w") as f:
             f.write(external_content)
@@ -141,7 +159,9 @@ external_files = ["configs/external.toml"]
         # Load config and verify file is loaded
         config = ConfigLoader.load_config(self.config_file)
         assert "files" in config
-        assert self.test_file in config["files"]
+        assert isinstance(config["files"], list)
+        assert len(config["files"]) == 1
+        assert config["files"][0]["path"] == self.test_file
 
     def test_external_files_invalid_section_error(self):
         """Test that external files with invalid sections raise an error."""
@@ -149,8 +169,9 @@ external_files = ["configs/external.toml"]
         external_content = f'''[time_periods]
 business_hours = {{ start = "09:00", end = "17:00" }}
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
 '''
         with open(self.external_file1, "w") as f:
             f.write(external_content)
@@ -172,8 +193,9 @@ external_files = ["{self.external_file1}"]
         # Create external file with default_interval (not allowed)
         external_content = f'''default_interval = 2000
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
 '''
         with open(self.external_file1, "w") as f:
             f.write(external_content)
@@ -228,8 +250,9 @@ external_files = ["{self.external_file1}"]
         config_content = f'''default_interval = "1s"
 external_files = []
 
-[files]
-"{self.test_file}" = {{ command = "echo 'test'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test'"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -237,7 +260,9 @@ external_files = []
         # Load config and verify it works
         config = ConfigLoader.load_config(self.config_file)
         assert "files" in config
-        assert self.test_file in config["files"]
+        assert isinstance(config["files"], list)
+        assert len(config["files"]) == 1
+        assert config["files"][0]["path"] == self.test_file
 
     def test_external_files_not_list_error(self):
         """Test that external_files must be a list."""
@@ -256,8 +281,9 @@ external_files = "{self.external_file1}"
     def test_external_files_with_watcher(self):
         """Test that FileWatcher works correctly with external files."""
         # Create external file
-        external_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'external watcher'" }}
+        external_content = f'''[[files]]
+path = "{self.test_file}"
+command = "echo 'external watcher'"
 '''
         with open(self.external_file1, "w") as f:
             f.write(external_content)
@@ -272,12 +298,14 @@ external_files = ["{self.external_file1}"]
         # Create watcher and verify it can be initialized
         watcher = FileWatcher(self.config_file)
         assert "files" in watcher.config
-        assert self.test_file in watcher.config["files"]
+        assert isinstance(watcher.config["files"], list)
+        assert len(watcher.config["files"]) == 1
+        assert watcher.config["files"][0]["path"] == self.test_file
 
     def test_external_files_empty_files_section(self):
         """Test external file with empty files section."""
         # Create external file with empty files section
-        external_content = """[files]
+        external_content = """[[files]]
 """
         with open(self.external_file1, "w") as f:
             f.write(external_content)
@@ -286,40 +314,48 @@ external_files = ["{self.external_file1}"]
         config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 
-[files]
-"{self.test_file}" = {{ command = "echo 'main'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'main'"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # Load config and verify main files section still works
-        config = ConfigLoader.load_config(self.config_file)
-        assert "files" in config
-        assert self.test_file in config["files"]
+        # Load config - should fail because files entry is missing required 'path' field
+        with pytest.raises(SystemExit) as cm:
+            ConfigLoader.load_config(self.config_file)
+        assert cm.value.code == 1
 
     def test_external_files_overwrite_main(self):
-        """Test that external file can overwrite entries from main config."""
+        """Test that external files can be appended to main config (array extends)."""
         # Create external file
-        external_content = f'''[files]
-"{self.test_file}" = {{ command = "echo 'from external'" }}
+        external_content = f'''[[files]]
+path = "{self.test_file}"
+command = "echo 'from external'"
 '''
         with open(self.external_file1, "w") as f:
             f.write(external_content)
 
         # Create main config with same file
-        # Note: external_files must be before [files] section to be at top level
         config_content = f'''default_interval = "1s"
 external_files = ["{self.external_file1}"]
 
-[files]
-"{self.test_file}" = {{ command = "echo 'from main'" }}
+[[files]]
+path = "{self.test_file}"
+command = "echo 'from main'"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # Load config and verify external overwrites main
+        # Load config and verify both entries exist (array extends, doesn't overwrite)
         config = ConfigLoader.load_config(self.config_file)
         assert "files" in config
-        assert self.test_file in config["files"]
-        # External files are loaded after main config, so they should overwrite
-        assert config["files"][self.test_file]["command"] == "echo 'from external'"
+        assert isinstance(config["files"], list)
+        # Note: With array format, both entries will exist in the list
+        # The order is: main config entries first, then external files
+        # So we should have 2 entries for the same file
+        assert len(config["files"]) == 2
+        assert config["files"][0]["path"] == self.test_file
+        assert config["files"][0]["command"] == "echo 'from main'"
+        assert config["files"][1]["path"] == self.test_file
+        assert config["files"][1]["command"] == "echo 'from external'"

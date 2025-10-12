@@ -35,8 +35,9 @@ class TestEmptyFilename:
         # Create config with empty filename
         config_content = f"""default_interval = "0.05s"
 
-[files]
-"" = {{ command = "echo 'executed' > {test_output}" }}
+[[files]]
+path = ""
+command = "echo 'executed' > {test_output}"
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -62,8 +63,9 @@ class TestEmptyFilename:
         # Create config with empty filename and custom interval (100ms)
         config_content = f"""default_interval = "0.1s"
 
-[files]
-"" = {{ command = "echo 'x' >> {counter_file}" }}
+[[files]]
+path = ""
+command = "echo 'x' >> {counter_file}"
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -97,8 +99,10 @@ class TestEmptyFilename:
         # Create config that checks if python is running, and only executes if NOT running
         config_content = f"""default_interval = "0.05s"
 
-[files]
-"" = {{ command = "echo 'process_not_found' > {test_output}", suppress_if_process = "python" }}
+[[files]]
+path = ""
+command = "echo 'process_not_found' > {test_output}"
+suppress_if_process = "python"
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -124,9 +128,13 @@ class TestEmptyFilename:
         # Create config with both empty filename and regular file
         config_content = f'''default_interval = "0.05s"
 
-[files]
-"" = {{ command = "echo 'periodic' > {output1}" }}
-"{test_file}" = {{ command = "echo 'file_changed' > {output2}" }}
+[[files]]
+path = ""
+command = "echo 'periodic' > {output1}"
+
+[[files]]
+path = "{test_file}"
+command = "echo 'file_changed' > {output2}"
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
