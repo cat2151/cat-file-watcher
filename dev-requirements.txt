@@ -7,6 +7,9 @@
 # Linting and formatting
 ruff>=0.6.0
 
+# Pre-commit hooks
+pre-commit>=3.0.0
+
 # Type checking (optional)
 mypy>=1.0.0
 types-toml>=0.10.0

@@ -252,20 +252,24 @@ ruff format --check src/
 ruff format src/
 ```
 
-#### Automated Checks in CI/CD
+#### Using Pre-commit Hooks (Optional)
 
-When you create a Pull Request, GitHub Actions automatically performs the following:
+For automated formatting on every commit, you can use pre-commit hooks:
 
-1. **Automatic Code Formatting**:
-   - `ruff format src/` - Automatically formats the code (e.g., removal of trailing spaces)
-   - `ruff check --fix src/` - Fixes automatically fixable lint issues
-   - If there are changes due to formatting, they are automatically committed and pushed.
+```bash
+# Install pre-commit
+pip install pre-commit
 
-2. **Quality Check**:
-   - `ruff check src/` - Linter check for code quality
-   - `ruff format --check src/` - Code format verification
+# Install the git hooks
+pre-commit install
 
-If checks still fail after auto-formatting, the PR merge will be blocked. It is recommended to run Ruff locally to format your code before pushing.
+# (Optional) Run on all files manually
+pre-commit run --all-files
+```
+
+Once installed, pre-commit will automatically run `ruff format` and `ruff check --fix` before each commit, ensuring your code is always properly formatted.
+
+**Note**: Pre-commit hooks work in local development environments. GitHub Copilot Agents and other CI/CD bots may not use pre-commit hooks, so always verify formatting before creating a PR.
 
 ### Running Tests
 
