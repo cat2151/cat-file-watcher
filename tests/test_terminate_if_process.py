@@ -91,8 +91,8 @@ terminate_if_process = "nonexistent_process_xyz123"
 
         # No assertion needed - just verify it doesn't crash
 
-    def test_terminate_multiple_processes_warning(self):
-        """Test that warning is issued and no termination occurs when multiple processes match."""
+    def test_terminate_multiple_processes_with_single_pattern(self):
+        """Test that multiple processes matching a single pattern are all terminated."""
         # Start multiple test processes
         test_script = os.path.join(self.test_dir, "test_multi.py")
         with open(test_script, "w") as f:
@@ -117,21 +117,22 @@ terminate_if_process = "test_multi\\\\.py"
 
             watcher = FileWatcher(self.config_file)
 
-            # Execute check - should issue warning but not terminate
+            # Execute check - should terminate both processes
             watcher._check_files()
 
-            # Wait a bit
+            # Wait a bit for termination to complete
             time.sleep(0.5)
 
-            # Verify both processes are still running (safety check worked)
-            assert proc1.poll() is None, "First process should still be running (not terminated)"
-            assert proc2.poll() is None, "Second process should still be running (not terminated)"
+            # Verify both processes were terminated
+            assert proc1.poll() is not None, "First process should have been terminated"
+            assert proc2.poll() is not None, "Second process should have been terminated"
 
-            # Verify warning was logged
+            # Verify termination was logged
             assert os.path.exists(self.error_log_file), "Error log should exist"
             with open(self.error_log_file, "r") as f:
                 log_content = f.read()
-            assert "Found 2 processes" in log_content, "Warning about multiple processes should be logged"
+            # Should have termination messages, not warning about multiple processes
+            assert "Terminating process" in log_content, "Should log process termination"
         finally:
             # Cleanup: ensure processes are killed
             for proc in [proc1, proc2]:
@@ -250,6 +251,178 @@ interval = "10s"
             if "proc2" in locals() and proc2.poll() is None:
                 proc2.kill()
                 proc2.wait()
+
+    def test_terminate_multiple_process_patterns_array(self):
+        """Test that terminate_if_process can accept an array of patterns and terminate all matching processes."""
+        # Start multiple different test processes
+        test_script1 = os.path.join(self.test_dir, "test_proc_a.py")
+        with open(test_script1, "w") as f:
+            f.write("import time\nwhile True:\n    time.sleep(0.1)\n")
+
+        test_script2 = os.path.join(self.test_dir, "test_proc_b.py")
+        with open(test_script2, "w") as f:
+            f.write("import time\nwhile True:\n    time.sleep(0.1)\n")
+
+        # Start both processes
+        proc1 = subprocess.Popen([sys.executable, test_script1])
+        proc2 = subprocess.Popen([sys.executable, test_script2])
+        time.sleep(0.2)  # Give them time to start
+
+        try:
+            # Verify both processes are running
+            assert proc1.poll() is None, "First test process should be running"
+            assert proc2.poll() is None, "Second test process should be running"
+
+            # Create config with array of terminate_if_process patterns
+            config_content = f"""default_interval = "0.05s"
+error_log_file = "{self.error_log_file}"
+
+[[files]]
+path = ""
+terminate_if_process = ["test_proc_a\\\\.py", "test_proc_b\\\\.py"]
+"""
+            with open(self.config_file, "w") as f:
+                f.write(config_content)
+
+            watcher = FileWatcher(self.config_file)
+
+            # Execute check - should terminate both processes
+            watcher._check_files()
+
+            # Wait a bit for termination to complete
+            time.sleep(0.5)
+
+            # Verify both processes were terminated
+            assert proc1.poll() is not None, "First process should have been terminated"
+            assert proc2.poll() is not None, "Second process should have been terminated"
+
+            # Verify log contains termination messages for both
+            assert os.path.exists(self.error_log_file), "Error log should exist"
+            with open(self.error_log_file, "r") as f:
+                log_content = f.read()
+            assert "test_proc_a" in log_content, "Should log termination of first process"
+            assert "test_proc_b" in log_content, "Should log termination of second process"
+        finally:
+            # Cleanup: ensure processes are killed if still running
+            for proc in [proc1, proc2]:
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait()
+
+    def test_terminate_multiple_instances_same_pattern_in_array(self):
+        """Test that when a pattern in an array matches multiple processes, all are terminated."""
+        # Start multiple instances of the same script
+        test_script = os.path.join(self.test_dir, "test_multi_same.py")
+        with open(test_script, "w") as f:
+            f.write("import time\nwhile True:\n    time.sleep(0.1)\n")
+
+        # Start three processes with the same script
+        proc1 = subprocess.Popen([sys.executable, test_script])
+        proc2 = subprocess.Popen([sys.executable, test_script])
+        proc3 = subprocess.Popen([sys.executable, test_script])
+        time.sleep(0.2)
+
+        try:
+            # Verify all processes are running
+            assert proc1.poll() is None, "First process should be running"
+            assert proc2.poll() is None, "Second process should be running"
+            assert proc3.poll() is None, "Third process should be running"
+
+            # Create config with array containing pattern that matches all three
+            config_content = f"""default_interval = "0.05s"
+error_log_file = "{self.error_log_file}"
+
+[[files]]
+path = ""
+terminate_if_process = ["test_multi_same\\\\.py"]
+"""
+            with open(self.config_file, "w") as f:
+                f.write(config_content)
+
+            watcher = FileWatcher(self.config_file)
+
+            # Execute check - should terminate all three processes
+            watcher._check_files()
+
+            # Wait a bit for termination to complete
+            time.sleep(0.5)
+
+            # Verify all processes were terminated
+            assert proc1.poll() is not None, "First process should have been terminated"
+            assert proc2.poll() is not None, "Second process should have been terminated"
+            assert proc3.poll() is not None, "Third process should have been terminated"
+        finally:
+            # Cleanup
+            for proc in [proc1, proc2, proc3]:
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait()
+
+    def test_terminate_array_with_no_matches(self):
+        """Test that array of patterns with no matches doesn't cause errors."""
+        config_content = f"""default_interval = "0.05s"
+error_log_file = "{self.error_log_file}"
+
+[[files]]
+path = ""
+terminate_if_process = ["nonexistent_abc", "nonexistent_xyz"]
+"""
+        with open(self.config_file, "w") as f:
+            f.write(config_content)
+
+        watcher = FileWatcher(self.config_file)
+
+        # Execute check - should do nothing (no error)
+        watcher._check_files()
+
+        # No assertion needed - just verify it doesn't crash
+
+    def test_terminate_array_with_partial_matches(self):
+        """Test that array of patterns terminates only matching processes."""
+        # Start only one of two expected processes
+        test_script = os.path.join(self.test_dir, "test_partial.py")
+        with open(test_script, "w") as f:
+            f.write("import time\nwhile True:\n    time.sleep(0.1)\n")
+
+        proc = subprocess.Popen([sys.executable, test_script])
+        time.sleep(0.2)
+
+        try:
+            # Verify process is running
+            assert proc.poll() is None, "Test process should be running"
+
+            # Create config with array where only one pattern matches
+            config_content = f"""default_interval = "0.05s"
+error_log_file = "{self.error_log_file}"
+
+[[files]]
+path = ""
+terminate_if_process = ["test_partial\\\\.py", "nonexistent_xyz"]
+"""
+            with open(self.config_file, "w") as f:
+                f.write(config_content)
+
+            watcher = FileWatcher(self.config_file)
+
+            # Execute check - should terminate only the matching process
+            watcher._check_files()
+
+            # Wait a bit for termination to complete
+            time.sleep(0.5)
+
+            # Verify process was terminated
+            assert proc.poll() is not None, "Process should have been terminated"
+
+            # Verify log contains termination message
+            assert os.path.exists(self.error_log_file), "Error log should exist"
+            with open(self.error_log_file, "r") as f:
+                log_content = f.read()
+            assert "test_partial" in log_content, "Should log termination of matching process"
+        finally:
+            # Cleanup
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait()
 
 
 class TestProcessDetectorEnhancements:

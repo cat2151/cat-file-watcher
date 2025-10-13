@@ -135,23 +135,34 @@ class CommandExecutor:
         """Handle process termination based on terminate_if_process setting.
 
         Args:
-            settings: Dictionary containing 'terminate_if_process' regex pattern
+            settings: Dictionary containing 'terminate_if_process' regex pattern(s) - can be a string or list of strings
             config: Optional global configuration dictionary
         """
-        process_pattern = settings["terminate_if_process"]
+        process_patterns = settings["terminate_if_process"]
         error_log_file = config.get("error_log_file") if config else None
 
-        # Get all matching processes
-        matched_processes = ProcessDetector.get_all_matching_processes(process_pattern)
+        # Normalize to list if a single string is provided
+        if isinstance(process_patterns, str):
+            process_patterns = [process_patterns]
 
-        if len(matched_processes) == 0:
+        # Collect all matching processes from all patterns
+        all_matched_processes = []
+        matched_pids = set()  # Track PIDs to avoid duplicates
+
+        for pattern in process_patterns:
+            matched_processes = ProcessDetector.get_all_matching_processes(pattern)
+            for pid, process_name in matched_processes:
+                if pid not in matched_pids:
+                    all_matched_processes.append((pid, process_name, pattern))
+                    matched_pids.add(pid)
+
+        if len(all_matched_processes) == 0:
             # No processes found - this is normal, no action needed
             return
 
-        if len(matched_processes) == 1:
-            # Exactly one process found - terminate it
-            pid, process_name = matched_processes[0]
-            msg = f"Terminating process (PID: {pid}, Name: {process_name}) matching pattern '{process_pattern}'"
+        # Terminate all matched processes
+        for pid, process_name, pattern in all_matched_processes:
+            msg = f"Terminating process (PID: {pid}, Name: {process_name}) matching pattern '{pattern}'"
             TimestampPrinter.print(msg, Fore.YELLOW)
             ErrorLogger.log_error(error_log_file, msg)
 
@@ -164,14 +175,3 @@ class CommandExecutor:
                 error_msg = f"Failed to terminate process {pid}"
                 TimestampPrinter.print(error_msg, Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg)
-        else:
-            # Multiple processes found - safety check, don't terminate
-            warning_msg = f"Warning: Found {len(matched_processes)} processes matching pattern '{process_pattern}'. Not terminating for safety."
-            TimestampPrinter.print(warning_msg, Fore.YELLOW)
-            ErrorLogger.log_error(error_log_file, warning_msg)
-
-            # Log details of matched processes
-            for pid, process_name in matched_processes:
-                detail_msg = f"  - PID: {pid}, Name: {process_name}"
-                TimestampPrinter.print(detail_msg, Fore.YELLOW)
-                ErrorLogger.log_error(error_log_file, detail_msg)

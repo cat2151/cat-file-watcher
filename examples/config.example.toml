@@ -186,14 +186,20 @@ midnight_window = { start = "23:59", end = "00:01" }
 # cwd = "./lib"
 
 # Example 20: Process termination without file watching (terminate_if_process)
-# Monitors and terminates processes matching the regex pattern
+# Monitors and terminates processes matching the regex pattern(s)
 # IMPORTANT: Can ONLY be used with empty path ("") and NO command field
-# Only terminates when exactly ONE process matches (safety feature)
-# Warns and does NOT terminate when multiple processes match (safety first)
+# Terminates ALL processes matching the pattern(s)
+# Can specify a single pattern as a string OR multiple patterns as an array
 # Useful for scheduled process termination during specific time periods
 # [[files]]
 # path = ""
-# terminate_if_process = "unwanted_process"
+# terminate_if_process = "unwanted_process"  # Single pattern
+# interval = "60s"
+#
+# # Or use an array for multiple patterns:
+# [[files]]
+# path = ""
+# terminate_if_process = ["process1\\.exe", "process2\\.exe", "process3\\.exe"]
 # interval = "60s"
 
 # Example 21: Terminate process only during specific time period
