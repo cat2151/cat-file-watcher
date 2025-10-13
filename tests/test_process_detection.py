@@ -25,8 +25,7 @@ class TestProcessDetection:
         with open(self.test_file, "w") as f:
             f.write("Initial content\n")
 
-        config_content = f'''[files]
-[[files]]
+        config_content = f'''[[files]]
 path = "{self.test_file}"
 command = "echo 'File changed'"
 

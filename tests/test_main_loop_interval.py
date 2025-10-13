@@ -108,8 +108,7 @@ interval = "0.1s"
 
     def test_main_loop_interval_defaults(self):
         """Test that main loop interval works with default values."""
-        config_content = f'''[files]
-[[files]]
+        config_content = f'''[[files]]
 path = "{self.test_file}"
 command = "echo 'File changed'"
 
