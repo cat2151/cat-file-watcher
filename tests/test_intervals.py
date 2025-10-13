@@ -30,8 +30,7 @@ class TestFileWatcherIntervals:
 
     def test_default_interval(self):
         """Test that default interval is used when not specified."""
-        config_content = f'''[files]
-[[files]]
+        config_content = f'''[[files]]
 path = "{self.test_file}"
 command = "echo 'File changed'"
 
@@ -73,7 +72,7 @@ interval = "0.25s"
             f.write(config_content)
 
         watcher = FileWatcher(self.config_file)
-        settings = watcher.config["files"][self.test_file]
+        settings = watcher.config["files"][0]
         interval = watcher._get_interval_for_file(settings)
         assert interval == 0.25
 
@@ -91,12 +90,12 @@ command = "echo 'File changed'"
 
         watcher = FileWatcher(self.config_file)
         watcher._check_files()
-        first_check_time = watcher.file_last_check[self.test_file]
+        first_check_time = watcher.file_last_check["#0"]
 
         time.sleep(0.05)
         watcher._check_files()
-        assert watcher.file_last_check[self.test_file] == first_check_time
+        assert watcher.file_last_check["#0"] == first_check_time
 
         time.sleep(0.5)
         watcher._check_files()
-        assert watcher.file_last_check[self.test_file] > first_check_time
+        assert watcher.file_last_check["#0"] > first_check_time

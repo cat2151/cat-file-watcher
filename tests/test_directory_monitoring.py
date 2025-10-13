@@ -47,7 +47,8 @@ command = "echo 'Directory changed!'"
 
         # Initial check - should register the directory
         watcher._check_files()
-        assert self.monitor_dir in watcher.file_timestamps, "Directory should be registered for monitoring"
+        # With array format, we use index-based keys
+        assert "#0" in watcher.file_timestamps, "Directory should be registered for monitoring"
 
     def test_directory_change_detection(self):
         """Test that directory changes are detected when files are added."""
@@ -65,7 +66,7 @@ command = "echo 'Directory changed!'"
 
         # Initial check
         watcher._check_files()
-        old_timestamp = watcher.file_timestamps.get(self.monitor_dir)
+        old_timestamp = watcher.file_timestamps.get("#0")
         assert old_timestamp is not None, "Directory should have an initial timestamp"
 
         # Wait and modify the directory by adding a file
@@ -79,7 +80,7 @@ command = "echo 'Directory changed!'"
 
         # Check again - should detect the change
         watcher._check_files()
-        new_timestamp = watcher.file_timestamps.get(self.monitor_dir)
+        new_timestamp = watcher.file_timestamps.get("#0")
 
         assert new_timestamp is not None, "Directory should still have a timestamp"
         assert new_timestamp != old_timestamp, "Directory timestamp should have changed after file addition"
@@ -100,7 +101,7 @@ interval = "0.5s"
         watcher = FileWatcher(self.config_file)
 
         # Verify the interval is set correctly (500ms = 0.5 seconds)
-        settings = watcher.config["files"][self.monitor_dir]
+        settings = watcher.config["files"][0]
         interval = watcher._get_interval_for_file(settings)
         assert interval == 0.5, f"Expected interval of 0.5 seconds, got {interval}"
 
@@ -121,7 +122,8 @@ suppress_if_process = "nonexistent_process_12345"
 
         # Directory should be monitored normally since the process doesn't exist
         watcher._check_files()
-        assert self.monitor_dir in watcher.file_timestamps, "Directory should be monitored"
+        # With array format, we use index-based keys
+        assert "#0" in watcher.file_timestamps, "Directory should be monitored"
 
     def test_mixed_files_and_directories(self):
         """Test monitoring both files and directories simultaneously."""
@@ -147,8 +149,9 @@ command = "echo 'Directory changed!'"
 
         # Initial check - both should be registered
         watcher._check_files()
-        assert test_file in watcher.file_timestamps, "File should be monitored"
-        assert self.monitor_dir in watcher.file_timestamps, "Directory should be monitored"
+        # With array format, we use index-based keys
+        assert "#0" in watcher.file_timestamps, "File should be monitored"
+        assert "#1" in watcher.file_timestamps, "Directory should be monitored"
 
         # Modify both
         time.sleep(0.1)
@@ -162,10 +165,10 @@ command = "echo 'Directory changed!'"
         time.sleep(0.1)
 
         # Both changes should be detected
-        file_old_ts = watcher.file_timestamps[test_file]
-        dir_old_ts = watcher.file_timestamps[self.monitor_dir]
+        file_old_ts = watcher.file_timestamps["#0"]
+        dir_old_ts = watcher.file_timestamps["#1"]
 
         watcher._check_files()
 
-        assert watcher.file_timestamps[test_file] != file_old_ts, "File change should be detected"
-        assert watcher.file_timestamps[self.monitor_dir] != dir_old_ts, "Directory change should be detected"
+        assert watcher.file_timestamps["#0"] != file_old_ts, "File change should be detected"
+        assert watcher.file_timestamps["#1"] != dir_old_ts, "Directory change should be detected"

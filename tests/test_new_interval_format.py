@@ -105,7 +105,7 @@ interval = "3s"
             f.write(config_content)
 
         watcher = FileWatcher(self.config_file)
-        settings = watcher.config["files"][self.test_file]
+        settings = watcher.config["files"][0]
         interval = watcher._get_interval_for_file(settings)
         assert interval == 3.0
 
@@ -123,7 +123,7 @@ interval = "5m"
             f.write(config_content)
 
         watcher = FileWatcher(self.config_file)
-        settings = watcher.config["files"][self.test_file]
+        settings = watcher.config["files"][0]
         interval = watcher._get_interval_for_file(settings)
         assert interval == 300.0
 
@@ -141,7 +141,7 @@ interval = "0.25s"
             f.write(config_content)
 
         watcher = FileWatcher(self.config_file)
-        settings = watcher.config["files"][self.test_file]
+        settings = watcher.config["files"][0]
         interval = watcher._get_interval_for_file(settings)
         assert interval == 0.25
 
