@@ -29,13 +29,13 @@ cat-file-watcher is a Python-based file change monitoring tool that watches for 
   ```python
   def method_name(self, param):
       """Brief description.
-      
+
       Args:
           param: Description of parameter
-          
+
       Returns:
           type: Description of return value
-          
+
       Raises:
           ErrorType: Description of when error is raised
       """
