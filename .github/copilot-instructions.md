@@ -181,11 +181,41 @@ cat-file-watcher is a Python-based file change monitoring tool that watches for 
 - Document all configuration options clearly
 - Note when README.md is auto-generated from README.ja.md
 
+## Code Formatting and Quality
+
+### Before Committing Changes
+
+**IMPORTANT**: Always run the following commands before committing any Python code changes:
+
+```bash
+# Format code with Ruff
+ruff format src/ tests/
+
+# Fix auto-fixable lint issues
+ruff check --fix src/ tests/
+
+# Verify formatting and linting (should pass with no errors)
+ruff format --check src/ tests/
+ruff check src/ tests/
+```
+
+These steps are **mandatory** for all code changes. Failure to format code will result in:
+- PR review delays
+- Manual formatting required by maintainers
+- Potential PR rejection
+
+### Why This Matters
+
+- The project enforces consistent code style using Ruff
+- GitHub Actions workflows for auto-formatting were removed due to security concerns (see issue #71)
+- Manual formatting before commit is the safest and most efficient approach
+
 ## Best Practices
 
 - Write self-documenting code with clear variable names
 - Keep functions small and focused
 - Avoid premature optimization
 - Test changes thoroughly before committing
+- **Always run ruff format and ruff check before committing**
 - Use meaningful commit messages
 - Follow existing code patterns and conventions
