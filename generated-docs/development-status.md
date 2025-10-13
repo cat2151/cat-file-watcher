@@ -1,50 +1,55 @@
-Last updated: 2025-10-13
+Last updated: 2025-10-14
 
 # Development Status
 
 ## 現在のIssues
-- [Issue #71](../issue-notes/71.md) では、agentによるプルリクエスト（PR）に対してRuff Linterの実行が自動で承認されず、手動での承認が必要な不便さが報告されています。
-- この問題の対策として、現在のワークフローYAMLファイルを分析し、改善版を生成してテストする方針が示されています。
-- 根本原因はGitHub Actionsのパーミッションやトリガー設定にある可能性が高く、自動承認の実現は開発フローの効率化に直結します。
+- 現在オープン中のIssueはありません。
+- 最近の活動は、`terminate_if_process` の配列パターン対応（[Issue #90](../issue-notes/90.md)）やRuffフォーマットの適用（[Issue #88](../issue-notes/88.md)）に集中しています。
+- また、古いIssueノートの整理も実施され、プロジェクトがクリーンな状態に保たれています。
 
 ## 次の一手候補
-1. Ruff自動実行ワークフローの修正案作成とテスト計画立案 ([Issue #71](../issue-notes/71.md))
-   - 最初の小さな一歩: 既存の`.github/workflows/ruff-check.yml`ファイルの内容を詳細に確認し、agentによるPRで自動承認されない具体的な原因（例: `pull_request_target`の利用、パーミッション設定）を特定する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: `.github/workflows/ruff-check.yml`
+1.  `terminate_if_process` の配列パターン対応 ([Issue #89](../issue-notes/89.md), [Issue #90](../issue-notes/90.md)) のドキュメント化とテスト強化
+    -   最初の小さな一歩: `examples/config.example.toml` に、新しく追加された `terminate_if_process` の配列パターンの具体的な使用例を追加する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `examples/config.example.toml`, `src/command_executor.py`, `tests/test_terminate_if_process.py`
 
-     実行内容: 対象ファイルについて、agentによるPRに対してRuffの実行が自動承認されない原因を特定し、その上で自動承認されるための修正案をMarkdown形式で提案してください。特に、GitHub Actionsのイベントトリガー（例: `pull_request`と`pull_request_target`の違い）やパーミッション設定（`permissions`ブロック）に焦点を当てて分析し、具体的な修正コード例を含めてください。
+        実行内容: `examples/config.example.toml` に、最近追加された `terminate_if_process` の配列パターン機能を示す具体的な設定例を追加してください。また、`src/command_executor.py` に実装された配列パターン処理が意図通り動作するか、既存のテスト (`tests/test_terminate_if_process.py`) のカバレッジを確認し、必要であれば新しいテストケースを追加してください。
 
-     確認事項: 既存のワークフローで設定されているトリガー、パーミッション、および他のワークフローファイル（例: `check-recent-human-commit.yml`のような認証関連ワークフロー）との依存関係や相互作用を確認してください。
+        確認事項: `terminate_if_process` の設定が単一文字列の場合と配列の場合の両方で、既存の機能が壊れていないことを確認してください。また、`config.example.toml` の他の設定例との整合性も確認してください。
 
-     期待する出力: Ruffワークフローの修正提案と、その修正がagentによるPRで自動承認されるかを確認するためのテスト計画を記述したMarkdownドキュメント。
-     ```
+        期待する出力: 更新された `examples/config.example.toml` の内容と、追加・修正されたテストファイル (`tests/test_terminate_if_process.py`) の変更内容をMarkdown形式で提示してください。
+        ```
 
-2. 修正したRuffワークフローのGitHub Actionsへの適用と動作確認 ([Issue #71](../issue-notes/71.md))
-   - 最初の小さな一歩: 候補1で提案された修正案を基に、新しいブランチで`.github/workflows/ruff-check.yml`ファイルを更新し、その変更を含むPRを作成して、自動実行と承認が行われるかを確認する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: `.github/workflows/ruff-check.yml`
+2.  Ruffフォーマット ([Issue #88](../issue-notes/88.md)) 設定の最適化とCI/CDワークフローへの統合
+    -   最初の小さな一歩: 現在の `ruff.toml` の設定内容を確認し、プロジェクトのコーディング規約と照らし合わせて、追加で有効にすべきルールや除外すべきルールがないかを調査する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `ruff.toml`, `.pre-commit-config.yaml`, `.github/workflows/` ディレクトリ内の既存のCI/CDワークフローファイル (例: `call-daily-project-summary.yml`など、コード品質チェックを含む可能性のあるもの)
 
-     実行内容: 候補1で生成された修正案を元に、`.github/workflows/ruff-check.yml`ファイルを更新する差分を生成してください。更新後、このワークフローがagentによって作成されたPRに対して自動で実行・承認されることを確認するための具体的なテスト計画を立案し、Markdown形式で出力してください。テスト計画には、テスト用のPRの作成手順と、期待される挙動、確認ポイントを含めてください。
+        実行内容: `ruff.toml` の設定をレビューし、プロジェクトのコーディング規約に合致するように最適化の提案を行ってください。特に、現在適用されているルールセットが適切か、より厳密なチェックや特定のルールを除外すべきかなどを検討してください。また、CI/CDワークフロー (`.github/workflows/` 内のファイル) において、Ruffによる自動フォーマットやリンティングが適切に実行されているかを確認し、未導入であれば導入を提案してください。
 
-     確認事項: 修正案がGitHub Actionsのセキュリティベストプラクティスに準拠しているか、また既存の他のワークフローやリポジトリのセキュリティ設定（例: "Require approval for all outside collaborators"）への影響がないかを確認してください。
+        確認事項: `ruff` の設定変更が既存コードに与える影響（大量のフォーマット変更が発生しないか）、`.pre-commit-config.yaml` との重複や競合がないかを確認してください。CI/CDへの組み込みは、既存のワークフローに影響を与えない形で提案してください。
 
-     期待する出力: 更新された`ruff-check.yml`ファイルの差分（`git diff`形式）と、その変更が期待通りに動作するかを確認するための具体的なテスト手順を記述したMarkdownドキュメント。
-     ```
+        期待する出力:
+        1.  `ruff.toml` の最適化に関する提案（変更内容とその理由）をMarkdownで記述。
+        2.  RuffをCI/CDワークフローに組み込むための具体的な提案（既存ワークフローファイルのどの部分にどのように追加するか）をMarkdownで記述。
+        ```
 
-3. ワークフローの自動テスト戦略の調査と提案 ([Issue #71](../issue-notes/71.md)に関連)
-   - 最初の小さな一歩: GitHub Actionsワークフローのテストに利用可能なツールやプラクティス（例: `act`, GitHub CLI, `actions/github-script`を用いたインテグレーションテスト）について調査し、その特徴と本プロジェクトへの適用可能性をまとめる。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: GitHub Actionsドキュメント、既存のワークフローファイル全般 (例: `.github/workflows/ruff-check.yml`)
+3.  整理された `issue-notes` のデッドリンク調査と修正 (関連コミット `d5fe98c`)
+    -   最初の小さな一歩: `issue-notes/` ディレクトリ内の既存のMarkdownファイルを開き、他の `issue-notes` への相対リンクを一つずつ手動で確認する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `issue-notes/` ディレクトリ内の全てのMarkdownファイル
 
-     実行内容: GitHub Actionsワークフローの自動テストに関する一般的なプラクティスや利用可能なツール（例: `act`、`actions/github-script`を使ったインテグレーションテスト、専用のテストフレームワークなど）を調査し、それらの特徴と本プロジェクトのワークフロー（特に自動承認されるRuffワークフロー）に適用可能なテスト戦略について考察し、Markdown形式で出力してください。特に、ワークフローのセキュリティと効率性を維持しながらテストを自動化する方法に焦点を当ててください。
+        実行内容: `issue-notes/` ディレクトリ内の各Markdownファイルを走査し、他の `issue-notes` ファイルへの相対リンク（例: `[Issue #XX](../issue-notes/XX.md)`）が存在するかどうかを確認してください。もし、リンク先ファイルが存在しない（デッドリンクとなっている）場合は、そのデッドリンクと、リンクを含む元のファイルを特定してください。
 
-     確認事項: 現在のプロジェクトで利用されているCI/CDツールや手法、およびGitHub Actionsの利用制限やセキュリティ要件（例: `pull_request_target`の利用上の注意点）を確認してください。
+        確認事項: 削除された `issue-notes` (コミット `d5fe98c` で言及) の影響で、現在も有効な `issue-notes` からそれらの削除されたファイルへのリンクがないかを確認してください。また、リンク形式がプロンプトで指示されている `[Issue #番号](../issue-notes/番号.md)` と合致しているかも確認してください。
 
-     期待する出力: ワークフローの自動テスト戦略に関する調査結果と、Ruffワークフローの自動承認テストを効率的に行うための具体的な適用方法を提案するMarkdownドキュメント。
+        期待する出力:
+        1.  発見されたデッドリンクの一覧（元のファイルパスとデッドリンクの内容）をMarkdown形式で提示してください。
+        2.  デッドリンクが存在しない場合は、その旨を明記してください。
+        3.  必要に応じて、リンクを修正するための具体的な提案（例: リンクの削除、別のIssueへの変更）を記述してください。
 
 ---
-Generated at: 2025-10-13 07:02:03 JST
+Generated at: 2025-10-14 07:02:10 JST

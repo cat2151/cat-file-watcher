@@ -1,4 +1,4 @@
-Last updated: 2025-10-13
+Last updated: 2025-10-14
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -193,12 +193,11 @@ Last updated: 2025-10-13
 - .github/workflows/call-daily-project-summary.yml
 - .github/workflows/call-issue-note.yml
 - .github/workflows/call-translate-readme.yml
-- .github/workflows/ruff-check.yml
 - .gitignore
+- .pre-commit-config.yaml
 - .vscode/README.md
 - .vscode/extensions.json
 - .vscode/settings.json
-- =0.6.0
 - LICENSE
 - README.ja.md
 - README.md
@@ -206,26 +205,19 @@ Last updated: 2025-10-13
 - examples/config.example.toml
 - examples/monitoring-group-example.toml
 - issue-notes/11.md
-- issue-notes/13.md
-- issue-notes/15.md
 - issue-notes/16-refactoring-summary.md
-- issue-notes/16.md
 - issue-notes/19-refactoring-summary.md
-- issue-notes/19.md
 - issue-notes/21.md
-- issue-notes/23.md
 - issue-notes/24.md
 - issue-notes/26.md
 - issue-notes/27.md
 - issue-notes/30.md
-- issue-notes/32.md
 - issue-notes/33.md
 - issue-notes/35.md
 - issue-notes/37.md
 - issue-notes/39.md
 - issue-notes/41.md
 - issue-notes/43.md
-- issue-notes/45.md
 - issue-notes/46.md
 - issue-notes/48.md
 - issue-notes/50.md
@@ -239,12 +231,19 @@ Last updated: 2025-10-13
 - issue-notes/65.md
 - issue-notes/67.md
 - issue-notes/69.md
+- issue-notes/71-investigation-report.md
 - issue-notes/71.md
 - issue-notes/72.md
 - issue-notes/74.md
 - issue-notes/76.md
 - issue-notes/78.md
-- issue-notes/9.md
+- issue-notes/79-investigation-report.md
+- issue-notes/79.md
+- issue-notes/81.md
+- issue-notes/83-completion.md
+- issue-notes/85.md
+- issue-notes/87.md
+- issue-notes/89.md
 - pytest.ini
 - requirements.txt
 - ruff.toml
@@ -282,86 +281,48 @@ Last updated: 2025-10-13
 - tests/test_timestamp.py
 
 ## 現在のオープンIssues
-## [Issue #71](../issue-notes/71.md): agentによるPRに対して、自動でRuffの実行がされず、毎回「GitHub Actionsの実行を承認する」ボタンをuserが押す必要があり、不便
-[issue-notes/71.md](https://github.com/cat2151/cat-file-watcher/blob/main/issue-notes/71.md)
-
-...
-ラベル: 
---- issue-notes/71.md の内容 ---
-
-```markdown
-# issue agentによるPRに対して、自動でRuffの実行がされず、毎回「GitHub Actionsの実行を承認する」ボタンをuserが押す必要があり、不便 #71
-[issues #71](https://github.com/cat2151/cat-file-watcher/issues/71)
-
-# 対策
-- Claudeに現在のworkflow ymlを投げた
-- 改善版を生成させた
-- testする
-
-
-```
+オープン中のIssueはありません
 
 ## ドキュメントで言及されているファイルの内容
-### issue-notes/71.md
-```md
-# issue agentによるPRに対して、自動でRuffの実行がされず、毎回「GitHub Actionsの実行を承認する」ボタンをuserが押す必要があり、不便 #71
-[issues #71](https://github.com/cat2151/cat-file-watcher/issues/71)
 
-# 対策
-- Claudeに現在のworkflow ymlを投げた
-- 改善版を生成させた
-- testする
-
-
-```
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-c245125 fixed #78
-3f2006f Add issue note for #78 [auto]
-c8a5f89 Merge pull request #77 from cat2151/copilot/add-commands-and-processes-sections
-938e542 Auto-format code with Ruff [skip ci]
-5ff45cf Update issue notes and fix linter issues
-f51ac95 Add [[commands]] and [[processes]] sections support
-0b9998d Initial plan
-c3f973f Add issue note for #76 [auto]
-278bdce Merge pull request #73 from cat2151/copilot/update-toml-files-section
-eca307b Merge branch 'main' of github.com:cat2151/cat-file-watcher into main
+dbec09c Merge pull request #90 from cat2151/copilot/add-multiple-process-termination
+020e65f Fix array behavior - apply safety check per pattern independently
+1859428 Add support for array of patterns in terminate_if_process
+719e6dc Initial plan
+cbcf7d0 Add issue note for #89 [auto]
+5688ac1 Trim trailing spaces
+d55fe98 issue-notesのうち、closeかつ空のものを削除し、読みやすくした。issueからのlinkがdead linkになりそうだが、悪影響は軽微と想定し、ひとまず様子見とする
+c81014a Merge branch 'main' of github.com:cat2151/cat-file-watcher into main
+90907b0 fixed #71 当該workflow ymlを廃止したのち、ほかのissueにて根本的な課題を解決したので、closeとする
+c2177f1 Merge pull request #88 from cat2151/copilot/apply-ruff-formatting
 
 ### 変更されたファイル:
-.github/workflows/ruff-check.yml
+.github/copilot-instructions.md
+.pre-commit-config.yaml
 =0.6.0
 README.md
+dev-requirements.txt
 examples/config.example.toml
-examples/monitoring-group-example.toml
-issue-notes/72.md
-issue-notes/76.md
-issue-notes/78.md
-src/cat_file_watcher.py
-src/config_loader.py
-tests/test_basics.py
-tests/test_cat_file_watcher.py
-tests/test_colorama.py
-tests/test_command_logging.py
-tests/test_command_suppression.py
-tests/test_commands_and_processes_sections.py
-tests/test_config_reload.py
-tests/test_cwd.py
-tests/test_directory_monitoring.py
-tests/test_empty_filename.py
-tests/test_error_logging.py
-tests/test_external_files.py
-tests/test_interval_parser.py
-tests/test_intervals.py
-tests/test_main_loop_interval.py
-tests/test_multiple_empty_filenames.py
-tests/test_new_interval_format.py
-tests/test_process_detection.py
-tests/test_suppression_logging.py
+issue-notes/13.md
+issue-notes/15.md
+issue-notes/16.md
+issue-notes/19.md
+issue-notes/23.md
+issue-notes/32.md
+issue-notes/45.md
+issue-notes/71-investigation-report.md
+issue-notes/71.md
+issue-notes/83.md
+issue-notes/85.md
+issue-notes/87.md
+issue-notes/89.md
+issue-notes/9.md
+src/command_executor.py
 tests/test_terminate_if_process.py
-tests/test_time_periods.py
-tests/test_timestamp.py
 
 
 ---
-Generated at: 2025-10-13 07:01:43 JST
+Generated at: 2025-10-14 07:01:46 JST
