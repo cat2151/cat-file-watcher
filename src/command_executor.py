@@ -145,33 +145,38 @@ class CommandExecutor:
         if isinstance(process_patterns, str):
             process_patterns = [process_patterns]
 
-        # Collect all matching processes from all patterns
-        all_matched_processes = []
-        matched_pids = set()  # Track PIDs to avoid duplicates
-
+        # Process each pattern independently with safety check
         for pattern in process_patterns:
             matched_processes = ProcessDetector.get_all_matching_processes(pattern)
-            for pid, process_name in matched_processes:
-                if pid not in matched_pids:
-                    all_matched_processes.append((pid, process_name, pattern))
-                    matched_pids.add(pid)
 
-        if len(all_matched_processes) == 0:
-            # No processes found - this is normal, no action needed
-            return
+            if len(matched_processes) == 0:
+                # No processes found - this is normal, no action needed
+                continue
 
-        # Terminate all matched processes
-        for pid, process_name, pattern in all_matched_processes:
-            msg = f"Terminating process (PID: {pid}, Name: {process_name}) matching pattern '{pattern}'"
-            TimestampPrinter.print(msg, Fore.YELLOW)
-            ErrorLogger.log_error(error_log_file, msg)
+            if len(matched_processes) == 1:
+                # Exactly one process found - terminate it
+                pid, process_name = matched_processes[0]
+                msg = f"Terminating process (PID: {pid}, Name: {process_name}) matching pattern '{pattern}'"
+                TimestampPrinter.print(msg, Fore.YELLOW)
+                ErrorLogger.log_error(error_log_file, msg)
 
-            success = ProcessDetector.terminate_process(pid)
-            if success:
-                success_msg = f"Successfully sent terminate signal to process {pid}"
-                TimestampPrinter.print(success_msg, Fore.GREEN)
-                ErrorLogger.log_error(error_log_file, success_msg)
+                success = ProcessDetector.terminate_process(pid)
+                if success:
+                    success_msg = f"Successfully sent terminate signal to process {pid}"
+                    TimestampPrinter.print(success_msg, Fore.GREEN)
+                    ErrorLogger.log_error(error_log_file, success_msg)
+                else:
+                    error_msg = f"Failed to terminate process {pid}"
+                    TimestampPrinter.print(error_msg, Fore.RED)
+                    ErrorLogger.log_error(error_log_file, error_msg)
             else:
-                error_msg = f"Failed to terminate process {pid}"
-                TimestampPrinter.print(error_msg, Fore.RED)
-                ErrorLogger.log_error(error_log_file, error_msg)
+                # Multiple processes found - safety check, don't terminate
+                warning_msg = f"Warning: Found {len(matched_processes)} processes matching pattern '{pattern}'. Not terminating for safety."
+                TimestampPrinter.print(warning_msg, Fore.YELLOW)
+                ErrorLogger.log_error(error_log_file, warning_msg)
+
+                # Log details of matched processes
+                for pid, process_name in matched_processes:
+                    detail_msg = f"  - PID: {pid}, Name: {process_name}"
+                    TimestampPrinter.print(detail_msg, Fore.YELLOW)
+                    ErrorLogger.log_error(error_log_file, detail_msg)
