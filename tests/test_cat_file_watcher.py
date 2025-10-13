@@ -66,7 +66,8 @@ command = "echo 'File changed'"
         assert len(watcher.file_timestamps) == 0
         watcher._check_files()
         assert len(watcher.file_timestamps) == 1
-        assert self.test_file in watcher.file_timestamps
+        # With array format, we use index-based keys
+        assert "#0" in watcher.file_timestamps
 
     def test_detect_file_change(self):
         """Test that file changes are detected."""
@@ -74,7 +75,7 @@ command = "echo 'File changed'"
 
         # Initialize tracking
         watcher._check_files()
-        initial_timestamp = watcher.file_timestamps[self.test_file]
+        initial_timestamp = watcher.file_timestamps["#0"]
 
         # Wait a bit and modify the file
         time.sleep(0.1)
@@ -119,13 +120,14 @@ path = "{self.test_file}"
 [[files]]
 path = "{self.test_file}"
 command = "echo 'File changed'"
+interval = "0.25s"
 
 '''
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
         watcher = FileWatcher(self.config_file)
-        settings = watcher.config["files"][self.test_file]
+        settings = watcher.config["files"][0]
         interval = watcher._get_interval_for_file(settings)
         # Per-file interval is "0.25s" = 0.25 second
         assert interval == 0.25
@@ -137,6 +139,7 @@ command = "echo 'File changed'"
 
 [[files]]
 path = "{self.test_file}"
+command = "echo 'File changed'"
 
 '''
         with open(self.config_file, "w") as f:
@@ -146,20 +149,20 @@ path = "{self.test_file}"
 
         # First check should process the file
         watcher._check_files()
-        assert self.test_file in watcher.file_last_check
-        first_check_time = watcher.file_last_check[self.test_file]
+        assert "#0" in watcher.file_last_check
+        first_check_time = watcher.file_last_check["#0"]
 
         # Immediate second check should skip the file (not enough time passed)
         time.sleep(0.05)  # Much less than 0.5s
         watcher._check_files()
         # Check time should not have changed
-        assert watcher.file_last_check[self.test_file] == first_check_time
+        assert watcher.file_last_check["#0"] == first_check_time
 
         # After waiting for the interval, file should be checked again
         time.sleep(0.5)  # Wait for 0.5s interval
         watcher._check_files()
         # Check time should have been updated
-        assert watcher.file_last_check[self.test_file] > first_check_time
+        assert watcher.file_last_check["#0"] > first_check_time
 
     def test_process_detection(self):
         """Test that process detection works correctly."""
@@ -206,6 +209,8 @@ path = "{self.test_file}"
 
 [[files]]
 path = "{self.test_file}"
+command = "echo 'executed' > {test_output}"
+suppress_if_process = "python"
 
 '''
         with open(self.config_file, "w") as f:
@@ -238,6 +243,8 @@ path = "{self.test_file}"
 
 [[files]]
 path = "{self.test_file}"
+command = "echo 'executed' > {test_output}"
+suppress_if_process = "nonexistent_process_xyz123"
 
 '''
         with open(self.config_file, "w") as f:
@@ -270,6 +277,7 @@ path = "{self.test_file}"
 
 [[files]]
 path = "{self.test_file}"
+command = "echo 'executed' > {test_output}"
 
 '''
         with open(self.config_file, "w") as f:

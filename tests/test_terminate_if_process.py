@@ -48,7 +48,9 @@ class TestTerminateIfProcess:
             config_content = f"""default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-"" = {{ terminate_if_process = "test_process\\\\.py" }}
+[[files]]
+path = ""
+terminate_if_process = "test_process\\\\.py"
 """
             with open(self.config_file, "w") as f:
                 f.write(config_content)
@@ -75,7 +77,9 @@ error_log_file = "{self.error_log_file}"
         config_content = f"""default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-"" = {{ terminate_if_process = "nonexistent_process_xyz123" }}
+[[files]]
+path = ""
+terminate_if_process = "nonexistent_process_xyz123"
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -104,7 +108,9 @@ error_log_file = "{self.error_log_file}"
             config_content = f"""default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-"" = {{ terminate_if_process = "test_multi\\\\.py" }}
+[[files]]
+path = ""
+terminate_if_process = "test_multi\\\\.py"
 """
             with open(self.config_file, "w") as f:
                 f.write(config_content)
@@ -169,7 +175,10 @@ terminate_if_process = "python"
         config_content = f"""default_interval = "0.05s"
 error_log_file = "{self.error_log_file}"
 
-"" = {{ command = "echo 'test'", terminate_if_process = "python" }}
+[[files]]
+path = ""
+command = "echo 'test'"
+terminate_if_process = "python"
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
@@ -201,7 +210,10 @@ error_log_file = "{self.error_log_file}"
             config_content = f"""default_interval = "10s"
 error_log_file = "{self.error_log_file}"
 
-"" = {{ terminate_if_process = "test_interval\\\\.py", interval = "10s" }}
+[[files]]
+path = ""
+terminate_if_process = "test_interval\\\\.py"
+interval = "10s"
 """
             with open(self.config_file, "w") as f:
                 f.write(config_content)
