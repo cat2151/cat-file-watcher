@@ -85,3 +85,19 @@ command = "echo 'File changed'"
         # Check again - timestamp should be different
         new_timestamp = watcher._get_file_timestamp(self.test_file)
         assert initial_timestamp != new_timestamp
+
+    def test_one_line_toml_format(self):
+        """Test that one-line inline TOML format works correctly."""
+        # Create a one-line config using inline table syntax
+        one_line_config = os.path.join(self.test_dir, "one_line.toml")
+        config_content = f'files = [{{path = "{self.test_file}", command = "echo changed"}}]'
+        with open(one_line_config, "w") as f:
+            f.write(config_content)
+
+        # Verify the config loads correctly
+        watcher = FileWatcher(one_line_config)
+        assert "files" in watcher.config
+        assert isinstance(watcher.config["files"], list)
+        assert len(watcher.config["files"]) == 1
+        assert watcher.config["files"][0]["path"] == self.test_file
+        assert watcher.config["files"][0]["command"] == "echo changed"
