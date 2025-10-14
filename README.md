@@ -181,7 +181,7 @@ after_hours = { start = "18:00", end = "08:00" }  # Spans across days
 
 **Important**: Commands are executed **sequentially**.
 
-- When a file change is detected and a command is executed, the next file will not be checked until that command completes (or times out after 30 seconds).
+- When a file change is detected and a command is executed, the next file will not be checked until that command completes (or times out after 30 seconds for foreground execution).
 - For example, if a command for one file takes 25 seconds, monitoring for other files will be temporarily paused for those 25 seconds.
 - Even if other files are updated during this time, they will not be detected until the currently running command completes (they will be detected in the next main loop after the command finishes).
 - The current implementation does not support parallelizing monitoring and execution of multiple files.
@@ -200,7 +200,7 @@ Standard output and standard error output of the executed commands are displayed
 - **On Failure**: If a command fails (with a non-zero exit code), a message like `Error: Command failed for '<file path>' with exit code <code_>` will be displayed.
 - **Error Log File**: If `error_log_file` is configured, error messages and the executed command upon command failure will be recorded in the log file.
 
-Command execution is set to a timeout of 30 seconds; exceeding this will result in a timeout error.
+Foreground command execution is set to a timeout of 30 seconds; exceeding this will result in a timeout error. For long-running commands, use background execution (`&`). Background commands complete immediately in subprocess.run(), bypassing the timeout limit.
 
 ## Concept
 
