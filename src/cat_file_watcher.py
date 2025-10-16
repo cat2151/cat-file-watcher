@@ -3,27 +3,24 @@
 File Watcher - Monitor files and execute commands on timestamp changes
 """
 
-import os
 import time
 
 from colorama import Fore
 
 # Support both relative and absolute imports
 try:
-    from .command_executor import CommandExecutor
     from .config_loader import ConfigLoader
     from .error_logger import ErrorLogger
+    from .file_monitor import FileMonitor
     from .interval_parser import IntervalParser
     from .process_detector import ProcessDetector
-    from .time_period_checker import TimePeriodChecker
     from .timestamp_printer import TimestampPrinter
 except ImportError:
-    from command_executor import CommandExecutor
     from config_loader import ConfigLoader
     from error_logger import ErrorLogger
+    from file_monitor import FileMonitor
     from interval_parser import IntervalParser
     from process_detector import ProcessDetector
-    from time_period_checker import TimePeriodChecker
     from timestamp_printer import TimestampPrinter
 
 
@@ -44,11 +41,8 @@ class FileWatcher:
         TimestampPrinter.set_enable_timestamp(enable_timestamp)
 
     def _get_file_timestamp(self, filepath):
-        """Get the modification timestamp of a file."""
-        try:
-            return os.path.getmtime(filepath)
-        except OSError:
-            return None
+        """Get the modification timestamp of a file (backward compatibility)."""
+        return FileMonitor.get_file_timestamp(filepath)
 
     def _get_interval_for_file(self, settings):
         """Get the interval for a file in seconds (backward compatibility)."""
@@ -143,83 +137,9 @@ class FileWatcher:
 
     def _check_files(self):
         """Check all files for timestamp changes and execute commands if needed."""
-        if "files" not in self.config:
-            TimestampPrinter.print("Warning: No 'files' section found in configuration.", Fore.YELLOW)
-            return
-
-        error_log_file = self.config.get("error_log_file")
-        current_time = time.time()
-        files_config = self.config["files"]
-        for index, entry in enumerate(files_config):
-            filename = entry.get("path", "")
-            settings = entry
-            # Create a unique key for tracking this entry (index-based)
-            entry_key = f"#{index}"
-
-            # Validate terminate_if_process configuration early
-            if "terminate_if_process" in settings:
-                if filename != "":
-                    error_msg = f"Fatal configuration error: terminate_if_process can only be used with empty filename, but filename is '{filename}'"
-                    TimestampPrinter.print(error_msg, Fore.RED)
-                    ErrorLogger.log_error(error_log_file, error_msg)
-                    continue  # Skip this entry
-
-                if "command" in settings and settings["command"]:
-                    error_msg = "Fatal configuration error: terminate_if_process cannot be used with command field (command must be empty)"
-                    TimestampPrinter.print(error_msg, Fore.RED)
-                    ErrorLogger.log_error(error_log_file, error_msg)
-                    continue  # Skip this entry
-
-            # Allow missing command if terminate_if_process is specified
-            if "command" not in settings and "terminate_if_process" not in settings:
-                TimestampPrinter.print(f"Warning: No command specified for file '{filename}'", Fore.YELLOW)
-                continue
-
-            try:
-                # Check if file should be monitored based on time period
-                if not TimePeriodChecker.should_monitor_file(self.config, settings):
-                    # Skip monitoring this file - outside time period
-                    continue
-
-                interval = ConfigLoader.get_interval_for_file(self.config, settings)
-
-                # Check if enough time has passed since last check
-                if entry_key in self.file_last_check:
-                    if current_time - self.file_last_check[entry_key] < interval:
-                        continue
-
-                self.file_last_check[entry_key] = current_time
-
-                # Special case: empty filename means execute command without file monitoring
-                # This is useful for process health monitoring or periodic tasks (including terminate_if_process)
-                if filename == "":
-                    command = settings.get("command", "")
-                    CommandExecutor.execute_command(command, filename, settings, self.config)
-                    continue
-
-                current_timestamp = self._get_file_timestamp(filename)
-
-                if current_timestamp is None:
-                    if entry_key in self.file_timestamps:
-                        TimestampPrinter.print(f"Warning: File '{filename}' is no longer accessible", Fore.YELLOW)
-                        del self.file_timestamps[entry_key]
-                    continue
-
-                # Check if this is the first time we're seeing this file
-                if entry_key not in self.file_timestamps:
-                    self.file_timestamps[entry_key] = current_timestamp
-                    TimestampPrinter.print(f"Started monitoring '{filename}'", Fore.GREEN)
-                # Check if the timestamp has changed
-                elif current_timestamp != self.file_timestamps[entry_key]:
-                    TimestampPrinter.print(f"Detected change in '{filename}'", Fore.GREEN)
-                    CommandExecutor.execute_command(settings["command"], filename, settings, self.config)
-                    self.file_timestamps[entry_key] = current_timestamp
-            except Exception as e:
-                error_msg = f"Error processing file '{filename}'"
-                TimestampPrinter.print(f"{error_msg}: {e}", Fore.RED)
-                ErrorLogger.log_error(error_log_file, error_msg, e)
-                # Continue processing other files despite error
-                continue
+        self.file_timestamps, self.file_last_check = FileMonitor.check_files(
+            self.config, self.file_timestamps, self.file_last_check
+        )
 
     def run(self, interval=None):
         """Run the file watcher with the specified check interval (in seconds).
