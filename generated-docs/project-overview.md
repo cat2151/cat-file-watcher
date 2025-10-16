@@ -1,31 +1,30 @@
-Last updated: 2025-10-14
+Last updated: 2025-10-17
 
 # Project Overview
 
 ## プロジェクト概要
-- ファイルシステム上の特定のファイルやディレクトリの変更を効率的に監視します。
-- 変更が検知された際に、あらかじめ設定されたコマンドを自動で実行します。
-- 開発作業の自動化、定期的な処理のトリガー、あるいは特定のイベント応答に利用できるツールです。
+- ファイルの変更をリアルタイムで監視し、変更が検知された際に指定されたコマンドを自動実行するツールです。
+- 開発ワークフローの自動化、テストの自動実行、特定のファイル変更時のタスク処理などを効率化します。
+- 柔軟な設定（TOML形式）により、監視対象、実行コマンド、時間制限、プロセス検出などの詳細な制御が可能です。
 
 ## 技術スタック
-- フロントエンド: N/A (直接的なWeb UIは提供していません)
+- フロントエンド: (特になし - このプロジェクトはCLIツールです)
 - 音楽・オーディオ:
-    - Tone.js: Web Audio APIを抽象化し、ブラウザ上で高度な音声処理を行うためのJavaScriptライブラリ。
-    - Web Audio API: ブラウザに内蔵された音声処理用のAPIで、Tone.jsを通じて利用されます。
-    - MML (Music Macro Language): 音楽をテキストで記述するための記法パーサー。
+  - Tone.js: Web Audio APIを抽象化するJavaScriptライブラリです。
+  - Web Audio API: ブラウザで高度なオーディオ処理を行うためのAPIです。（CLIツールの直接機能ではありませんが、特定の拡張機能や関連用途で用いられる可能性があります。）
+  - MML (Music Macro Language): 音楽をテキストで記述するための記法パーサーです。
 - 開発ツール:
-    - Node.js runtime: JavaScriptの実行環境で、開発スクリプトや一部のツール実行に利用されます。
-- テスト: N/A (テストフレームワークの具体的な記載はありませんが、`pytest.ini`からPythonのPytestが使用されていると推測できます。)
-- ビルドツール: N/A
-- 言語機能: N/A (主要言語はPythonと推測されますが、特定の言語機能は明記されていません。)
+  - Node.js runtime: JavaScriptコードを実行するための環境です。
+- テスト:
+  - pytest: Pythonで書かれた強力なテストフレームワークです。
+- ビルドツール: (特になし - 主にスクリプト実行形式です)
+- 言語機能:
+  - Python: プロジェクトの主要なプログラミング言語です。
 - 自動化・CI/CD:
-    - GitHub Actions: コードの変更をトリガーに自動テスト、ドキュメント生成、翻訳などを行うCI/CDワークフロー。
-        - プロジェクト要約自動生成: プロジェクトの概要を自動で生成します。
-        - Issue自動管理: GitHub Issueのライフサイクルを自動で管理します。
-        - README多言語翻訳: READMEファイルを複数の言語に自動翻訳します。
-        - i18n automation: 国際化（i18n）関連の自動処理を行います。
+  - GitHub Actions: コードの変更に基づいて自動テスト、デプロイ、ドキュメント生成などを行うCI/CDプラットフォームです。具体的には、プロジェクト要約の自動生成、Issue管理、READMEの多言語翻訳、i18n自動化ワークフローが設定されています。
 - 開発標準:
-    - EditorConfig: 異なるIDEやエディタ間でコードスタイルの一貫性を保つための設定ファイル。
+  - EditorConfig: 異なるエディタやIDE間でコードスタイル（インデント、改行コードなど）を統一するための設定ファイルです。
+  - Ruff: Pythonのコードを高速にチェックし、フォーマットするリンター兼フォーマッターです。
 
 ## ファイル階層ツリー
 ```
@@ -45,6 +44,7 @@ Last updated: 2025-10-14
   📄 monitoring-group-example.toml
 📁 generated-docs/
 📁 issue-notes/
+  📖 101.md
   📖 11.md
   📖 16-refactoring-summary.md
   📖 19-refactoring-summary.md
@@ -85,6 +85,11 @@ Last updated: 2025-10-14
   📖 85.md
   📖 87.md
   📖 89.md
+  📖 91.md
+  📖 93.md
+  📖 95.md
+  📖 97.md
+  📖 99.md
 📄 pytest.ini
 📄 requirements.txt
 📄 ruff.toml
@@ -94,7 +99,10 @@ Last updated: 2025-10-14
   📄 cat_file_watcher.py
   📄 command_executor.py
   📄 config_loader.py
+  📄 config_validator.py
   📄 error_logger.py
+  📄 external_config_merger.py
+  📄 file_monitor.py
   📄 interval_parser.py
   📄 process_detector.py
   📄 time_period_checker.py
@@ -125,78 +133,82 @@ Last updated: 2025-10-14
 ```
 
 ## ファイル詳細説明
-- **.editorconfig**: 複数の開発者や異なるエディタ間で、インデントスタイル、文字コード、改行コードなど、コードの基本的な書式設定を一貫させるための設定ファイル。
-- **.gitignore**: Gitのバージョン管理から除外するファイルやディレクトリを指定するファイル。ビルド生成物や一時ファイルなどが含まれます。
-- **.pre-commit-config.yaml**: Gitのpre-commitフックで実行される処理を設定するファイル。コミット前にコードのフォーマットチェックやリンティングなどを自動で行います。
-- **.vscode/**: Visual Studio Codeエディタのワークスペース固有の設定を格納するディレクトリ。
-    - **.vscode/README.md**: VS Codeユーザー向けの追加情報や推奨設定が記述されている可能性があります。
-    - **.vscode/extensions.json**: このプロジェクトで推奨されるVS Code拡張機能のリスト。
-    - **.vscode/settings.json**: VS Codeのワークスペース固有の設定（例: 言語設定、フォーマット設定）。
-- **LICENSE**: このプロジェクトのソフトウェアライセンス情報。利用条件が記載されています。
-- **README.ja.md**: プロジェクトの概要、使い方、機能などを日本語で説明する主要なドキュメント。
-- **README.md**: プロジェクトの概要、使い方、機能などを英語で説明する主要なドキュメント。
-- **dev-requirements.txt**: 開発環境で必要となるPythonライブラリのリスト。テストツールやリンターなどが含まれます。
-- **examples/**: プロジェクトの設定ファイルや使用例が格納されているディレクトリ。
-    - **examples/config.example.toml**: メインの設定ファイル（`cat-file-watcher`の動作設定）の例。
-    - **examples/monitoring-group-example.toml**: 監視対象のファイルグループとその設定の例。
-- **generated-docs/**: 自動生成されたドキュメントを格納するディレクトリ。開発状況レポートなどが含まれる可能性があります。
-- **issue-notes/**: 開発中の特定のGitHub Issueに関連するメモや詳細な調査結果を格納するディレクトリ。
-- **pytest.ini**: Pythonのテストフレームワークであるpytestの設定ファイル。テストの実行方法やオプションを定義します。
-- **requirements.txt**: プロジェクトの実行に必要なPythonライブラリのリスト。
-- **ruff.toml**: Pythonの高速なLinterおよびFormatterであるRuffの設定ファイル。コードの品質と一貫性を保つためのルールを定義します。
-- **src/**: プロジェクトの主要なソースコードを格納するディレクトリ。
-    - **src/__init__.py**: Pythonパッケージとして`src`ディレクトリを初期化するためのファイル。
-    - **src/__main__.py**: `python -m src`のようにパッケージを直接実行した際のプログラムのエントリーポイント。
-    - **src/cat_file_watcher.py**: ファイルやディレクトリの変更を監視し、指定されたコマンドを実行するメインロジックを含むファイル。
-    - **src/command_executor.py**: 監視対象の変更をトリガーとして実行される外部コマンドを安全に実行するための機能を提供します。
-    - **src/config_loader.py**: TOML形式などの設定ファイルを読み込み、プログラムが使用できる形式に解析する機能を提供します。
-    - **src/error_logger.py**: プログラム実行中に発生したエラーを記録し、適切な方法で報告するためのロギング機能を提供します。
-    - **src/interval_parser.py**: 監視間隔や時間指定などの文字列を解析し、数値形式に変換するユーティリティ機能を提供します。
-    - **src/process_detector.py**: 特定の名前のプロセスが現在実行中であるかを検出し、その状態に基づいてアクションを決定する機能を提供します。
-    - **src/time_period_checker.py**: 設定された時間帯（例: 業務時間内）にプログラムの動作を制限または調整するための時間チェック機能を提供します。
-    - **src/timestamp_printer.py**: イベントの発生時刻などを分かりやすい形式で出力するためのタイムスタンプ生成・表示機能を提供します。
-- **tests/**: プロジェクトのテストコードを格納するディレクトリ。
-    - `test_*.py` ファイル群: 各モジュールや機能の単体テスト、統合テストなどが記述されています。
+- **.editorconfig**: エディタのコードスタイル設定を定義し、プロジェクト全体で一貫したコーディングスタイルを強制します。
+- **.gitignore**: Gitがバージョン管理から無視すべきファイルやディレクトリを指定します。
+- **.pre-commit-config.yaml**: pre-commitフレームワークの設定ファイルで、コミット前に特定のフック（コード整形、リンティングなど）を自動実行するために使用されます。
+- **.vscode/**: Visual Studio Codeに関連する設定を格納するディレクトリです。
+  - **README.md**: VS Codeの推奨設定や拡張機能に関する情報を提供するドキュメントです。
+  - **extensions.json**: このプロジェクトで推奨されるVS Code拡張機能のリストです。
+  - **settings.json**: このワークスペース固有のVS Code設定を定義します。
+- **LICENSE**: プロジェクトの利用条件を定めるライセンス情報が記載されています。
+- **README.ja.md**: プロジェクトの概要、使い方、設定方法などを日本語で説明するドキュメントです。
+- **README.md**: プロジェクトの概要、使い方、設定方法などを英語で説明するドキュメントです。
+- **dev-requirements.txt**: 開発環境で必要となるPythonパッケージの一覧を定義します。
+- **examples/**: 設定ファイルの例が格納されているディレクトリです。
+  - **config.example.toml**: メインの設定ファイル（TOML形式）の記述例です。
+  - **monitoring-group-example.toml**: 監視グループに関する設定例（TOML形式）です。
+- **generated-docs/**: 自動生成されたドキュメントやレポートを格納するディレクトリです。
+- **issue-notes/**: 過去のIssueに関する議論、調査報告、解決策などの詳細なメモが格納されています。（開発者向け情報が主です）
+- **pytest.ini**: pytestテストフレームワークの設定ファイルです。
+- **requirements.txt**: プロジェクトの実行に必要なPythonパッケージの一覧を定義します。
+- **ruff.toml**: Pythonのリンター/フォーマッターであるRuffの設定ファイルです。
+- **src/**: プロジェクトの主要なソースコードを格納するディレクトリです。
+  - **__init__.py**: Pythonパッケージであることを示すファイルです。
+  - **__main__.py**: プログラムが直接実行された際のエントリポイントとなるスクリプトです。
+  - **cat_file_watcher.py**: ファイル監視の全体的なロジックとコマンド実行フローを統括するメインスクリプトです。
+  - **command_executor.py**: 設定に基づいて外部コマンドを実行する機能を提供します。
+  - **config_loader.py**: TOML形式などの設定ファイルを読み込み、プログラムで利用可能な形式に変換します。
+  - **config_validator.py**: 読み込んだ設定データの構造と内容が正しいかを検証します。
+  - **error_logger.py**: 発生したエラーを適切にログに記録する機能を提供します。
+  - **external_config_merger.py**: メイン設定ファイルと、そこから参照される外部設定ファイルを統合するロジックを扱います。
+  - **file_monitor.py**: ファイルシステム上の特定のファイルやディレクトリの変更を効率的に監視するコアロジックを実装します。
+  - **interval_parser.py**: "5s", "1m"のような文字列形式の時間間隔を、プログラムで扱える数値形式にパース（解析）します。
+  - **process_detector.py**: 指定された名前のプロセスが現在システム上で実行中であるかを検出する機能を提供します。
+  - **time_period_checker.py**: コマンド実行を特定の日時や時間帯に制限するための条件チェックを行います。
+  - **timestamp_printer.py**: 現在の時刻を整形して出力する機能を提供します。
+- **tests/**: プロジェクトのテストコードを格納するディレクトリです。
+  - **test_basics.py**: プロジェクトの基本的な機能が正しく動作するかを検証するテストです。
+  - **test_cat_file_watcher.py**: `cat_file_watcher.py`で実装されている主要なファイル監視機能に関するテストです。
+  - **test_colorama.py**: ターミナル出力の色付けライブラリ`colorama`（もし使用されていれば）に関するテストです。
+  - **test_command_logging.py**: コマンド実行のログ記録機能に関するテストです。
+  - **test_command_suppression.py**: 特定の条件でコマンド実行を抑制する機能に関するテストです。
+  - **test_commands_and_processes_sections.py**: 設定ファイル内の`commands`および`processes`セクションの正しい解析と動作に関するテストです。
+  - **test_config_reload.py**: 実行中に設定が正しく再読み込みされるかに関するテストです。
+  - **test_cwd.py**: コマンド実行時のカレントワーキングディレクトリ(CWD)の動作に関するテストです。
+  - **test_directory_monitoring.py**: ファイルだけでなくディレクトリの変更監視機能に関するテストです。
+  - **test_empty_filename.py**: 空のファイル名が指定された場合の挙動に関するテストです。
+  - **test_error_logging.py**: エラーロギング機能が正しく動作するかに関するテストです。
+  - **test_external_files.py**: 外部ファイルの取り扱い、特に外部設定のマージに関するテストです。
+  - **test_interval_parser.py**: 時間間隔を解析するパーサーの機能に関するテストです。
+  - **test_intervals.py**: 監視間隔の指定と動作に関するテストです。
+  - **test_main_loop_interval.py**: メインの監視ループの実行間隔に関するテストです。
+  - **test_multiple_empty_filenames.py**: 複数の空のファイル名が指定された場合の挙動に関するテストです。
+  - **test_new_interval_format.py**: 新しい時間間隔フォーマットの対応に関するテストです。
+  - **test_process_detection.py**: プロセス検出機能に関するテストです。
+  - **test_suppression_logging.py**: 抑制されたコマンド実行が適切にログに記録されるかに関するテストです。
+  - **test_terminate_if_process.py**: 特定のプロセスが実行中の場合に監視を終了する条件に関するテストです。
+  - **test_time_periods.py**: 時間帯によるコマンド実行制限機能に関するテストです。
+  - **test_timestamp.py**: タイムスタンプ出力機能に関するテストです。
 
 ## 関数詳細説明
-プロジェクト情報から具体的な関数の引数や戻り値の詳細を直接抽出することはできませんでしたが、各ファイルが担当する主要な機能に基づき、関連するであろう関数とその役割を以下に示します。
-
-- **`src/cat_file_watcher.py`**
-    - `watch_files(config)`:
-        - 役割: 指定された設定情報に基づき、ファイルやディレクトリの変更を継続的に監視するメインループを実行します。
-        - 機能: 監視対象の変更を検知し、必要に応じて`command_executor`を呼び出す。
-- **`src/command_executor.py`**
-    - `execute_command(command_args, cwd=None)`:
-        - 役割: 指定されたコマンドとその引数を新しいサブプロセスとして実行します。
-        - 機能: コマンドの実行、ワーキングディレクトリの指定、実行結果のハンドリング。
-- **`src/config_loader.py`**
-    - `load_config(config_path)`:
-        - 役割: 指定されたパスにある設定ファイル（例: TOML）を読み込み、パースして設定オブジェクトを返します。
-        - 機能: ファイルの読み込み、TOML形式の解析、設定値のバリデーション。
-- **`src/error_logger.py`**
-    - `log_error(message, level='error')`:
-        - 役割: 指定されたエラーメッセージをログに出力します。
-        - 機能: エラーメッセージのフォーマット、ログファイルやコンソールへの出力、ログレベルの管理。
-- **`src/interval_parser.py`**
-    - `parse_interval(interval_str)`:
-        - 役割: "10s", "5m" のような文字列形式の時間間隔を、秒数などの数値形式に解析して変換します。
-        - 機能: 文字列解析、時間単位（秒、分など）の変換。
-- **`src/process_detector.py`**
-    - `is_process_running(process_name)`:
-        - 役割: 指定された名前のプロセスがシステム上で現在実行中であるかを検出します。
-        - 機能: 実行中プロセスのリスト取得、プロセス名との比較。
-- **`src/time_period_checker.py`**
-    - `is_within_time_period(time_periods)`:
-        - 役割: 現在の時刻が、設定された特定の時間帯の範囲内にあるかを判定します。
-        - 機能: 現在時刻の取得、設定された開始・終了時刻との比較。
-- **`src/timestamp_printer.py`**
-    - `print_timestamp()`:
-        - 役割: 現在のタイムスタンプ（日時）を整形して標準出力に表示します。
-        - 機能: 現在時刻の取得、フォーマット指定、出力。
+- **main() (in `src/__main__.py`, `src/cat_file_watcher.py`)**: プログラムのエントリポイントで、設定のロード、ファイル監視ループの初期化と開始、全体の実行フローを管理します。
+- **run_watcher() (in `src/cat_file_watcher.py`)**: 実際のファイル監視ロジックと、変更検知時のコマンド実行、各種条件判定（時間帯、プロセス検出など）を含むメインループを実行します。
+- **execute_command(command_config) (in `src/command_executor.py`)**: 指定されたコマンド設定（コマンド文字列、実行ディレクトリ、環境変数など）に基づいて、外部のシェルコマンドを実行します。
+- **load_config(path) (in `src/config_loader.py`)**: 指定されたファイルパスから設定ファイル（TOML形式を想定）を読み込み、Pythonのデータ構造に変換して返します。
+- **validate_config(config_data) (in `src/config_validator.py`)**: 読み込んだ設定データのスキーマと値の妥当性を検証し、不正な設定があればエラーを報告します。
+- **log_error(message, error_details) (in `src/error_logger.py`)**: 発生したエラーメッセージとその詳細情報を、標準エラー出力や設定されたログシステムに出力します。
+- **merge_external_configs(main_config) (in `src/external_config_merger.py`)**: メイン設定ファイル内で参照されている可能性のある外部設定ファイルをロードし、それらの内容をメイン設定にマージします。
+- **watch_files(paths, callback) (in `src/file_monitor.py`)**: 指定されたファイルパスまたはディレクトリパスの変更を継続的に監視し、変更が検知された際に登録されたコールバック関数を呼び出します。
+- **get_file_status(path) (in `src/file_monitor.py`)**: 特定のファイルの現在の状態（例：最終更新タイムスタンプ、ファイルサイズなど）を取得し、変更検知のための比較に使用します。
+- **parse_interval(interval_str) (in `src/interval_parser.py`)**: "10s" (10秒), "5m" (5分) のような時間間隔を表す文字列を解析し、対応する秒数などの数値に変換します。
+- **is_process_running(process_name) (in `src/process_detector.py`)**: 指定された名前のプロセスが現在システム上で実行中であるかどうかをチェックし、真偽値を返します。
+- **is_within_time_period(time_periods) (in `src/time_period_checker.py`)**: 現在時刻が、設定ファイルで定義された許可された時間帯のいずれかに含まれているかを判断します。
+- **print_timestamp() (in `src/timestamp_printer.py`)**: 現在のタイムスタンプを整形された文字列として標準出力に出力します。
+- **format_timestamp(dt) (in `src/timestamp_printer.py`)**: `datetime`オブジェクトを受け取り、特定のフォーマット（例: `YYYY-MM-DD HH:MM:SS`）で文字列に変換します。
 
 ## 関数呼び出し階層ツリー
 ```
-関数呼び出し階層を分析できませんでした
+関数呼び出し階層を分析できませんでした。
 
 ---
-Generated at: 2025-10-14 07:02:17 JST
+Generated at: 2025-10-17 07:02:44 JST

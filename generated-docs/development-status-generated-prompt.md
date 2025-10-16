@@ -1,4 +1,4 @@
-Last updated: 2025-10-14
+Last updated: 2025-10-17
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -204,6 +204,7 @@ Last updated: 2025-10-14
 - dev-requirements.txt
 - examples/config.example.toml
 - examples/monitoring-group-example.toml
+- issue-notes/101.md
 - issue-notes/11.md
 - issue-notes/16-refactoring-summary.md
 - issue-notes/19-refactoring-summary.md
@@ -244,6 +245,11 @@ Last updated: 2025-10-14
 - issue-notes/85.md
 - issue-notes/87.md
 - issue-notes/89.md
+- issue-notes/91.md
+- issue-notes/93.md
+- issue-notes/95.md
+- issue-notes/97.md
+- issue-notes/99.md
 - pytest.ini
 - requirements.txt
 - ruff.toml
@@ -252,7 +258,10 @@ Last updated: 2025-10-14
 - src/cat_file_watcher.py
 - src/command_executor.py
 - src/config_loader.py
+- src/config_validator.py
 - src/error_logger.py
+- src/external_config_merger.py
+- src/file_monitor.py
 - src/interval_parser.py
 - src/process_detector.py
 - src/time_period_checker.py
@@ -288,41 +297,29 @@ Last updated: 2025-10-14
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-dbec09c Merge pull request #90 from cat2151/copilot/add-multiple-process-termination
-020e65f Fix array behavior - apply safety check per pattern independently
-1859428 Add support for array of patterns in terminate_if_process
-719e6dc Initial plan
-cbcf7d0 Add issue note for #89 [auto]
-5688ac1 Trim trailing spaces
-d55fe98 issue-notesのうち、closeかつ空のものを削除し、読みやすくした。issueからのlinkがdead linkになりそうだが、悪影響は軽微と想定し、ひとまず様子見とする
-c81014a Merge branch 'main' of github.com:cat2151/cat-file-watcher into main
-90907b0 fixed #71 当該workflow ymlを廃止したのち、ほかのissueにて根本的な課題を解決したので、closeとする
-c2177f1 Merge pull request #88 from cat2151/copilot/apply-ruff-formatting
+70290ad Merge pull request #102 from cat2151/copilot/visualize-refactoring-tasks
+bec131b Add comprehensive refactoring status visualization to issue-notes/101.md
+266d752 Initial plan
+2a86bbb Add issue note for #101 [auto]
+4992911 Merge pull request #100 from cat2151/copilot/refactor-issues-96-98
+1c5a4a4 Refactor command_executor.py: split long functions (Phase 2)
+e1fa69d Initial plan
+0dc5115 Add issue note for #99 [auto]
+a19a62c Merge pull request #98 from cat2151/copilot/refactor-issue-96-material
+9daa34d Complete Phase 1 refactoring - update issue notes with summary
 
 ### 変更されたファイル:
-.github/copilot-instructions.md
-.pre-commit-config.yaml
-=0.6.0
-README.md
-dev-requirements.txt
-examples/config.example.toml
-issue-notes/13.md
-issue-notes/15.md
-issue-notes/16.md
-issue-notes/19.md
-issue-notes/23.md
-issue-notes/32.md
-issue-notes/45.md
-issue-notes/71-investigation-report.md
-issue-notes/71.md
-issue-notes/83.md
-issue-notes/85.md
-issue-notes/87.md
-issue-notes/89.md
-issue-notes/9.md
+issue-notes/101.md
+issue-notes/95.md
+issue-notes/97.md
+issue-notes/99.md
+src/cat_file_watcher.py
 src/command_executor.py
-tests/test_terminate_if_process.py
+src/config_loader.py
+src/config_validator.py
+src/external_config_merger.py
+src/file_monitor.py
 
 
 ---
-Generated at: 2025-10-14 07:01:46 JST
+Generated at: 2025-10-17 07:01:57 JST

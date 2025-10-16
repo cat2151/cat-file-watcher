@@ -1,55 +1,48 @@
-Last updated: 2025-10-14
+Last updated: 2025-10-17
 
 # Development Status
 
 ## 現在のIssues
-- 現在オープン中のIssueはありません。
-- 最近の活動は、`terminate_if_process` の配列パターン対応（[Issue #90](../issue-notes/90.md)）やRuffフォーマットの適用（[Issue #88](../issue-notes/88.md)）に集中しています。
-- また、古いIssueノートの整理も実施され、プロジェクトがクリーンな状態に保たれています。
+現在オープン中のIssueはありません。
 
 ## 次の一手候補
-1.  `terminate_if_process` の配列パターン対応 ([Issue #89](../issue-notes/89.md), [Issue #90](../issue-notes/90.md)) のドキュメント化とテスト強化
-    -   最初の小さな一歩: `examples/config.example.toml` に、新しく追加された `terminate_if_process` の配列パターンの具体的な使用例を追加する。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `examples/config.example.toml`, `src/command_executor.py`, `tests/test_terminate_if_process.py`
+1. src/command_executor.pyのさらなるリファクタリング [Issue #103](../issue-notes/103.md)
+   - 最初の小さな一歩: `src/command_executor.py` 内の `_execute_command_with_suppression` 関数がまだ複雑なため、その内部ロジックをより小さなサブ関数に分割するための分析を行う。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: src/command_executor.py
 
-        実行内容: `examples/config.example.toml` に、最近追加された `terminate_if_process` の配列パターン機能を示す具体的な設定例を追加してください。また、`src/command_executor.py` に実装された配列パターン処理が意図通り動作するか、既存のテスト (`tests/test_terminate_if_process.py`) のカバレッジを確認し、必要であれば新しいテストケースを追加してください。
+     実行内容: src/command_executor.py 内の `_execute_command_with_suppression` 関数について、その処理内容を詳細に分析し、担当する複数の責任を洗い出してください。その後、これらの責任に基づいて関数を2〜3個のより小さな関数に分割する具体的なリファクタリング計画をMarkdown形式で提案してください。
 
-        確認事項: `terminate_if_process` の設定が単一文字列の場合と配列の場合の両方で、既存の機能が壊れていないことを確認してください。また、`config.example.toml` の他の設定例との整合性も確認してください。
+     確認事項: 分割提案は、元の関数の外部から見た振る舞いを変更しないことを前提とします。また、関連するテストファイル (`tests/test_command_suppression.py` など) との整合性を確認し、リファクタリング後に既存のテストが引き続きパスすることを目指します。
 
-        期待する出力: 更新された `examples/config.example.toml` の内容と、追加・修正されたテストファイル (`tests/test_terminate_if_process.py`) の変更内容をMarkdown形式で提示してください。
-        ```
+     期待する出力: リファクタリング計画を記載したMarkdownファイル。提案される新しい関数名とその役割、元の関数からの呼び出し関係、そして各新関数の目的を明確に記述してください。
+     ```
 
-2.  Ruffフォーマット ([Issue #88](../issue-notes/88.md)) 設定の最適化とCI/CDワークフローへの統合
-    -   最初の小さな一歩: 現在の `ruff.toml` の設定内容を確認し、プロジェクトのコーディング規約と照らし合わせて、追加で有効にすべきルールや除外すべきルールがないかを調査する。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `ruff.toml`, `.pre-commit-config.yaml`, `.github/workflows/` ディレクトリ内の既存のCI/CDワークフローファイル (例: `call-daily-project-summary.yml`など、コード品質チェックを含む可能性のあるもの)
+2. リファクタリング進捗の可視化改善 [Issue #104](../issue-notes/104.md)
+   - 最初の小さな一歩: `issue-notes/101.md` の内容を読み込み、現在のリファクタリング進捗の表現方法を理解する。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: issue-notes/101.md
 
-        実行内容: `ruff.toml` の設定をレビューし、プロジェクトのコーディング規約に合致するように最適化の提案を行ってください。特に、現在適用されているルールセットが適切か、より厳密なチェックや特定のルールを除外すべきかなどを検討してください。また、CI/CDワークフロー (`.github/workflows/` 内のファイル) において、Ruffによる自動フォーマットやリンティングが適切に実行されているかを確認し、未導入であれば導入を提案してください。
+     実行内容: issue-notes/101.md に記載されているリファクタリング進捗の可視化方法を分析し、タスクの依存関係や完了状態をより明確に示すための改善案をMarkdown形式で提案してください。具体的には、Mermaid図（例: FlowchartやGantt chart）の導入を検討し、そのサンプルコードとその適用例を含めてください。
 
-        確認事項: `ruff` の設定変更が既存コードに与える影響（大量のフォーマット変更が発生しないか）、`.pre-commit-config.yaml` との重複や競合がないかを確認してください。CI/CDへの組み込みは、既存のワークフローに影響を与えない形で提案してください。
+     確認事項: 提案は、現在の情報をより分かりやすくすることを目的とし、過度な複雑化を避けること。既存のissue note形式との整合性や、将来的な自動生成の可能性も考慮してください。
 
-        期待する出力:
-        1.  `ruff.toml` の最適化に関する提案（変更内容とその理由）をMarkdownで記述。
-        2.  RuffをCI/CDワークフローに組み込むための具体的な提案（既存ワークフローファイルのどの部分にどのように追加するか）をMarkdownで記述。
-        ```
+     期待する出力: issue-notes/101.md の改善案を記載したMarkdownファイル。Mermaid図のサンプルコードとその説明、およびissue-notes/101.mdへ適用した場合のプレビューを含めてください。
+     ```
 
-3.  整理された `issue-notes` のデッドリンク調査と修正 (関連コミット `d5fe98c`)
-    -   最初の小さな一歩: `issue-notes/` ディレクトリ内の既存のMarkdownファイルを開き、他の `issue-notes` への相対リンクを一つずつ手動で確認する。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `issue-notes/` ディレクトリ内の全てのMarkdownファイル
+3. src/command_executor.py のテストカバレッジ拡充 [Issue #105](../issue-notes/105.md)
+   - 最初の小さな一歩: `src/command_executor.py` の現在のテストファイル (`tests/test_command_logging.py`, `tests/test_command_suppression.py`) をレビューし、主要な関数の既存テストを把握する。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: src/command_executor.py と tests/test_command_logging.py, tests/test_command_suppression.py
 
-        実行内容: `issue-notes/` ディレクトリ内の各Markdownファイルを走査し、他の `issue-notes` ファイルへの相対リンク（例: `[Issue #XX](../issue-notes/XX.md)`）が存在するかどうかを確認してください。もし、リンク先ファイルが存在しない（デッドリンクとなっている）場合は、そのデッドリンクと、リンクを含む元のファイルを特定してください。
+     実行内容: src/command_executor.py 内の `_execute_command_with_suppression` 関数およびそれに密接に関連する関数について、既存のテストファイル (`tests/test_command_logging.py`, `tests/test_command_suppression.py`) の内容を分析してください。特に、リファクタリングによって影響を受けた可能性のあるロジックや、複雑な条件分岐に焦点を当て、現在のテストカバレッジで不足していると思われるシナリオやエッジケースをMarkdown形式でリストアップしてください。
 
-        確認事項: 削除された `issue-notes` (コミット `d5fe98c` で言及) の影響で、現在も有効な `issue-notes` からそれらの削除されたファイルへのリンクがないかを確認してください。また、リンク形式がプロンプトで指示されている `[Issue #番号](../issue-notes/番号.md)` と合致しているかも確認してください。
+     確認事項: テストケースの提案は、既存のPytestフレームワークと整合性があること。ハルシネーションを避け、具体的な不足シナリオ（例: 特定のエラー発生時、特定のフラグが設定されている場合など）を記述すること。
 
-        期待する出力:
-        1.  発見されたデッドリンクの一覧（元のファイルパスとデッドリンクの内容）をMarkdown形式で提示してください。
-        2.  デッドリンクが存在しない場合は、その旨を明記してください。
-        3.  必要に応じて、リンクを修正するための具体的な提案（例: リンクの削除、別のIssueへの変更）を記述してください。
+     期待する出力: src/command_executor.py 用の新規または既存テストファイルに追加すべきテストケースのリストをMarkdown形式で出力してください。各テストケースについて、テストの目的、具体的な入力条件、期待される結果を簡潔に記述してください。
 
 ---
-Generated at: 2025-10-14 07:02:10 JST
+Generated at: 2025-10-17 07:02:33 JST
