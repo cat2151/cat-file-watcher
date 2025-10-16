@@ -38,18 +38,50 @@ class CommandExecutor:
             return
 
         # Check if command execution should be suppressed based on running processes
-        if "suppress_if_process" in settings:
-            process_pattern = settings["suppress_if_process"]
-            matched_process = ProcessDetector.get_matching_process(process_pattern)
-            if matched_process:
-                TimestampPrinter.print(
-                    f"Skipping command for '{filepath}': process matching '{process_pattern}' is running", Style.DIM
-                )
-                # Write to suppression log file if configured
-                if config and config.get("suppression_log_file"):
-                    CommandExecutor._write_to_suppression_log(filepath, process_pattern, matched_process, config)
-                return
+        if CommandExecutor._check_process_suppression(filepath, settings, config):
+            return
 
+        # Execute the command
+        CommandExecutor._execute_shell_command(command, filepath, settings, config)
+
+    @staticmethod
+    def _check_process_suppression(filepath, settings, config):
+        """Check if command execution should be suppressed based on running processes.
+
+        Args:
+            filepath: The path to the file that changed
+            settings: Dictionary containing file-specific settings
+            config: Optional global configuration dictionary
+
+        Returns:
+            bool: True if command should be suppressed, False otherwise
+        """
+        if "suppress_if_process" not in settings:
+            return False
+
+        process_pattern = settings["suppress_if_process"]
+        matched_process = ProcessDetector.get_matching_process(process_pattern)
+        if matched_process:
+            TimestampPrinter.print(
+                f"Skipping command for '{filepath}': process matching '{process_pattern}' is running", Style.DIM
+            )
+            # Write to suppression log file if configured
+            if config and config.get("suppression_log_file"):
+                CommandExecutor._write_to_suppression_log(filepath, process_pattern, matched_process, config)
+            return True
+
+        return False
+
+    @staticmethod
+    def _execute_shell_command(command, filepath, settings, config):
+        """Execute a shell command and handle the result.
+
+        Args:
+            command: The shell command to execute
+            filepath: The path to the file that changed
+            settings: Dictionary containing file-specific settings
+            config: Optional global configuration dictionary
+        """
         TimestampPrinter.print(f"Executing command for '{filepath}': {command}", Fore.GREEN)
 
         # Write to log file if enabled
@@ -57,19 +89,12 @@ class CommandExecutor:
             CommandExecutor._write_to_log(filepath, settings, config)
 
         error_log_file = config.get("error_log_file") if config else None
-
-        # Get cwd setting if specified
         cwd = settings.get("cwd")
 
         try:
             # Use capture_output=False to allow real-time output for long-running commands
             result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
-            if result.returncode != 0:
-                error_msg = f"Command failed for '{filepath}' with exit code {result.returncode}"
-                TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
-                # Log command execution error (without stderr since we're not capturing it)
-                if error_log_file:
-                    ErrorLogger.log_error(error_log_file, f"{error_msg}\nCommand: {command}")
+            CommandExecutor._handle_command_result(result, command, filepath, error_log_file)
         except subprocess.TimeoutExpired as e:
             error_msg = f"Command timed out after 30 seconds for '{filepath}'"
             TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
@@ -80,6 +105,23 @@ class CommandExecutor:
             TimestampPrinter.print(f"{error_msg}: {e}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             raise
+
+    @staticmethod
+    def _handle_command_result(result, command, filepath, error_log_file):
+        """Handle the result of a command execution.
+
+        Args:
+            result: subprocess.CompletedProcess result object
+            command: The shell command that was executed
+            filepath: The path to the file that changed
+            error_log_file: Path to error log file (optional)
+        """
+        if result.returncode != 0:
+            error_msg = f"Command failed for '{filepath}' with exit code {result.returncode}"
+            TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
+            # Log command execution error (without stderr since we're not capturing it)
+            if error_log_file:
+                ErrorLogger.log_error(error_log_file, f"{error_msg}\nCommand: {command}")
 
     @staticmethod
     def _write_to_log(filepath, settings, config):
@@ -148,35 +190,67 @@ class CommandExecutor:
         # Process each pattern independently with safety check
         for pattern in process_patterns:
             matched_processes = ProcessDetector.get_all_matching_processes(pattern)
+            CommandExecutor._process_matched_processes(pattern, matched_processes, error_log_file)
 
-            if len(matched_processes) == 0:
-                # No processes found - this is normal, no action needed
-                continue
+    @staticmethod
+    def _process_matched_processes(pattern, matched_processes, error_log_file):
+        """Process the matched processes for a given pattern.
 
-            if len(matched_processes) == 1:
-                # Exactly one process found - terminate it
-                pid, process_name = matched_processes[0]
-                msg = f"Terminating process (PID: {pid}, Name: {process_name}) matching pattern '{pattern}'"
-                TimestampPrinter.print(msg, Fore.YELLOW)
-                ErrorLogger.log_error(error_log_file, msg)
+        Args:
+            pattern: The regex pattern used to match processes
+            matched_processes: List of (pid, process_name) tuples
+            error_log_file: Path to error log file (optional)
+        """
+        if len(matched_processes) == 0:
+            # No processes found - this is normal, no action needed
+            return
 
-                success = ProcessDetector.terminate_process(pid)
-                if success:
-                    success_msg = f"Successfully sent terminate signal to process {pid}"
-                    TimestampPrinter.print(success_msg, Fore.GREEN)
-                    ErrorLogger.log_error(error_log_file, success_msg)
-                else:
-                    error_msg = f"Failed to terminate process {pid}"
-                    TimestampPrinter.print(error_msg, Fore.RED)
-                    ErrorLogger.log_error(error_log_file, error_msg)
-            else:
-                # Multiple processes found - safety check, don't terminate
-                warning_msg = f"Warning: Found {len(matched_processes)} processes matching pattern '{pattern}'. Not terminating for safety."
-                TimestampPrinter.print(warning_msg, Fore.YELLOW)
-                ErrorLogger.log_error(error_log_file, warning_msg)
+        if len(matched_processes) == 1:
+            # Exactly one process found - terminate it
+            CommandExecutor._terminate_single_process(pattern, matched_processes[0], error_log_file)
+        else:
+            # Multiple processes found - safety check, don't terminate
+            CommandExecutor._handle_multiple_matches(pattern, matched_processes, error_log_file)
 
-                # Log details of matched processes
-                for pid, process_name in matched_processes:
-                    detail_msg = f"  - PID: {pid}, Name: {process_name}"
-                    TimestampPrinter.print(detail_msg, Fore.YELLOW)
-                    ErrorLogger.log_error(error_log_file, detail_msg)
+    @staticmethod
+    def _terminate_single_process(pattern, process_info, error_log_file):
+        """Terminate a single matched process.
+
+        Args:
+            pattern: The regex pattern that matched this process
+            process_info: Tuple of (pid, process_name)
+            error_log_file: Path to error log file (optional)
+        """
+        pid, process_name = process_info
+        msg = f"Terminating process (PID: {pid}, Name: {process_name}) matching pattern '{pattern}'"
+        TimestampPrinter.print(msg, Fore.YELLOW)
+        ErrorLogger.log_error(error_log_file, msg)
+
+        success = ProcessDetector.terminate_process(pid)
+        if success:
+            success_msg = f"Successfully sent terminate signal to process {pid}"
+            TimestampPrinter.print(success_msg, Fore.GREEN)
+            ErrorLogger.log_error(error_log_file, success_msg)
+        else:
+            error_msg = f"Failed to terminate process {pid}"
+            TimestampPrinter.print(error_msg, Fore.RED)
+            ErrorLogger.log_error(error_log_file, error_msg)
+
+    @staticmethod
+    def _handle_multiple_matches(pattern, matched_processes, error_log_file):
+        """Handle the case when multiple processes match a pattern.
+
+        Args:
+            pattern: The regex pattern that matched multiple processes
+            matched_processes: List of (pid, process_name) tuples
+            error_log_file: Path to error log file (optional)
+        """
+        warning_msg = f"Warning: Found {len(matched_processes)} processes matching pattern '{pattern}'. Not terminating for safety."
+        TimestampPrinter.print(warning_msg, Fore.YELLOW)
+        ErrorLogger.log_error(error_log_file, warning_msg)
+
+        # Log details of matched processes
+        for pid, process_name in matched_processes:
+            detail_msg = f"  - PID: {pid}, Name: {process_name}"
+            TimestampPrinter.print(detail_msg, Fore.YELLOW)
+            ErrorLogger.log_error(error_log_file, detail_msg)
