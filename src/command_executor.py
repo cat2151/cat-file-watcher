@@ -67,7 +67,7 @@ class CommandExecutor:
             )
             # Write to suppression log file if configured
             if config and config.get("suppression_log_file"):
-                CommandExecutor._write_to_suppression_log(filepath, process_pattern, matched_process, config)
+                CommandExecutor._write_to_suppression_log(filepath, process_pattern, matched_process, config, settings)
             return True
 
         return False
@@ -148,7 +148,7 @@ class CommandExecutor:
             ErrorLogger.log_error(error_log_file, error_msg, e)
 
     @staticmethod
-    def _write_to_suppression_log(filepath, process_pattern, matched_process, config):
+    def _write_to_suppression_log(filepath, process_pattern, matched_process, config, settings=None):
         """Write command suppression information to suppression log file.
 
         Args:
@@ -156,6 +156,7 @@ class CommandExecutor:
             process_pattern: The regex pattern used to match processes
             matched_process: The actual process name that matched
             config: Global configuration dictionary containing 'suppression_log_file'
+            settings: Dictionary containing file-specific settings (optional)
         """
         error_log_file = config.get("error_log_file") if config else None
         try:
@@ -166,6 +167,10 @@ class CommandExecutor:
                 f.write(f"[{timestamp}] File: {filepath}\n")
                 f.write(f"  Process pattern: {process_pattern}\n")
                 f.write(f"  Matched process: {matched_process}\n")
+                # Write all settings if provided
+                if settings:
+                    for key, value in settings.items():
+                        f.write(f"  {key}: {value}\n")
                 f.write("\n")
         except Exception as e:
             error_msg = f"Failed to write to suppression log file for '{filepath}'"
