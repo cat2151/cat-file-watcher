@@ -295,12 +295,15 @@ terminate_if_process = ["test_proc_a\\\\.py", "test_proc_b\\\\.py"]
             assert proc1.poll() is not None, "First process should have been terminated"
             assert proc2.poll() is not None, "Second process should have been terminated"
 
-            # Verify log contains termination messages for both
-            assert os.path.exists(self.error_log_file), "Error log should exist"
-            with open(self.error_log_file, "r") as f:
-                log_content = f.read()
-            assert "test_proc_a" in log_content, "Should log termination of first process"
-            assert "test_proc_b" in log_content, "Should log termination of second process"
+            # Successful terminations should not be logged to error log
+            # Error log should not exist for successful operations
+            if os.path.exists(self.error_log_file):
+                with open(self.error_log_file, "r") as f:
+                    log_content = f.read()
+                # If the file exists, it should only contain actual errors, not success messages
+                assert "Successfully sent terminate signal" not in log_content, (
+                    "Success messages should not be in error log"
+                )
         finally:
             # Cleanup: ensure processes are killed if still running
             for proc in [proc1, proc2]:
@@ -418,11 +421,15 @@ terminate_if_process = ["test_partial\\\\.py", "nonexistent_xyz"]
             # Verify process was terminated
             assert proc.poll() is not None, "Process should have been terminated"
 
-            # Verify log contains termination message
-            assert os.path.exists(self.error_log_file), "Error log should exist"
-            with open(self.error_log_file, "r") as f:
-                log_content = f.read()
-            assert "test_partial" in log_content, "Should log termination of matching process"
+            # Successful terminations should not be logged to error log
+            # Error log should not exist for successful operations
+            if os.path.exists(self.error_log_file):
+                with open(self.error_log_file, "r") as f:
+                    log_content = f.read()
+                # If the file exists, it should only contain actual errors, not success messages
+                assert "Successfully sent terminate signal" not in log_content, (
+                    "Success messages should not be in error log"
+                )
         finally:
             # Cleanup
             if proc.poll() is None:
@@ -482,11 +489,12 @@ terminate_if_process = ["test_single\\\\.py", "test_multi\\\\.py"]
             assert proc_b1.poll() is None, "Process B1 should still be running (multiple match safety)"
             assert proc_b2.poll() is None, "Process B2 should still be running (multiple match safety)"
 
-            # Verify log contains termination for A and warning for B
+            # Verify log contains warning for B (multiple matches)
+            # Successful termination of A should NOT be in error log
             assert os.path.exists(self.error_log_file), "Error log should exist"
             with open(self.error_log_file, "r") as f:
                 log_content = f.read()
-            assert "test_single" in log_content, "Should log termination of single-match process"
+            assert "test_single" not in log_content, "Successful termination should not be in error log"
             assert "Found 2 processes" in log_content, "Should log warning about multiple-match pattern"
             assert "test_multi" in log_content, "Should mention the multi-match pattern"
         finally:

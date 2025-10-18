@@ -229,13 +229,11 @@ class CommandExecutor:
         pid, process_name = process_info
         msg = f"Terminating process (PID: {pid}, Name: {process_name}) matching pattern '{pattern}'"
         TimestampPrinter.print(msg, Fore.YELLOW)
-        ErrorLogger.log_error(error_log_file, msg)
 
         success = ProcessDetector.terminate_process(pid)
         if success:
             success_msg = f"Successfully sent terminate signal to process {pid}"
             TimestampPrinter.print(success_msg, Fore.GREEN)
-            ErrorLogger.log_error(error_log_file, success_msg)
         else:
             error_msg = f"Failed to terminate process {pid}"
             TimestampPrinter.print(error_msg, Fore.RED)
