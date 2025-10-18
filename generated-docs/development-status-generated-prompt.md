@@ -1,4 +1,4 @@
-Last updated: 2025-10-17
+Last updated: 2025-10-19
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -205,6 +205,8 @@ Last updated: 2025-10-17
 - examples/config.example.toml
 - examples/monitoring-group-example.toml
 - issue-notes/101.md
+- issue-notes/103.md
+- issue-notes/105.md
 - issue-notes/11.md
 - issue-notes/16-refactoring-summary.md
 - issue-notes/19-refactoring-summary.md
@@ -276,6 +278,7 @@ Last updated: 2025-10-17
 - tests/test_cwd.py
 - tests/test_directory_monitoring.py
 - tests/test_empty_filename.py
+- tests/test_error_log_clarity.py
 - tests/test_error_logging.py
 - tests/test_external_files.py
 - tests/test_interval_parser.py
@@ -297,29 +300,29 @@ Last updated: 2025-10-17
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+b1ceb03 Merge pull request #106 from cat2151/copilot/fix-error-log-clarity
+72c3a74 Fix error log to only log actual errors for process termination
+8d2b450 Initial plan
+b74493d Merge pull request #104 from cat2151/copilot/add-entries-to-suppression-log
+582360e Add all entry settings to suppression log
+e8f44d9 Add issue note for #105 [auto]
+28f16ab Initial plan
+7dfca34 Add issue note for #103 [auto]
+bbc8081 Update project summaries (overview & development status) [auto]
 70290ad Merge pull request #102 from cat2151/copilot/visualize-refactoring-tasks
-bec131b Add comprehensive refactoring status visualization to issue-notes/101.md
-266d752 Initial plan
-2a86bbb Add issue note for #101 [auto]
-4992911 Merge pull request #100 from cat2151/copilot/refactor-issues-96-98
-1c5a4a4 Refactor command_executor.py: split long functions (Phase 2)
-e1fa69d Initial plan
-0dc5115 Add issue note for #99 [auto]
-a19a62c Merge pull request #98 from cat2151/copilot/refactor-issue-96-material
-9daa34d Complete Phase 1 refactoring - update issue notes with summary
 
 ### 変更されたファイル:
+generated-docs/development-status-generated-prompt.md
+generated-docs/development-status.md
+generated-docs/project-overview.md
 issue-notes/101.md
-issue-notes/95.md
-issue-notes/97.md
-issue-notes/99.md
-src/cat_file_watcher.py
+issue-notes/103.md
+issue-notes/105.md
 src/command_executor.py
-src/config_loader.py
-src/config_validator.py
-src/external_config_merger.py
-src/file_monitor.py
+tests/test_error_log_clarity.py
+tests/test_suppression_logging.py
+tests/test_terminate_if_process.py
 
 
 ---
-Generated at: 2025-10-17 07:01:57 JST
+Generated at: 2025-10-19 07:01:42 JST

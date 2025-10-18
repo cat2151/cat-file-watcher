@@ -1,48 +1,48 @@
-Last updated: 2025-10-17
+Last updated: 2025-10-19
 
 # Development Status
 
 ## 現在のIssues
-現在オープン中のIssueはありません。
+現在オープン中のIssueはありません。最近のコミットで、プロセス終了時のエラーログの明確化や、抑制ログへのエントリ追加、そしてプロジェクトサマリーの自動更新が行われ、Issueが解決されています。
 
 ## 次の一手候補
-1. src/command_executor.pyのさらなるリファクタリング [Issue #103](../issue-notes/103.md)
-   - 最初の小さな一歩: `src/command_executor.py` 内の `_execute_command_with_suppression` 関数がまだ複雑なため、その内部ロジックをより小さなサブ関数に分割するための分析を行う。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: src/command_executor.py
+1.  `src/command_executor.py` のログ改善原則を他のファイルへ展開 [Issue #106 の派生]
+    -   最初の小さな一歩: `src/command_executor.py` の `72c3a74` コミット内容を再確認し、ログ出力の意図と条件を理解する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `src/command_executor.py`, `src/error_logger.py`, `src/file_monitor.py`, `src/process_detector.py`
 
-     実行内容: src/command_executor.py 内の `_execute_command_with_suppression` 関数について、その処理内容を詳細に分析し、担当する複数の責任を洗い出してください。その後、これらの責任に基づいて関数を2〜3個のより小さな関数に分割する具体的なリファクタリング計画をMarkdown形式で提案してください。
+        実行内容: `src/command_executor.py` における「Fix error log to only log actual errors for process termination」の変更意図を分析し、その原則が他の関連ファイル (`src/error_logger.py`, `src/file_monitor.py`, `src/process_detector.py` など、ログ出力を行っている可能性のあるファイル) にも適用できるかを調査してください。具体的な改善点があれば、markdown形式で提案してください。
 
-     確認事項: 分割提案は、元の関数の外部から見た振る舞いを変更しないことを前提とします。また、関連するテストファイル (`tests/test_command_suppression.py` など) との整合性を確認し、リファクタリング後に既存のテストが引き続きパスすることを目指します。
+        確認事項: 各ファイルのロギング箇所とその目的を正確に把握し、変更がシステムの振る舞いやデバッグの容易性に悪影響を与えないことを確認してください。
 
-     期待する出力: リファクタリング計画を記載したMarkdownファイル。提案される新しい関数名とその役割、元の関数からの呼び出し関係、そして各新関数の目的を明確に記述してください。
-     ```
+        期待する出力: ログ出力の一貫性を向上させるための具体的な提案（コード例を含む）をmarkdown形式で出力してください。
+        ```
 
-2. リファクタリング進捗の可視化改善 [Issue #104](../issue-notes/104.md)
-   - 最初の小さな一歩: `issue-notes/101.md` の内容を読み込み、現在のリファクタリング進捗の表現方法を理解する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: issue-notes/101.md
+2.  主要モジュールのテストカバレッジを評価 [Issue #未登録]
+    -   最初の小さな一歩: `src/` ディレクトリ内の主要なファイル（`src/file_monitor.py`, `src/command_executor.py`, `src/process_detector.py`, `src/config_loader.py` など）を特定する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `src/file_monitor.py`, `src/command_executor.py`, `src/process_detector.py`, `src/config_loader.py`, `tests/` ディレクトリ内の全テストファイル
 
-     実行内容: issue-notes/101.md に記載されているリファクタリング進捗の可視化方法を分析し、タスクの依存関係や完了状態をより明確に示すための改善案をMarkdown形式で提案してください。具体的には、Mermaid図（例: FlowchartやGantt chart）の導入を検討し、そのサンプルコードとその適用例を含めてください。
+        実行内容: `src/` ディレクトリ内の主要モジュール（`src/file_monitor.py`, `src/command_executor.py`, `src/process_detector.py`, `src/config_loader.py` など）について、既存の `tests/` 内のテストファイルがどの程度カバレッジしているかを分析してください。特に、重要なパスやエラーハンドリングがテストされているか、不足しているテストケースがないかを洗い出し、markdown形式で報告してください。
 
-     確認事項: 提案は、現在の情報をより分かりやすくすることを目的とし、過度な複雑化を避けること。既存のissue note形式との整合性や、将来的な自動生成の可能性も考慮してください。
+        確認事項: 既存のテストスイートの構造と実行方法を理解し、分析結果が誤りでないことを確認してください。Pythonの `coverage.py` のようなツールは直接実行できないため、コードとテストを照らし合わせて手動で分析する前提です。
 
-     期待する出力: issue-notes/101.md の改善案を記載したMarkdownファイル。Mermaid図のサンプルコードとその説明、およびissue-notes/101.mdへ適用した場合のプレビューを含めてください。
-     ```
+        期待する出力: 各主要モジュールに対するテストカバレッジの評価結果、不足していると見られるテストケースの概要、および新たにテストを追加すべき機能のリストをmarkdown形式で出力してください。
+        ```
 
-3. src/command_executor.py のテストカバレッジ拡充 [Issue #105](../issue-notes/105.md)
-   - 最初の小さな一歩: `src/command_executor.py` の現在のテストファイル (`tests/test_command_logging.py`, `tests/test_command_suppression.py`) をレビューし、主要な関数の既存テストを把握する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: src/command_executor.py と tests/test_command_logging.py, tests/test_command_suppression.py
+3.  `project-overview-prompt.md` の改善 [Issue #未登録]
+    -   最初の小さな一歩: `project-overview-prompt.md` の現在の内容を確認し、生成ガイドラインと比較して不足点や改善点を洗い出す。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `.github/actions-tmp/.github_automation/project_summary/prompts/project-overview-prompt.md`
 
-     実行内容: src/command_executor.py 内の `_execute_command_with_suppression` 関数およびそれに密接に関連する関数について、既存のテストファイル (`tests/test_command_logging.py`, `tests/test_command_suppression.py`) の内容を分析してください。特に、リファクタリングによって影響を受けた可能性のあるロジックや、複雑な条件分岐に焦点を当て、現在のテストカバレッジで不足していると思われるシナリオやエッジケースをMarkdown形式でリストアップしてください。
+        実行内容: `project-overview-prompt.md` の現在の内容を分析し、より詳細で有用なプロジェクト概要を生成できるよう、プロンプトを改善する提案をmarkdown形式で記述してください。具体的には、プロジェクトの目的、主要機能、技術スタック、アーキテクチャの概要、および最新の開発状況をより効果的に反映するための指示を追加することを検討してください。
 
-     確認事項: テストケースの提案は、既存のPytestフレームワークと整合性があること。ハルシネーションを避け、具体的な不足シナリオ（例: 特定のエラー発生時、特定のフラグが設定されている場合など）を記述すること。
+        確認事項: プロンプトの変更がハルシネーションの温床にならないよう、具体的かつ客観的な情報源（例：ファイル一覧、最近のコミット履歴など）に基づいて情報を抽出するよう指示できるかを考慮してください。また、生成しないとされている要素（「今日のissue目標」など）を含まないことを確認してください。
 
-     期待する出力: src/command_executor.py 用の新規または既存テストファイルに追加すべきテストケースのリストをMarkdown形式で出力してください。各テストケースについて、テストの目的、具体的な入力条件、期待される結果を簡潔に記述してください。
+        期待する出力: 改善された `project-overview-prompt.md` の内容を提案するmarkdown形式の出力。変更理由や期待される効果も併記してください。
 
 ---
-Generated at: 2025-10-17 07:02:33 JST
+Generated at: 2025-10-19 07:02:07 JST
