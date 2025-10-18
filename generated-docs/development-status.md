@@ -1,50 +1,48 @@
-Last updated: 2025-10-13
+Last updated: 2025-10-19
 
 # Development Status
 
 ## 現在のIssues
-- [Issue #71](../issue-notes/71.md) では、agentによるプルリクエスト（PR）に対してRuff Linterの実行が自動で承認されず、手動での承認が必要な不便さが報告されています。
-- この問題の対策として、現在のワークフローYAMLファイルを分析し、改善版を生成してテストする方針が示されています。
-- 根本原因はGitHub Actionsのパーミッションやトリガー設定にある可能性が高く、自動承認の実現は開発フローの効率化に直結します。
+現在オープン中のIssueはありません。最近のコミットで、プロセス終了時のエラーログの明確化や、抑制ログへのエントリ追加、そしてプロジェクトサマリーの自動更新が行われ、Issueが解決されています。
 
 ## 次の一手候補
-1. Ruff自動実行ワークフローの修正案作成とテスト計画立案 ([Issue #71](../issue-notes/71.md))
-   - 最初の小さな一歩: 既存の`.github/workflows/ruff-check.yml`ファイルの内容を詳細に確認し、agentによるPRで自動承認されない具体的な原因（例: `pull_request_target`の利用、パーミッション設定）を特定する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: `.github/workflows/ruff-check.yml`
+1.  `src/command_executor.py` のログ改善原則を他のファイルへ展開 [Issue #106 の派生]
+    -   最初の小さな一歩: `src/command_executor.py` の `72c3a74` コミット内容を再確認し、ログ出力の意図と条件を理解する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `src/command_executor.py`, `src/error_logger.py`, `src/file_monitor.py`, `src/process_detector.py`
 
-     実行内容: 対象ファイルについて、agentによるPRに対してRuffの実行が自動承認されない原因を特定し、その上で自動承認されるための修正案をMarkdown形式で提案してください。特に、GitHub Actionsのイベントトリガー（例: `pull_request`と`pull_request_target`の違い）やパーミッション設定（`permissions`ブロック）に焦点を当てて分析し、具体的な修正コード例を含めてください。
+        実行内容: `src/command_executor.py` における「Fix error log to only log actual errors for process termination」の変更意図を分析し、その原則が他の関連ファイル (`src/error_logger.py`, `src/file_monitor.py`, `src/process_detector.py` など、ログ出力を行っている可能性のあるファイル) にも適用できるかを調査してください。具体的な改善点があれば、markdown形式で提案してください。
 
-     確認事項: 既存のワークフローで設定されているトリガー、パーミッション、および他のワークフローファイル（例: `check-recent-human-commit.yml`のような認証関連ワークフロー）との依存関係や相互作用を確認してください。
+        確認事項: 各ファイルのロギング箇所とその目的を正確に把握し、変更がシステムの振る舞いやデバッグの容易性に悪影響を与えないことを確認してください。
 
-     期待する出力: Ruffワークフローの修正提案と、その修正がagentによるPRで自動承認されるかを確認するためのテスト計画を記述したMarkdownドキュメント。
-     ```
+        期待する出力: ログ出力の一貫性を向上させるための具体的な提案（コード例を含む）をmarkdown形式で出力してください。
+        ```
 
-2. 修正したRuffワークフローのGitHub Actionsへの適用と動作確認 ([Issue #71](../issue-notes/71.md))
-   - 最初の小さな一歩: 候補1で提案された修正案を基に、新しいブランチで`.github/workflows/ruff-check.yml`ファイルを更新し、その変更を含むPRを作成して、自動実行と承認が行われるかを確認する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: `.github/workflows/ruff-check.yml`
+2.  主要モジュールのテストカバレッジを評価 [Issue #未登録]
+    -   最初の小さな一歩: `src/` ディレクトリ内の主要なファイル（`src/file_monitor.py`, `src/command_executor.py`, `src/process_detector.py`, `src/config_loader.py` など）を特定する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `src/file_monitor.py`, `src/command_executor.py`, `src/process_detector.py`, `src/config_loader.py`, `tests/` ディレクトリ内の全テストファイル
 
-     実行内容: 候補1で生成された修正案を元に、`.github/workflows/ruff-check.yml`ファイルを更新する差分を生成してください。更新後、このワークフローがagentによって作成されたPRに対して自動で実行・承認されることを確認するための具体的なテスト計画を立案し、Markdown形式で出力してください。テスト計画には、テスト用のPRの作成手順と、期待される挙動、確認ポイントを含めてください。
+        実行内容: `src/` ディレクトリ内の主要モジュール（`src/file_monitor.py`, `src/command_executor.py`, `src/process_detector.py`, `src/config_loader.py` など）について、既存の `tests/` 内のテストファイルがどの程度カバレッジしているかを分析してください。特に、重要なパスやエラーハンドリングがテストされているか、不足しているテストケースがないかを洗い出し、markdown形式で報告してください。
 
-     確認事項: 修正案がGitHub Actionsのセキュリティベストプラクティスに準拠しているか、また既存の他のワークフローやリポジトリのセキュリティ設定（例: "Require approval for all outside collaborators"）への影響がないかを確認してください。
+        確認事項: 既存のテストスイートの構造と実行方法を理解し、分析結果が誤りでないことを確認してください。Pythonの `coverage.py` のようなツールは直接実行できないため、コードとテストを照らし合わせて手動で分析する前提です。
 
-     期待する出力: 更新された`ruff-check.yml`ファイルの差分（`git diff`形式）と、その変更が期待通りに動作するかを確認するための具体的なテスト手順を記述したMarkdownドキュメント。
-     ```
+        期待する出力: 各主要モジュールに対するテストカバレッジの評価結果、不足していると見られるテストケースの概要、および新たにテストを追加すべき機能のリストをmarkdown形式で出力してください。
+        ```
 
-3. ワークフローの自動テスト戦略の調査と提案 ([Issue #71](../issue-notes/71.md)に関連)
-   - 最初の小さな一歩: GitHub Actionsワークフローのテストに利用可能なツールやプラクティス（例: `act`, GitHub CLI, `actions/github-script`を用いたインテグレーションテスト）について調査し、その特徴と本プロジェクトへの適用可能性をまとめる。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: GitHub Actionsドキュメント、既存のワークフローファイル全般 (例: `.github/workflows/ruff-check.yml`)
+3.  `project-overview-prompt.md` の改善 [Issue #未登録]
+    -   最初の小さな一歩: `project-overview-prompt.md` の現在の内容を確認し、生成ガイドラインと比較して不足点や改善点を洗い出す。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `.github/actions-tmp/.github_automation/project_summary/prompts/project-overview-prompt.md`
 
-     実行内容: GitHub Actionsワークフローの自動テストに関する一般的なプラクティスや利用可能なツール（例: `act`、`actions/github-script`を使ったインテグレーションテスト、専用のテストフレームワークなど）を調査し、それらの特徴と本プロジェクトのワークフロー（特に自動承認されるRuffワークフロー）に適用可能なテスト戦略について考察し、Markdown形式で出力してください。特に、ワークフローのセキュリティと効率性を維持しながらテストを自動化する方法に焦点を当ててください。
+        実行内容: `project-overview-prompt.md` の現在の内容を分析し、より詳細で有用なプロジェクト概要を生成できるよう、プロンプトを改善する提案をmarkdown形式で記述してください。具体的には、プロジェクトの目的、主要機能、技術スタック、アーキテクチャの概要、および最新の開発状況をより効果的に反映するための指示を追加することを検討してください。
 
-     確認事項: 現在のプロジェクトで利用されているCI/CDツールや手法、およびGitHub Actionsの利用制限やセキュリティ要件（例: `pull_request_target`の利用上の注意点）を確認してください。
+        確認事項: プロンプトの変更がハルシネーションの温床にならないよう、具体的かつ客観的な情報源（例：ファイル一覧、最近のコミット履歴など）に基づいて情報を抽出するよう指示できるかを考慮してください。また、生成しないとされている要素（「今日のissue目標」など）を含まないことを確認してください。
 
-     期待する出力: ワークフローの自動テスト戦略に関する調査結果と、Ruffワークフローの自動承認テストを効率的に行うための具体的な適用方法を提案するMarkdownドキュメント。
+        期待する出力: 改善された `project-overview-prompt.md` の内容を提案するmarkdown形式の出力。変更理由や期待される効果も併記してください。
 
 ---
-Generated at: 2025-10-13 07:02:03 JST
+Generated at: 2025-10-19 07:02:07 JST

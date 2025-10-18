@@ -209,3 +209,52 @@ suppress_if_process = "python"
 
         timestamp_pattern = r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]"
         assert re.search(timestamp_pattern, log_content)
+
+    def test_suppression_logging_includes_all_settings(self):
+        """Test that suppression log includes all entry settings."""
+        # Create config with multiple settings and suppression_log_file
+        config_content = f'''default_interval = "0.05s"
+suppression_log_file = "{self.suppression_log_file}"
+
+[[files]]
+path = "{self.test_file}"
+command = "echo 'test command'"
+suppress_if_process = "python"
+interval = "0.05s"
+enable_log = true
+cwd = "/tmp"
+
+'''
+        with open(self.config_file, "w") as f:
+            f.write(config_content)
+
+        watcher = FileWatcher(self.config_file)
+
+        # Initialize timestamp tracking
+        watcher._check_files()
+
+        # Modify the test file to trigger command execution (which should be suppressed)
+        time.sleep(0.1)
+        with open(self.test_file, "a") as f:
+            f.write("Modified content\n")
+
+        # Check for file changes
+        watcher._check_files()
+
+        # Suppression log file should be created
+        assert os.path.exists(self.suppression_log_file)
+
+        # Check log content
+        with open(self.suppression_log_file, "r") as f:
+            log_content = f.read()
+
+        # Log should contain all the settings from the entry
+        assert f"File: {self.test_file}" in log_content
+        assert "Process pattern: python" in log_content
+        assert "Matched process:" in log_content
+        assert "command: echo 'test command'" in log_content
+        assert "interval: 0.05s" in log_content
+        assert "enable_log: True" in log_content
+        assert "cwd: /tmp" in log_content
+        # suppress_if_process should also be in the settings
+        assert "suppress_if_process: python" in log_content
