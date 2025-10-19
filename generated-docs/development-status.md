@@ -1,48 +1,50 @@
-Last updated: 2025-10-19
+Last updated: 2025-10-20
 
 # Development Status
 
 ## 現在のIssues
-現在オープン中のIssueはありません。最近のコミットで、プロセス終了時のエラーログの明確化や、抑制ログへのエントリ追加、そしてプロジェクトサマリーの自動更新が行われ、Issueが解決されています。
+現在、オープン中の具体的なIssueは存在しません。
+そのため、主な開発タスクは、既存機能の改善やドキュメントの強化に焦点を当てています。
+これにより、プロジェクトの使いやすさと保守性を向上させることを目指します。
 
 ## 次の一手候補
-1.  `src/command_executor.py` のログ改善原則を他のファイルへ展開 [Issue #106 の派生]
-    -   最初の小さな一歩: `src/command_executor.py` の `72c3a74` コミット内容を再確認し、ログ出力の意図と条件を理解する。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `src/command_executor.py`, `src/error_logger.py`, `src/file_monitor.py`, `src/process_detector.py`
+1. メインREADMEドキュメントの利用ガイド拡充
+   - 最初の小さな一歩: `README.md`および`README.ja.md`の「使い方」または「設定方法」セクションを具体例を交えて明確化する。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: `README.md`, `README.ja.md`
 
-        実行内容: `src/command_executor.py` における「Fix error log to only log actual errors for process termination」の変更意図を分析し、その原則が他の関連ファイル (`src/error_logger.py`, `src/file_monitor.py`, `src/process_detector.py` など、ログ出力を行っている可能性のあるファイル) にも適用できるかを調査してください。具体的な改善点があれば、markdown形式で提案してください。
+     実行内容: `README.md`と`README.ja.md`の内容を分析し、特にユーザーがプロジェクトをセットアップし、基本的な機能を使い始めるための手順が明確であるかを確認してください。設定例や一般的な利用シナリオに関する具体的な記述が不足している箇所を特定し、改善案を提示してください。
 
-        確認事項: 各ファイルのロギング箇所とその目的を正確に把握し、変更がシステムの振る舞いやデバッグの容易性に悪影響を与えないことを確認してください。
+     確認事項: 既存のREADMEの内容と、プロジェクトの主要機能（ファイル監視、コマンド実行、プロセス監視など）との整合性を確認してください。日本語版と英語版の同期も考慮してください。
 
-        期待する出力: ログ出力の一貫性を向上させるための具体的な提案（コード例を含む）をmarkdown形式で出力してください。
-        ```
+     期待する出力: 改善提案をMarkdown形式で出力してください。具体的には、追加すべき情報の箇条書きリスト、または提案される新しいセクション構造を含めてください。
+     ```
 
-2.  主要モジュールのテストカバレッジを評価 [Issue #未登録]
-    -   最初の小さな一歩: `src/` ディレクトリ内の主要なファイル（`src/file_monitor.py`, `src/command_executor.py`, `src/process_detector.py`, `src/config_loader.py` など）を特定する。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `src/file_monitor.py`, `src/command_executor.py`, `src/process_detector.py`, `src/config_loader.py`, `tests/` ディレクトリ内の全テストファイル
+2. 開発状況生成プロンプトの精度向上
+   - 最初の小さな一歩: 現在の`development-status-prompt.md`とその出力結果を比較し、さらに具体的で示唆に富む「次の一手候補」を生成するための改善点を洗い出す。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md` と `generated-docs/development-status.md`
 
-        実行内容: `src/` ディレクトリ内の主要モジュール（`src/file_monitor.py`, `src/command_executor.py`, `src/process_detector.py`, `src/config_loader.py` など）について、既存の `tests/` 内のテストファイルがどの程度カバレッジしているかを分析してください。特に、重要なパスやエラーハンドリングがテストされているか、不足しているテストケースがないかを洗い出し、markdown形式で報告してください。
+     実行内容: `development-status-prompt.md`の内容と、それによって生成された直近の`development-status.md`（この出力含む）を比較分析してください。特に「次の一手候補」セクションが、プロジェクトの現状と直近の変更履歴に基づき、より具体的で実行可能なタスクを提案できるよう、プロンプトの改善点を特定してください。
 
-        確認事項: 既存のテストスイートの構造と実行方法を理解し、分析結果が誤りでないことを確認してください。Pythonの `coverage.py` のようなツールは直接実行できないため、コードとテストを照らし合わせて手動で分析する前提です。
+     確認事項: プロンプトがハルシネーションを引き起こさず、かつ具体的なファイルパスやアクションを提案できるかを評価してください。また、現在の開発状況情報に含まれる「最近の変更」を適切に参照できているかを確認してください。
 
-        期待する出力: 各主要モジュールに対するテストカバレッジの評価結果、不足していると見られるテストケースの概要、および新たにテストを追加すべき機能のリストをmarkdown形式で出力してください。
-        ```
+     期待する出力: `development-status-prompt.md`の変更提案をMarkdown形式で出力してください。具体的なプロンプトの修正案、または追加すべき指示内容を含めてください。
+     ```
 
-3.  `project-overview-prompt.md` の改善 [Issue #未登録]
-    -   最初の小さな一歩: `project-overview-prompt.md` の現在の内容を確認し、生成ガイドラインと比較して不足点や改善点を洗い出す。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `.github/actions-tmp/.github_automation/project_summary/prompts/project-overview-prompt.md`
+3. コアロジックのロギング・エラー処理コードの再確認と整理
+   - 最初の小さな一歩: 最近のログ関連の修正（`fix-error-log-clarity`, `add-entries-to-suppression-log`）が適用された`src/cat_file_watcher.py`および`src/command_executor.py`の該当箇所の可読性と保守性を再評価する。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: `src/cat_file_watcher.py`, `src/command_executor.py`
 
-        実行内容: `project-overview-prompt.md` の現在の内容を分析し、より詳細で有用なプロジェクト概要を生成できるよう、プロンプトを改善する提案をmarkdown形式で記述してください。具体的には、プロジェクトの目的、主要機能、技術スタック、アーキテクチャの概要、および最新の開発状況をより効果的に反映するための指示を追加することを検討してください。
+     実行内容: 最近のコミット（`72c3a74 Fix error log to only log actual errors for process termination` と `582360e Add all entry settings to suppression log`）に関連するコードブロックを`src/cat_file_watcher.py`と`src/command_executor.py`内で特定し、そのロギングとエラー処理ロジックを分析してください。コードの重複、複雑性、コメントの不足がないかを確認し、改善の機会を特定してください。
 
-        確認事項: プロンプトの変更がハルシネーションの温床にならないよう、具体的かつ客観的な情報源（例：ファイル一覧、最近のコミット履歴など）に基づいて情報を抽出するよう指示できるかを考慮してください。また、生成しないとされている要素（「今日のissue目標」など）を含まないことを確認してください。
+     確認事項: ロギングの出力形式、エラーメッセージの明確さ、および例外処理の一貫性を確認してください。変更が既存の挙動に悪影響を与えないこと。
 
-        期待する出力: 改善された `project-overview-prompt.md` の内容を提案するmarkdown形式の出力。変更理由や期待される効果も併記してください。
+     期待する出力: ロギングおよびエラー処理コードの改善提案をMarkdown形式で出力してください。具体的なリファクタリングの候補、コメントの追加提案、または共通化可能なヘルパー関数の提案を含めてください。
 
 ---
-Generated at: 2025-10-19 07:02:07 JST
+Generated at: 2025-10-20 07:02:07 JST
