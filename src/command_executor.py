@@ -228,7 +228,7 @@ class CommandExecutor:
         """
         pid, process_name = process_info
         msg = f"Terminating process (PID: {pid}, Name: {process_name}) matching pattern '{pattern}'"
-        TimestampPrinter.print(msg, Fore.YELLOW)
+        TimestampPrinter.print(msg, Fore.GREEN)
 
         success = ProcessDetector.terminate_process(pid)
         if success:
