@@ -1,50 +1,49 @@
-Last updated: 2025-10-20
+Last updated: 2025-10-21
 
 # Development Status
 
 ## 現在のIssues
-現在、オープン中の具体的なIssueは存在しません。
-そのため、主な開発タスクは、既存機能の改善やドキュメントの強化に焦点を当てています。
-これにより、プロジェクトの使いやすさと保守性を向上させることを目指します。
+- 現在オープンされているIssueはありません。
 
 ## 次の一手候補
-1. メインREADMEドキュメントの利用ガイド拡充
-   - 最初の小さな一歩: `README.md`および`README.ja.md`の「使い方」または「設定方法」セクションを具体例を交えて明確化する。
+1. GitHub Pagesを利用したドキュメントの公開とコンテンツの整備 [Issue #なし]
+   - 最初の小さな一歩: GitHub Pagesを有効にし、`README.md`と`README.ja.md`が正しく表示されることを確認する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `README.md`, `README.ja.md`
+     対象ファイル: `_config.yml`, `README.md`, `README.ja.md`, `.github/workflows/call-translate-readme.yml`
 
-     実行内容: `README.md`と`README.ja.md`の内容を分析し、特にユーザーがプロジェクトをセットアップし、基本的な機能を使い始めるための手順が明確であるかを確認してください。設定例や一般的な利用シナリオに関する具体的な記述が不足している箇所を特定し、改善案を提示してください。
+     実行内容: GitHub Pagesの設定（`_config.yml`）が適切か確認し、`README.md`と`README.ja.md`がGitHub Pagesで公開されるように設定してください。また、`call-translate-readme.yml` workflowが翻訳内容を適切に管理できているか調査し、GitHub Pagesの表示内容と同期が取れるように改善案を検討してください。
 
-     確認事項: 既存のREADMEの内容と、プロジェクトの主要機能（ファイル監視、コマンド実行、プロセス監視など）との整合性を確認してください。日本語版と英語版の同期も考慮してください。
+     確認事項: GitHub Pagesの有効化がリポジトリ設定で可能であること。既存のJekyll設定（`_config.yml`）が正しく機能すること。`call-translate-readme.yml`が現在どのように動作しているか。
 
-     期待する出力: 改善提案をMarkdown形式で出力してください。具体的には、追加すべき情報の箇条書きリスト、または提案される新しいセクション構造を含めてください。
+     期待する出力: GitHub Pagesのセットアップ手順と、公開されたドキュメントのスクリーンショット、`call-translate-readme.yml`の改善提案をMarkdown形式で出力してください。
      ```
 
-2. 開発状況生成プロンプトの精度向上
-   - 最初の小さな一歩: 現在の`development-status-prompt.md`とその出力結果を比較し、さらに具体的で示唆に富む「次の一手候補」を生成するための改善点を洗い出す。
+2. ログ出力の詳細度設定と改善 [Issue #なし]
+   - 最初の小さな一歩: 現在のログ出力箇所と、ログ出力に使用されているライブラリや関数を特定する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md` と `generated-docs/development-status.md`
+     対象ファイル: `src/cat_file_watcher.py`, `src/command_executor.py`, `src/error_logger.py`, `src/config_loader.py`, `examples/config.example.toml`
 
-     実行内容: `development-status-prompt.md`の内容と、それによって生成された直近の`development-status.md`（この出力含む）を比較分析してください。特に「次の一手候補」セクションが、プロジェクトの現状と直近の変更履歴に基づき、より具体的で実行可能なタスクを提案できるよう、プロンプトの改善点を特定してください。
+     実行内容: `cat-file-watcher` アプリケーション全体のログ出力メカニズムを分析し、ユーザーが設定ファイル（`config.toml`）を通じてログの詳細度（例: DEBUG, INFO, WARNING, ERROR）を設定できる機能の導入を検討してください。`src/error_logger.py` を中心に、既存のログ出力処理をどのように変更・拡張すべきか、また、`config_loader.py` でどのように設定を読み込むかを具体的に記述してください。
 
-     確認事項: プロンプトがハルシネーションを引き起こさず、かつ具体的なファイルパスやアクションを提案できるかを評価してください。また、現在の開発状況情報に含まれる「最近の変更」を適切に参照できているかを確認してください。
+     確認事項: 現在のログ出力がどのように行われているか（標準出力、ファイル出力など）。既存の `error_logger.py` の役割と限界。設定ファイル (`config.example.toml`) に新しい項目を追加する際のフォーマット。
 
-     期待する出力: `development-status-prompt.md`の変更提案をMarkdown形式で出力してください。具体的なプロンプトの修正案、または追加すべき指示内容を含めてください。
+     期待する出力: ログ詳細度設定機能の設計案をMarkdown形式で出力してください。これには、設定ファイルでの指定方法、各ログレベルで出力されるべき情報の例、関連ファイルの変更点（疑似コードを含む）を含めてください。
      ```
 
-3. コアロジックのロギング・エラー処理コードの再確認と整理
-   - 最初の小さな一歩: 最近のログ関連の修正（`fix-error-log-clarity`, `add-entries-to-suppression-log`）が適用された`src/cat_file_watcher.py`および`src/command_executor.py`の該当箇所の可読性と保守性を再評価する。
+3. プロセス検出機能の強化と設定の柔軟性向上 [Issue #なし]
+   - 最初の小さな一歩: `src/process_detector.py` の現在の実装を理解し、どのようなプロセス検出が可能か、また、設定ファイルでどのように制御されているかを把握する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `src/cat_file_watcher.py`, `src/command_executor.py`
+     対象ファイル: `src/process_detector.py`, `src/config_loader.py`, `src/config_validator.py`, `examples/config.example.toml`
 
-     実行内容: 最近のコミット（`72c3a74 Fix error log to only log actual errors for process termination` と `582360e Add all entry settings to suppression log`）に関連するコードブロックを`src/cat_file_watcher.py`と`src/command_executor.py`内で特定し、そのロギングとエラー処理ロジックを分析してください。コードの重複、複雑性、コメントの不足がないかを確認し、改善の機会を特定してください。
+     実行内容: `src/process_detector.py` のプロセス検出ロジックを分析し、ユーザーが複数のプロセス名や正規表現パターンを指定して検出できるような機能強化を検討してください。また、検出されたプロセスの扱い（警告、終了、特定のコマンド実行など）をより柔軟に設定できるように、`config.example.toml` および関連する `config_loader.py`, `config_validator.py` の拡張案を具体的に記述してください。
 
-     確認事項: ロギングの出力形式、エラーメッセージの明確さ、および例外処理の一貫性を確認してください。変更が既存の挙動に悪影響を与えないこと。
+     確認事項: 現在のプロセス検出が単一のプロセス名に限定されているか。複数のプロセスを同時に監視する際のパフォーマンスへの影響。設定ファイルでの新しい定義方法が既存のロジックと衝突しないか。
 
-     期待する出力: ロギングおよびエラー処理コードの改善提案をMarkdown形式で出力してください。具体的なリファクタリングの候補、コメントの追加提案、または共通化可能なヘルパー関数の提案を含めてください。
+     期待する出力: プロセス検出機能強化の設計案をMarkdown形式で出力してください。これには、設定ファイルでの新しいオプション定義、`process_detector.py` の変更点（疑似コードを含む）、`config_validator.py` でのバリデーションロジックの追加方法を含めてください。
+     ```
 
 ---
-Generated at: 2025-10-20 07:02:07 JST
+Generated at: 2025-10-21 07:02:14 JST
