@@ -82,7 +82,9 @@ class CommandExecutor:
             settings: Dictionary containing file-specific settings
             config: Optional global configuration dictionary
         """
-        TimestampPrinter.print(f"Executing command for '{filepath}': {command}", Fore.GREEN)
+        # Color only the command part in green for emphasis
+        message = f"Executing command for '{filepath}': {Fore.GREEN}{command}{Style.RESET_ALL}"
+        TimestampPrinter.print(message)
 
         # Write to log file if enabled
         if settings.get("enable_log", False) and config and config.get("log_file"):
