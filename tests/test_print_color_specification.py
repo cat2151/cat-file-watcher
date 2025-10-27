@@ -43,12 +43,14 @@ class TestPrintColorSpecification:
             file_timestamps = {}
             file_last_check = {}
 
-            # First check - should start monitoring (green message)
+            # First check - initializes monitoring
             captured_output = StringIO()
             sys.stdout = captured_output
             TimestampPrinter.set_enable_timestamp(False)
 
-            file_timestamps, file_last_check = FileMonitor.check_files(config, file_timestamps, file_last_check)
+            file_timestamps, file_last_check = FileMonitor.check_files(
+                config, file_timestamps, file_last_check
+            )
 
             # Modify the file
             time.sleep(0.2)
