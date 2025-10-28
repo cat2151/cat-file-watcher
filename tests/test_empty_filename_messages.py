@@ -87,6 +87,8 @@ command = "{test_command}"
         assert "Executing" in output
         # Should show the command text
         assert "echo" in output
+        # Should NOT show "for ''"
+        assert "for ''" not in output
 
     def test_suppress_message_shows_process_for_terminate_if_process(self):
         """Test that messages show process pattern for terminate_if_process."""
@@ -112,3 +114,33 @@ terminate_if_process = "{process_pattern}"
         # No message should appear when process doesn't exist
         # (This test just ensures no crash occurs)
         # The pattern name would appear if there were matches
+
+    def test_error_message_shows_command_for_empty_filename(self):
+        """Test that error messages show command when filename is empty."""
+        # Use a command that will fail
+        test_command = "exit 1"
+
+        # Create config with empty filename
+        config_content = f"""default_interval = "0.05s"
+
+[[files]]
+path = ""
+command = "{test_command}"
+"""
+        with open(self.config_file, "w") as f:
+            f.write(config_content)
+
+        watcher = FileWatcher(self.config_file)
+
+        # Capture stdout to verify message
+        captured_output = io.StringIO()
+        with patch("sys.stdout", captured_output):
+            watcher._check_files()
+
+        output = captured_output.getvalue()
+
+        # The error message should contain the command
+        assert "Error" in output
+        assert "exit 1" in output or "Command failed" in output
+        # Should NOT show "for ''"
+        assert "for ''" not in output
