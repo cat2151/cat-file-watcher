@@ -1,4 +1,4 @@
-# cat-file-watcher
+# cat-file-watcher - Cat is watching your file -
 
 **ファイル変更監視ツール - ファイルの変更を検知してコマンドを実行**
 
@@ -306,10 +306,10 @@ TDDしたものです。
 `wsl pytest` します。
   - WSL2だといくつかtest redになることがありますが許容しています。issueをagentに投げたときTDDしてtest greenであればOK、を基準としています。
 
-
-
 ## ライセンス
 
 MIT License - 詳細はLICENSEファイルを参照してください
 
 ※英語版README.mdは、README.ja.mdを元にGeminiの翻訳でGitHub Actionsにより自動生成しています
+
+*Big Brother watched your files. Now the cat does. 🐱*
