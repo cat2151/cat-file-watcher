@@ -109,12 +109,18 @@ class CommandExecutor:
             result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
             CommandExecutor._handle_command_result(result, command, filepath, error_log_file)
         except subprocess.TimeoutExpired as e:
-            error_msg = f"Command timed out after 30 seconds for '{filepath}'"
+            if filepath == "":
+                error_msg = f"Command timed out after 30 seconds: {command}"
+            else:
+                error_msg = f"Command timed out after 30 seconds for '{filepath}'"
             TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             raise
         except Exception as e:
-            error_msg = f"Error executing command for '{filepath}'"
+            if filepath == "":
+                error_msg = f"Error executing command: {command}"
+            else:
+                error_msg = f"Error executing command for '{filepath}'"
             TimestampPrinter.print(f"{error_msg}: {e}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             raise
@@ -130,7 +136,10 @@ class CommandExecutor:
             error_log_file: Path to error log file (optional)
         """
         if result.returncode != 0:
-            error_msg = f"Command failed for '{filepath}' with exit code {result.returncode}"
+            if filepath == "":
+                error_msg = f"Command failed with exit code {result.returncode}: {command}"
+            else:
+                error_msg = f"Command failed for '{filepath}' with exit code {result.returncode}"
             TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
             # Log command execution error (without stderr since we're not capturing it)
             if error_log_file:
