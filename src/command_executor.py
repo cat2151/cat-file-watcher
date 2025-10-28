@@ -62,9 +62,16 @@ class CommandExecutor:
         process_pattern = settings["suppress_if_process"]
         matched_process = ProcessDetector.get_matching_process(process_pattern)
         if matched_process:
-            TimestampPrinter.print(
-                f"Skipping command for '{filepath}': process matching '{process_pattern}' is running", Style.DIM
-            )
+            # For empty filename, show the command being skipped instead
+            if filepath == "":
+                command = settings.get("command", "")
+                TimestampPrinter.print(
+                    f"Skipping command '{command}': process matching '{process_pattern}' is running", Style.DIM
+                )
+            else:
+                TimestampPrinter.print(
+                    f"Skipping command for '{filepath}': process matching '{process_pattern}' is running", Style.DIM
+                )
             # Write to suppression log file if configured
             if config and config.get("suppression_log_file"):
                 CommandExecutor._write_to_suppression_log(filepath, process_pattern, matched_process, config, settings)
@@ -83,7 +90,11 @@ class CommandExecutor:
             config: Optional global configuration dictionary
         """
         # Color only the command part in green for emphasis
-        message = f"Executing command for '{filepath}': {Fore.GREEN}{command}{Style.RESET_ALL}"
+        # For empty filename, show the command directly instead of "for ''"
+        if filepath == "":
+            message = f"Executing command: {Fore.GREEN}{command}{Style.RESET_ALL}"
+        else:
+            message = f"Executing command for '{filepath}': {Fore.GREEN}{command}{Style.RESET_ALL}"
         TimestampPrinter.print(message)
 
         # Write to log file if enabled
