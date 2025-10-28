@@ -162,7 +162,7 @@ class FileMonitor:
             TimestampPrinter.print(f"Started monitoring '{filename}'", Fore.GREEN)
         # Check if timestamp changed
         elif current_timestamp != file_timestamps[entry_key]:
-            TimestampPrinter.print(f"Detected change in '{filename}'", Fore.GREEN)
+            TimestampPrinter.print(f"Detected change in '{filename}'")
             CommandExecutor.execute_command(settings["command"], filename, settings, config)
             file_timestamps[entry_key] = current_timestamp
 
