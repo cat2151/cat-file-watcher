@@ -7,7 +7,7 @@
   <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
 </p>
 
-※このドキュメントは大部分がAI生成です。issueをagentに投げて生成させました。一部（コンセプト、使い分け）は人力で書いています
+※このドキュメントは大部分がAI生成です。issueをagentに投げて生成させました。一部（コンセプト、使い分け、test）は人力で書いています
 
 ## Quick Links
 | 項目 | リンク |
@@ -283,21 +283,6 @@ ruff format --check src/
 ruff format src/
 ```
 
-#### CI/CDでの自動チェック
-
-Pull Requestを作成すると、GitHub Actionsが自動的に以下を実行します:
-
-1. **コードの自動フォーマット**:
-   - `ruff format src/` - コードを自動的にフォーマット（trailing spaceの除去など）
-   - `ruff check --fix src/` - 自動修正可能なlint問題を修正
-   - フォーマットによる変更があれば、自動的にコミット＆プッシュ
-
-2. **品質チェック**:
-   - `ruff check src/` - コード品質のリンターチェック
-   - `ruff format --check src/` - コードフォーマットの確認
-
-自動フォーマット後もチェックが失敗する場合、PRのマージがブロックされます。ローカルでRuffを実行してコードを整形しておくことを推奨します。
-
 ### テストの実行
 
 ```bash
@@ -308,8 +293,23 @@ pytest
 pytest -v
 ```
 
+- Linux
+  - テストはすべてLinux用です。
+  - GitHub Copilot Coding Agentが、
+GitHub Actions（Linux Runner）上でテストコードを生成し
+TDDしたものです。
+
+- Windows
+  - Windows環境でWSL2を使わずテストをするとtest redが多発します。これはテストがLinux用であるためです。
+  - Windows環境でテストするには、WSL2を使います。
+  - 具体的には、WSL2をinstallして、`wsl pip install -r dev-requirements.txt` で準備してから、
+`wsl pytest` します。
+  - WSL2だといくつかtest redになることがありますが許容しています。issueをagentに投げたときTDDしてtest greenであればOK、を基準としています。
+
+
+
 ## ライセンス
 
 MIT License - 詳細はLICENSEファイルを参照してください
 
-※このREADME.mdはREADME.ja.mdを元にGeminiの翻訳でGitHub Actionsにより自動生成しています
+※英語版README.mdは、README.ja.mdを元にGeminiの翻訳でGitHub Actionsにより自動生成しています
