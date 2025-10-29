@@ -62,9 +62,16 @@ class CommandExecutor:
         process_pattern = settings["suppress_if_process"]
         matched_process = ProcessDetector.get_matching_process(process_pattern)
         if matched_process:
-            TimestampPrinter.print(
-                f"Skipping command for '{filepath}': process matching '{process_pattern}' is running", Style.DIM
-            )
+            # For empty filename, show the command being skipped instead
+            if filepath == "":
+                command = settings.get("command", "")
+                TimestampPrinter.print(
+                    f"Skipping command '{command}': process matching '{process_pattern}' is running", Style.DIM
+                )
+            else:
+                TimestampPrinter.print(
+                    f"Skipping command for '{filepath}': process matching '{process_pattern}' is running", Style.DIM
+                )
             # Write to suppression log file if configured
             if config and config.get("suppression_log_file"):
                 CommandExecutor._write_to_suppression_log(filepath, process_pattern, matched_process, config, settings)
@@ -83,7 +90,11 @@ class CommandExecutor:
             config: Optional global configuration dictionary
         """
         # Color only the command part in green for emphasis
-        message = f"Executing command for '{filepath}': {Fore.GREEN}{command}{Style.RESET_ALL}"
+        # For empty filename, show the command directly instead of "for ''"
+        if filepath == "":
+            message = f"Executing command: {Fore.GREEN}{command}{Style.RESET_ALL}"
+        else:
+            message = f"Executing command for '{filepath}': {Fore.GREEN}{command}{Style.RESET_ALL}"
         TimestampPrinter.print(message)
 
         # Write to log file if enabled
@@ -98,12 +109,18 @@ class CommandExecutor:
             result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
             CommandExecutor._handle_command_result(result, command, filepath, error_log_file)
         except subprocess.TimeoutExpired as e:
-            error_msg = f"Command timed out after 30 seconds for '{filepath}'"
+            if filepath == "":
+                error_msg = f"Command timed out after 30 seconds: {command}"
+            else:
+                error_msg = f"Command timed out after 30 seconds for '{filepath}'"
             TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             raise
         except Exception as e:
-            error_msg = f"Error executing command for '{filepath}'"
+            if filepath == "":
+                error_msg = f"Error executing command: {command}"
+            else:
+                error_msg = f"Error executing command for '{filepath}'"
             TimestampPrinter.print(f"{error_msg}: {e}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             raise
@@ -119,7 +136,10 @@ class CommandExecutor:
             error_log_file: Path to error log file (optional)
         """
         if result.returncode != 0:
-            error_msg = f"Command failed for '{filepath}' with exit code {result.returncode}"
+            if filepath == "":
+                error_msg = f"Command failed with exit code {result.returncode}: {command}"
+            else:
+                error_msg = f"Command failed for '{filepath}' with exit code {result.returncode}"
             TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
             # Log command execution error (without stderr since we're not capturing it)
             if error_log_file:
