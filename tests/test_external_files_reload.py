@@ -107,6 +107,10 @@ external_files = ["{self.external_file}"]
         external_file2 = os.path.join(self.test_dir, "external2.toml")
         test_file2 = os.path.join(self.test_dir, "test2.txt")
 
+        # Create test files
+        with open(test_file2, "w") as f:
+            f.write("test content\n")
+
         # Create first external file
         external1_content = f'''[[files]]
 path = "{self.test_file}"

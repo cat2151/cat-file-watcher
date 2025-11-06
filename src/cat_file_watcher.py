@@ -180,12 +180,19 @@ class FileWatcher:
 
         # If any config file changed, reload the entire config
         if config_changed:
-            TimestampPrinter.print(f"Detected change in config file '{changed_file}', reloading...", Fore.GREEN)
+            TimestampPrinter.print(
+                f"Detected change in config file '{changed_file}', reloading...",
+                Fore.GREEN,
+            )
             error_log_file = self.config.get("error_log_file")
             try:
                 new_config = ConfigLoader.load_config(self.config_path)
                 self.config = new_config
-                self.config_timestamp = self._get_file_timestamp(self.config_path)
+                # If main config changed, reuse current_timestamp; otherwise re-fetch
+                if changed_file == self.config_path:
+                    self.config_timestamp = current_timestamp
+                else:
+                    self.config_timestamp = self._get_file_timestamp(self.config_path)
                 # Update external file tracking after reload (list may have changed)
                 self._update_external_file_tracking()
                 TimestampPrinter.print("Config reloaded successfully", Fore.GREEN)
