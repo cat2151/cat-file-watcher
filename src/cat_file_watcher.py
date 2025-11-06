@@ -3,6 +3,7 @@
 File Watcher - Monitor files and execute commands on timestamp changes
 """
 
+import os
 import time
 
 from colorama import Fore
@@ -36,6 +37,11 @@ class FileWatcher:
         self.config_last_check = 0
         self.config_timestamp = self._get_file_timestamp(config_path)
 
+        # Track external files and their timestamps
+        self.external_file_paths = []
+        self.external_file_timestamps = {}
+        self._update_external_file_tracking()
+
         # Configure timestamp display from config (default: True)
         enable_timestamp = self.config.get("enable_timestamp", True)
         TimestampPrinter.set_enable_timestamp(enable_timestamp)
@@ -51,6 +57,40 @@ class FileWatcher:
     def _is_process_running(self, process_pattern):
         """Check if a process is running (backward compatibility)."""
         return ProcessDetector.is_process_running(process_pattern)
+
+    def _resolve_external_file_paths(self):
+        """Resolve external file paths from config to absolute paths.
+
+        Returns:
+            list: List of absolute paths to external files
+        """
+        external_files = self.config.get("external_files", [])
+        if not isinstance(external_files, list):
+            return []
+
+        # Get directory of main config file for resolving relative paths
+        main_config_dir = os.path.dirname(os.path.abspath(self.config_path))
+
+        resolved_paths = []
+        for external_file in external_files:
+            # Resolve relative paths relative to main config file
+            if not os.path.isabs(external_file):
+                external_file = os.path.join(main_config_dir, external_file)
+            resolved_paths.append(external_file)
+
+        return resolved_paths
+
+    def _update_external_file_tracking(self):
+        """Update the tracking of external files and their timestamps."""
+        self.external_file_paths = self._resolve_external_file_paths()
+
+        # Initialize or update timestamps for all external files
+        new_timestamps = {}
+        for filepath in self.external_file_paths:
+            timestamp = self._get_file_timestamp(filepath)
+            new_timestamps[filepath] = timestamp
+
+        self.external_file_timestamps = new_timestamps
 
     def _calculate_main_loop_interval(self):
         """Calculate the main loop interval from config settings.
@@ -97,7 +137,7 @@ class FileWatcher:
         return min(intervals)
 
     def _check_config_file(self):
-        """Check if config file has been modified and reload if needed."""
+        """Check if config file or external files have been modified and reload if needed."""
         current_time = time.time()
 
         # Get config check interval (supports both old and new format), default to "1s"
@@ -115,22 +155,54 @@ class FileWatcher:
             TimestampPrinter.print(f"Warning: Config file '{self.config_path}' is no longer accessible", Fore.YELLOW)
             return
 
-        # Check if the config file has been modified
+        config_changed = False
+        changed_file = None
+
+        # Check if the main config file has been modified
         if current_timestamp != self.config_timestamp:
-            TimestampPrinter.print(f"Detected change in config file '{self.config_path}', reloading...", Fore.GREEN)
+            config_changed = True
+            changed_file = self.config_path
+
+        # Check if any external files have been modified
+        if not config_changed:
+            for filepath in self.external_file_paths:
+                current_external_timestamp = self._get_file_timestamp(filepath)
+
+                if current_external_timestamp is None:
+                    TimestampPrinter.print(f"Warning: External file '{filepath}' is no longer accessible", Fore.YELLOW)
+                    continue
+
+                previous_timestamp = self.external_file_timestamps.get(filepath)
+                if current_external_timestamp != previous_timestamp:
+                    config_changed = True
+                    changed_file = filepath
+                    break
+
+        # If any config file changed, reload the entire config
+        if config_changed:
+            TimestampPrinter.print(
+                f"Detected change in config file '{changed_file}', reloading...",
+                Fore.GREEN,
+            )
             error_log_file = self.config.get("error_log_file")
             try:
                 new_config = ConfigLoader.load_config(self.config_path)
                 self.config = new_config
-                self.config_timestamp = current_timestamp
+                # If main config changed, reuse current_timestamp; otherwise re-fetch
+                if changed_file == self.config_path:
+                    self.config_timestamp = current_timestamp
+                else:
+                    self.config_timestamp = self._get_file_timestamp(self.config_path)
+                # Update external file tracking after reload (list may have changed)
+                self._update_external_file_tracking()
                 TimestampPrinter.print("Config reloaded successfully", Fore.GREEN)
             except SystemExit as e:
-                error_msg = f"Fatal error reloading config file '{self.config_path}'"
+                error_msg = f"Fatal error reloading config file '{changed_file}'"
                 TimestampPrinter.print(f"Error reloading config: {e}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, e)
                 TimestampPrinter.print("Continuing with previous config", Fore.YELLOW)
             except Exception as e:
-                error_msg = f"Error reloading config file '{self.config_path}'"
+                error_msg = f"Error reloading config file '{changed_file}'"
                 TimestampPrinter.print(f"Error reloading config: {e}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, e)
                 TimestampPrinter.print("Continuing with previous config", Fore.YELLOW)
