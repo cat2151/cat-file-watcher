@@ -1,68 +1,50 @@
-Last updated: 2025-10-30
+Last updated: 2025-11-08
 
 # Development Status
 
 ## 現在のIssues
-- [Issue #113](../issue-notes/113.md) は、`external_files` で指定されたTOML設定ファイルがタイムスタンプ監視によるconfig反映の対象外であるという課題に対応しています。
-- この現状では、外部設定ファイルを更新しても自動的に変更が適用されず、手動での介入が必要となり運用上の不便が生じています。
-- 解決策として、`external_files` に指定されたパスのファイルも `cat-file-watcher` の監視対象に加え、変更時に設定が自動でリロードされる機能の実装が求められています。
+- 現在、プロジェクトにはオープン中のIssueは存在しません。
+- 過去の報告された問題はすべて解決されており、安定した状態です。
+- 今後の開発は、既存機能の更なる強化、品質向上、およびドキュメント整備に焦点を当てます。
 
 ## 次の一手候補
-1.  [Issue #113](../issue-notes/113.md) の実装: `external_files` のTOMLファイルを監視対象とする機能を追加
-    -   最初の小さな一歩: `src/config_loader.py` と `src/external_config_merger.py` を調査し、`external_files` の設定で指定されたTOMLファイルのパスを正確に取得する方法を特定する。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `src/cat_file_watcher.py`, `src/config_loader.py`, `src/external_config_merger.py`, `src/file_monitor.py`
+1. 外部TOMLファイルのタイムスタンプ監視機能のドキュメント化と強化 ([Issue #115](../issue-notes/115.md))
+   - 最初の小さな一歩: `README.md`に、最近追加された外部TOMLファイルのタイムスタンプ監視機能に関する簡単な説明を追記する。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: `README.md`, `examples/config.example.toml`
 
-        実行内容: `external_files` で指定されたTOML設定ファイルがタイムスタンプ監視の対象となるように、`src/config_loader.py` がこれらのファイルのパスを `file_monitor` に渡すロジックを実装してください。また、`file_monitor` がこれらのファイルを監視対象に追加できるように修正し、変更時に設定リロードをトリガーするよう改修してください。
+     実行内容: `README.md`の既存のファイル監視設定に関するセクションに、外部TOMLファイル（例: `examples/config.example.toml`）のタイムスタンプ監視機能についての説明を追加してください。具体的には、この機能がどのような設定で有効になり、どのような挙動をするのかを簡潔に記述します。また、`examples/config.example.toml`にこの機能のサンプル設定を追加してください。
 
-        確認事項:
-        - `src/external_config_merger.py` が `external_files` をどのように読み込んでいるか、そのファイルパスの取得方法を確認すること。
-        - `src/file_monitor.py` が現在、監視対象のファイルパスをどのように受け取って登録しているかを確認し、新しいファイルパスをどのように追加するかを検討すること。
-        - 設定リロード時のアプリケーションの挙動（特に既存の動作を損なわないこと）について、既存のテストケース (`tests/test_external_files.py` など) を参照し、必要に応じて新しいテストケースを追加してください。
+     確認事項: `README.md`の既存の記述との整合性、およびユーザーが理解しやすい表現になっているかを確認してください。`examples/config.example.toml`に追加する設定が実際に動作することを確認してください。
 
-        期待する出力:
-        - `src/config_loader.py`、`src/external_config_merger.py`、`src/file_monitor.py` の修正後のPythonコード。
-        - この機能が正しく動作することを確認するための新しいテストケース（既存の `tests/test_external_files.py` を拡張または新規作成）を含むPythonコード。
-        ```
+     期待する出力: 更新された`README.md`の内容と、`examples/config.example.toml`に追加された設定ブロックをmarkdown形式で出力してください。
+     ```
 
-2.  [Issue #13](../issue-notes/13.md) 関連: `issue-note` 共通ワークフローの外部プロジェクト向け導入手順書を作成
-    -   最初の小さな一歩: `.github/actions-tmp/.github/workflows/issue-note.yml` の `workflow_call` セクションを分析し、必須となる `inputs` および `secrets` を洗い出す。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `.github/actions-tmp/.github/workflows/issue-note.yml`, `.github/workflows/call-issue-note.yml`, `.github/actions-tmp/issue-notes/13.md`
+2. Agent生成ポリシーの見直しとガイドラインの明確化 ([Issue #116](../issue-notes/116.md))
+   - 最初の小さな一歩: `.github/copilot-instructions.md`の内容を読み込み、Agentによるドキュメント生成（特にIssue Notes）に関する記述が最新の方針（生成しない）と合致しているかを確認する。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: `.github/copilot-instructions.md`, `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md`
 
-        実行内容: `issue-note` 共通ワークフロー (`.github/actions-tmp/.github/workflows/issue-note.yml`) を外部プロジェクトから利用するための詳細な導入手順書をMarkdown形式で作成してください。手順書には以下の要素を必ず含めてください。
-        - 共通ワークフローの概要
-        - 必要な入力パラメータ (`inputs`) の説明と設定例
-        - 必要なシークレット (`secrets`) の説明と登録手順
-        - 呼び出し元ワークフロー (`.github/workflows/call-issue-note.yml` を参考に) の具体的な記述例（`uses` と `with` の使用方法）
-        - その他の前提条件や注意事項
+     実行内容: `.github/copilot-instructions.md`に記載されているAgentの振る舞いに関するガイドラインを分析し、特に「Issue Notesを生成しない」という新しい方針が明確に反映されているかを確認してください。もし不明瞭な点があれば、その点を指摘し、より明確にするための修正案を提案してください。また、`development-status-prompt.md`がこの新しいガイドラインと矛盾しないか確認してください。
 
-        確認事項:
-        - `issue-note.yml` に定義されている `workflow_call` の `inputs` および `secrets` が網羅されていること。
-        - 呼び出し元である `call-issue-note.yml` が、これらの `inputs` と `secrets` をどのように渡しているかを参考にすること。
-        - `.github/actions-tmp/issue-notes/13.md` に記載されている「call導入手順を書く」というタスクがこの手順書で満たされることを確認すること。
+     確認事項: ガイドラインがハルシネーションを防止し、Agentが期待通りの振る舞いをするように促しているか。開発者にとって理解しやすい表現になっているか。
 
-        期待する出力: 外部プロジェクトが `issue-note` 共通ワークフローを導入する際の手順書を記述したMarkdownファイル (`.github/actions-tmp/.github_automation/project_summary/docs/issue-note-setup.md` として新規作成)。
-        ```
+     期待する出力: `.github/copilot-instructions.md`の分析結果をmarkdown形式で出力し、必要に応じて修正案を提示してください。また、`development-status-prompt.md`との整合性に関する評価も含めてください。
+     ```
 
-3.  自動生成ドキュメント (`generated-docs/`) の最新性確認と生成プロセス分析
-    -   最初の小さな一歩: `generated-docs/` ディレクトリ内の `development-status.md` と `project-overview.md` の最終更新日時を確認し、最近のコミット履歴や期待される更新頻度と比較する。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `generated-docs/development-status.md`, `generated-docs/project-overview.md`, `.github/workflows/call-daily-project-summary.yml`, `.github/actions-tmp/.github_automation/project_summary/scripts/generate-project-summary.cjs`
+3. コード品質の継続的改善とテストカバレッジの拡充 ([Issue #117](../issue-notes/117.md))
+   - 最初の小さな一歩: 最近変更があった `src/cat_file_watcher.py` および `src/command_executor.py` のテストカバレッジを分析し、不足している部分を特定する。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: `src/cat_file_watcher.py`, `src/command_executor.py`, `tests/test_cat_file_watcher.py`, `tests/test_command_logging.py`, `tests/test_command_suppression.py`, `tests/test_empty_filename_messages.py`, `tests/test_print_color_specification.py`
 
-        実行内容: `generated-docs/` ディレクトリ配下の自動生成ドキュメント (`development-status.md`, `project-overview.md` など) が、期待される頻度と内容で最新化されているかを確認してください。具体的には、これらのドキュメントの最終更新日時を調べ、関連するワークフロー (`.github/workflows/call-daily-project-summary.yml`) と生成スクリプト (`generate-project-summary.cjs`) の設定を分析し、生成トリガーやデータソースが適切に機能しているかを評価してください。
+     実行内容: `src/cat_file_watcher.py`と`src/command_executor.py`の最近の変更点（コミット履歴 `31d6860` から `cee3bf1` の間）を考慮し、関連するテストファイル群のテストカバレッジを静的に分析してください。特に、新しい機能や修正されたロジックに対するテストが十分に行われているか、エッジケースがカバーされているかを評価してください。
 
-        確認事項:
-        - `call-daily-project-summary.yml` の `on:` トリガー (特に `schedule` 設定) が、ドキュメントの更新頻度として適切か。
-        - `generate-project-summary.cjs` が、現在のプロジェクトの状態を正確に反映するための十分な情報を収集できているか。
-        - 各ドキュメントの内容が、ハルシネーションなく正確に生成されているか。
+     確認事項: 分析対象のファイルが、実際のコードベースでの役割と適切に合致しているか。既存のテストコードが最新のコード変更を反映しているか。
 
-        期待する出力:
-        - 各自動生成ドキュメントの最終更新日時と、その時点での内容の簡単な要約を記したMarkdown形式のレポート。
-        - ドキュメント生成プロセスが健全に動作しているか、または改善が必要な点があるかについての分析結果と、具体的な改善提案（もしあれば）をMarkdown形式で出力してください。
+     期待する出力: `src/cat_file_watcher.py`と`src/command_executor.py`に対するテストカバレッジの分析結果をmarkdown形式で出力してください。具体的には、カバレッジが不足していると思われる領域、または追加のテストケースが推奨される機能について言及してください。
 
 ---
-Generated at: 2025-10-30 07:02:18 JST
+Generated at: 2025-11-08 07:02:03 JST
