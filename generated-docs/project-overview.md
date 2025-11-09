@@ -1,31 +1,31 @@
-Last updated: 2025-10-30
+Last updated: 2025-11-08
 
 # Project Overview
 
 ## プロジェクト概要
-- 「cat-file-watcher」は、指定されたファイルの変更を自動で検知し、その変更に応じて任意のコマンドを実行するツールです。
-- 開発者のワークフローを自動化し、手動での監視やコマンド実行の手間を削減することで、生産性向上を支援します。
-- プロジェクト名にある「Cat」のように、目立たず静かにファイルの動きを監視し、必要なアクションをトリガーします。
+- ファイルの変更をリアルタイムで検知し、設定されたコマンドを自動実行するツールです。
+- 開発ワークフローの自動化やシステム運用の効率化を支援します。
+- 「猫が見守る」というコンセプトで、親しみやすくファイルを監視します。
 
 ## 技術スタック
-- フロントエンド: 該当なし
+- フロントエンド: 本プロジェクトは主にバックエンド/CLIツールであるため、特定のフロントエンド技術は使用していません。
 - 音楽・オーディオ:
-  - Tone.js: Web Audio APIを簡潔に扱うためのJavaScriptライブラリ。
-  - Web Audio API: ウェブブラウザで高度な音声処理を行うための標準技術（Tone.jsを介して利用）。
-  - MML (Music Macro Language): 音楽をテキストで記述するための記法パーサー。
+    - Tone.js: Web Audio APIをベースにしたJavaScriptフレームワークで、ブラウザ上で高度な音声処理や音楽生成を実現します。ファイル変更通知のサウンド生成に利用されている可能性があります。
+    - Web Audio API: Webブラウザで音声の合成、処理、解析を行うためのAPIです。Tone.jsを通じて利用されます。
+    - MML (Music Macro Language): テキストで音楽を記述するための簡易記法で、音楽的表現の生成に利用される可能性があります。
 - 開発ツール:
-  - Node.js runtime: JavaScriptコードを実行するためのランタイム環境。
-- テスト: 該当なし（ただし、`tests/` ディレクトリにPythonのテストコードが存在するため、pytestなどのPythonテストフレームワークが内部的に使用されている可能性があります）
-- ビルドツール: 該当なし
-- 言語機能: 該当なし
+    - Node.js runtime: JavaScriptコードを実行するための環境です。プロジェクト内の特定のスクリプトやCI/CDプロセスで利用されている可能性があります。
+- テスト:
+    - pytest: Pythonで広く使われるテストフレームワークです。簡潔なテストコード記述と強力な機能で、コードの品質と信頼性を保証します。
+- ビルドツール: 特に明記されているビルドツールはありません。
+- 言語機能: プロジェクトはPythonで実装されていますが、特定の言語機能に焦点を当てた説明は提供されていません。
 - 自動化・CI/CD:
-  - GitHub Actions: コードの変更を検知して自動でビルド、テスト、デプロイなどのワークフローを実行するCI/CDサービス。以下のワークフローが含まれます:
-    - プロジェクト要約自動生成: プロジェクトの情報を自動で要約するワークフロー。
-    - Issue自動管理: 課題追跡システム（Issue）の管理を自動化するワークフロー。
-    - README多言語翻訳: プロジェクトのREADMEドキュメントを多言語に自動翻訳するワークフロー。
-    - i18n automation: 国際化（i18n）関連の自動化ワークフロー。
+    - GitHub Actions: コードの自動テスト、デプロイ、ドキュメント生成、翻訳など、継続的インテグレーション/デリバリーのワークフローを自動化するサービスです。
+    - i18n automation: 多言語対応（国際化）を自動化するためのワークフローを指します。
 - 開発標準:
-  - EditorConfig: 異なるエディタやIDE間で、コードのインデント、改行コード、エンコーディングなどの書式設定を統一するための設定ファイル。
+    - EditorConfig: 異なるエディタやIDEを使用する開発者間で、インデントスタイル、文字コード、改行コードなどのコーディングスタイルを統一するための設定ファイルです。
+    - ruff: Pythonの非常に高速なリンターおよびフォーマッターです。コード品質の維持とスタイルの統一に貢献します。
+    - Pre-commit: コミット前にコードのフォーマットチェックやリンティングなどのフックを自動実行し、コードベースの一貫性を保つツールです。
 
 ## ファイル階層ツリー
 ```
@@ -46,58 +46,9 @@ Last updated: 2025-10-30
   📄 monitoring-group-example.toml
 📁 generated-docs/
 📁 issue-notes/
-  📖 101.md
-  📖 103.md
-  📖 105.md
-  📖 107.md
-  📖 109.md
-  📖 11.md
-  📖 111.md
-  📖 113.md
-  📖 16-refactoring-summary.md
-  📖 19-refactoring-summary.md
-  📖 21.md
-  📖 24.md
-  📖 26.md
-  📖 27.md
-  📖 30.md
-  📖 33.md
-  📖 35.md
-  📖 37.md
-  📖 39.md
-  📖 41.md
-  📖 43.md
-  📖 46.md
-  📖 48.md
-  📖 50.md
-  📖 52.md
-  📖 54.md
-  📖 56.md
-  📖 57.md
-  📖 58.md
   📖 62.md
-  📖 63.md
-  📖 65.md
-  📖 67.md
-  📖 69.md
-  📖 71-investigation-report.md
   📖 71.md
-  📖 72.md
-  📖 74.md
-  📖 76.md
   📖 78.md
-  📖 79-investigation-report.md
-  📖 79.md
-  📖 81.md
-  📖 83-completion.md
-  📖 85.md
-  📖 87.md
-  📖 89.md
-  📖 91.md
-  📖 93.md
-  📖 95.md
-  📖 97.md
-  📖 99.md
 📄 pytest.ini
 📄 requirements.txt
 📄 ruff.toml
@@ -130,6 +81,7 @@ Last updated: 2025-10-30
   📄 test_error_log_clarity.py
   📄 test_error_logging.py
   📄 test_external_files.py
+  📄 test_external_files_reload.py
   📄 test_interval_parser.py
   📄 test_intervals.py
   📄 test_main_loop_interval.py
@@ -145,90 +97,45 @@ Last updated: 2025-10-30
 ```
 
 ## ファイル詳細説明
-- **.editorconfig**: 異なる開発環境（エディタ、IDE）間でのコードスタイル（インデント、エンコーディングなど）を統一するための設定ファイルです。
-- **.gitignore**: Gitのバージョン管理から除外するファイルやディレクトリを指定するファイルです。
-- **.pre-commit-config.yaml**: Gitコミット前に自動的に実行されるフック（コードフォーマット、リンティングなど）を設定するためのファイルです。
-- **.vscode/**: Visual Studio Codeエディタ用の設定ディレクトリです。
-  - **README.md**: VS Codeワークスペースに関する情報や設定の簡単な説明です。
-  - **extensions.json**: このプロジェクトで推奨されるVS Code拡張機能のリストです。
-  - **settings.json**: このVS Codeワークスペース固有の設定を定義するファイルです。
-- **LICENSE**: プロジェクトの利用条件や配布に関するライセンス情報が記載されています。
-- **README.ja.md, README.md**: プロジェクトの概要、インストール方法、使い方などを説明するドキュメント（日本語版と英語版）です。
-- **_config.yml**: GitHub Pagesなどのサイトジェネレーターで利用される設定ファイルです。
-- **dev-requirements.txt, requirements.txt**: Pythonプロジェクトの依存関係を定義するファイルで、それぞれ開発環境用と本番環境用のパッケージリストを記載しています。
-- **examples/**: プロジェクトの設定ファイルの使用例が含まれるディレクトリです。
-  - **config.example.toml**: cat-file-watcherの主要な設定項目を示すサンプル設定ファイルです。
-  - **monitoring-group-example.toml**: 複数のファイルをグループ化して監視する設定のサンプルです。
-- **generated-docs/**: GitHub Actionsなどによって自動生成されたドキュメントやレポートを格納するディレクトリです。
-- **issue-notes/**: 開発過程で発生したIssue（課題）や検討事項に関するメモが格納されているディレクトリです。
-- **pytest.ini**: Pythonのテストフレームワークであるpytestの設定ファイルです。
-- **ruff.toml**: Pythonの高速なリンター・フォーマッターであるRuffの設定ファイルです。
-- **src/**: プロジェクトの主要なソースコードが格納されているディレクトリです。
-  - **__init__.py**: Pythonパッケージであることを示す初期化ファイルです。
-  - **__main__.py**: プロジェクトがスクリプトとして直接実行された際のエントリポイントとなるファイルです。
-  - **cat_file_watcher.py**: ファイル変更監視ツールのメインロジックを含むファイルで、全体の処理フローを管理します。
-  - **command_executor.py**: ファイル変更を検知した際に実行される外部コマンドの実行ロジックを管理します。
-  - **config_loader.py**: TOML形式などの設定ファイルを読み込み、プログラムで利用可能な形式に変換する機能を提供します。
-  - **config_validator.py**: 読み込まれた設定ファイルの内容が正しく、必要な項目が全て揃っているかを検証します。
-  - **error_logger.py**: プログラム実行中に発生したエラーを記録し、デバッグや問題解決に役立てるためのロギング機能を提供します。
-  - **external_config_merger.py**: 外部に定義された設定ファイルを読み込み、メインの設定と統合（マージ）する機能を提供します。
-  - **file_monitor.py**: 指定されたファイルのタイムスタンプや内容の変化を定期的に監視するコア機能です。
-  - **interval_parser.py**: 監視間隔や時間指定など、時間に関する文字列をプログラムが理解できる形式に解析する機能です。
-  - **process_detector.py**: 特定のプロセスが現在実行中であるかを検出し、その状態に基づいて処理を制御する機能を提供します。
-  - **time_period_checker.py**: 特定の時間帯（例：営業時間内、夜間など）であるかを判定し、処理の実行可否を制御する機能です。
-  - **timestamp_printer.py**: ログ出力やコンソール表示に、現在の時刻を示すタイムスタンプを付加する機能を提供します。
-- **tests/**: プロジェクトの各種機能の単体テストや統合テストが記述されたファイル群です。各 `test_*.py` ファイルは特定のモジュールや機能のテストを担当します。
+-   `.editorconfig`: プロジェクトのコーディングスタイル（インデント、改行コードなど）を定義し、異なるエディタ間での統一を保証します。
+-   `.gitignore`: Gitのバージョン管理から除外するファイルやディレクトリを指定します。
+-   `.pre-commit-config.yaml`: Pre-commitフックの設定ファイルで、コミット前にコードの自動整形やリンティングなどのチェックを実行します。
+-   `.vscode/README.md`: VS Code (Visual Studio Code) 関連のドキュメントや補足情報が含まれます。
+-   `.vscode/extensions.json`: VS Codeで推奨される拡張機能のリストを定義し、チーム全体の開発環境の統一を促します。
+-   `.vscode/settings.json`: VS Codeのワークスペース固有の設定を定義します。
+-   `LICENSE`: プロジェクトのライセンス情報が記載されています。
+-   `README.ja.md`: プロジェクトの概要を日本語で説明するドキュメントです。
+-   `README.md`: プロジェクトの概要を英語で説明する、主要なドキュメントです。
+-   `_config.yml`: Jekyllなどの静的サイトジェネレータの設定ファイルで、GitHub Pagesのサイト設定に利用される可能性があります。
+-   `dev-requirements.txt`: 開発環境でのみ必要なPythonパッケージの一覧を定義します。
+-   `examples/config.example.toml`: プロジェクトの基本的な監視設定の記述例を提供するTOML形式のサンプル設定ファイルです。
+-   `examples/monitoring-group-example.toml`: 複数のファイル監視グループを設定する際の具体的な記述例を示すサンプル設定ファイルです。
+-   `generated-docs/`: AIなどによって自動生成されたドキュメントやレポートを格納するためのディレクトリです。
+-   `issue-notes/62.md`, `issue-notes/71.md`, `issue-notes/78.md`: 特定の課題（issue）に関する詳細なメモや議論の記録です。
+-   `pytest.ini`: Pytestテストフレームワークの設定ファイルで、テストの発見方法や実行オプションなどを定義します。
+-   `requirements.txt`: プロジェクトの実行に必要なPythonパッケージの一覧を定義します。
+-   `ruff.toml`: Pythonの高速リンター/フォーマッターであるRuffの設定ファイルです。コードスタイルや静的解析のルールを定義します。
+-   `src/__init__.py`: `src` ディレクトリをPythonパッケージとして認識させるための初期化ファイルです。
+-   `src/__main__.py`: プロジェクトが直接Pythonインタープリタによって実行された際のエントリポイントとなるファイルです。
+-   `src/cat_file_watcher.py`: プロジェクトのメインロジックを含むファイル監視の中核コンポーネントです。ファイルシステムイベントの処理とコマンド実行の調整を行います。
+-   `src/command_executor.py`: ファイル変更が検知された際に実行される外部コマンドを処理し、その結果を管理する役割を担います。
+-   `src/config_loader.py`: 設定ファイル（例: TOML形式）を読み込み、パースしてアプリケーションが利用できる形式に変換します。
+-   `src/config_validator.py`: 読み込まれた設定ファイルの内容が有効であるか、定義されたスキーマやルールに従っているかを検証します。
+-   `src/error_logger.py`: アプリケーション内で発生したエラーや警告を記録し、デバッグや問題解決を支援するロギング機能を提供します。
+-   `src/external_config_merger.py`: 外部の設定ファイルを読み込み、メインの設定と統合・結合する機能を提供します。
+-   `src/file_monitor.py`: ファイルシステム上の変更（作成、削除、変更など）を監視し、そのイベントを検出するコアコンポーネントです。
+-   `src/interval_parser.py`: "5s", "1m" のような時間間隔指定の文字列を解析し、適切な数値に変換するユーティリティ機能です。
+-   `src/process_detector.py`: 特定の名前やPIDを持つプロセスが現在実行中であるかを検出し、その状態を報告します。
+-   `src/time_period_checker.py`: 設定された時間帯（例: 営業時間内のみ）に特定の処理が実行可能であるかをチェックする機能です。
+-   `src/timestamp_printer.py`: ログや出力に含めるタイムスタンプを整形し、読みやすい形式で表示するためのユーティリティです。
+-   `tests/test_basics.py` (その他 `tests/test_*.py`): プロジェクトの各機能やコンポーネントの正確性を検証するためのテストコード群です。
 
 ## 関数詳細説明
-このプロジェクトの具体的な関数リストは提供されていませんが、`src/` ディレクトリ内のファイル名から、以下のような役割を持つ関数群が存在すると推測されます。各関数の引数と戻り値は一般的な設計に基づいた推測です。
-
-- **`cat_file_watcher.py` 内の関数**:
-    - `main()`: プログラムのエントリポイント。設定の読み込み、ファイル監視の初期化、メインループの開始などを担当します。
-        - 引数: なし (またはコマンドライン引数)
-        - 戻り値: なし
-    - `start_monitoring(config)`: ファイル監視を開始し、監視ループを管理します。
-        - 引数: `config` (設定オブジェクト): 監視対象ファイルや実行コマンドなどの情報を含む。
-        - 戻り値: なし
-    - `_watch_files(monitor_config)`: 実際のファイル変更を定期的にチェックし、変更があれば通知します。
-        - 引数: `monitor_config` (監視設定): 監視対象の詳細情報。
-        - 戻り値: なし
-
-- **`command_executor.py` 内の関数**:
-    - `execute_command(command, cwd=None)`: 指定されたコマンド文字列をサブプロセスとして実行します。
-        - 引数: `command` (str): 実行するコマンド文字列。`cwd` (str, optional): コマンドを実行する作業ディレクトリ。
-        - 戻り値: `tuple` (int, str, str): 終了コード、標準出力、標準エラー出力。
-    - `run_subprocess(command_list, shell=False)`: コマンドリストを受け取り、より詳細なサブプロセス実行を制御します。
-        - 引数: `command_list` (list[str]): コマンドと引数のリスト。`shell` (bool): シェル経由で実行するかどうか。
-        - 戻り値: `subprocess.CompletedProcess` オブジェクト。
-
-- **`config_loader.py` 内の関数**:
-    - `load_config(file_path)`: 指定されたTOMLファイルパスから設定を読み込み、Pythonオブジェクトとして返します。
-        - 引数: `file_path` (str): 設定ファイルのパス。
-        - 戻り値: `dict` または `ConfigObject`: パースされた設定データ。
-    - `parse_toml_file(file_path)`: TOML形式のファイルを解析し、その内容を辞書形式で返します。
-        - 引数: `file_path` (str): TOMLファイルのパス。
-        - 戻り値: `dict`: TOMLファイルの内容。
-
-- **`file_monitor.py` 内の関数**:
-    - `check_for_changes(file_path, last_timestamp)`: 指定ファイルの現在のタイムスタンプと前回のタイムスタンプを比較し、変更があったかを確認します。
-        - 引数: `file_path` (str): 監視対象ファイルのパス。`last_timestamp` (float): 前回の変更タイムスタンプ。
-        - 戻り値: `tuple` (bool, float): 変更があったか (True/False)、新しいタイムスタンプ。
-    - `get_file_timestamp(file_path)`: 指定されたファイルの最終変更タイムスタンプを取得します。
-        - 引数: `file_path` (str): ファイルのパス。
-        - 戻り値: `float`: 最終変更タイムスタンプ（Unix時間）。
-
-- **その他、各ファイルの主要な関数（推測）**:
-    - **`config_validator.py`**: `validate_config(config)` (設定のスキーマ検証)
-    - **`error_logger.py`**: `log_error(message, exception=None)` (エラーメッセージの記録)
-    - **`external_config_merger.py`**: `merge_external_configs(main_config, external_paths)` (外部設定の読み込みと統合)
-    - **`interval_parser.py`**: `parse_interval_string(interval_str)` (時間文字列を秒数に変換)
-    - **`process_detector.py`**: `is_process_running(process_name)` (特定のプロセスが実行中か判定)
-    - **`time_period_checker.py`**: `is_within_time_period(start_time_str, end_time_str)` (現在が指定時間帯内か判定)
-    - **`timestamp_printer.py`**: `print_with_timestamp(message, color=None)` (タイムスタンプ付きでメッセージ出力)
+関数に関する具体的な情報（役割、引数、戻り値、機能）は提供されていないため、詳細な説明はできません。
 
 ## 関数呼び出し階層ツリー
 ```
-関数呼び出し階層を分析できませんでした。
+関数呼び出し階層を分析できませんでした
 
 ---
-Generated at: 2025-10-30 07:02:20 JST
+Generated at: 2025-11-08 07:02:06 JST
