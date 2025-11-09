@@ -1,50 +1,54 @@
-Last updated: 2025-11-08
+Last updated: 2025-11-10
 
 # Development Status
 
 ## 現在のIssues
-- 現在、プロジェクトにはオープン中のIssueは存在しません。
-- 過去の報告された問題はすべて解決されており、安定した状態です。
-- 今後の開発は、既存機能の更なる強化、品質向上、およびドキュメント整備に焦点を当てます。
+- 現在、プロジェクトにはオープン中の具体的な課題は認識されていません。
+- 直近の活動は、GitHub Actionsの共通ワークフロー導入とCopilotの指示改善に注力されています。
+- また、外部TOMLファイルのタイムスタンプ監視機能が追加され、継続的な改善が進んでいます。
 
 ## 次の一手候補
-1. 外部TOMLファイルのタイムスタンプ監視機能のドキュメント化と強化 ([Issue #115](../issue-notes/115.md))
-   - 最初の小さな一歩: `README.md`に、最近追加された外部TOMLファイルのタイムスタンプ監視機能に関する簡単な説明を追記する。
+1. 導入された共通GitHub Actionsワークフローの統合検証
+   - 最初の小さな一歩: `call-daily-project-summary.yml` が期待通りに `daily-project-summary.yml` を呼び出し、`generated-docs/development-status.md` と `generated-docs/project-overview.md` を更新しているか確認する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `README.md`, `examples/config.example.toml`
+     対象ファイル: .github/workflows/call-daily-project-summary.yml, .github/actions-tmp/.github/workflows/daily-project-summary.yml, generated-docs/development-status.md, generated-docs/project-overview.md
 
-     実行内容: `README.md`の既存のファイル監視設定に関するセクションに、外部TOMLファイル（例: `examples/config.example.toml`）のタイムスタンプ監視機能についての説明を追加してください。具体的には、この機能がどのような設定で有効になり、どのような挙動をするのかを簡潔に記述します。また、`examples/config.example.toml`にこの機能のサンプル設定を追加してください。
+     実行内容: `call-daily-project-summary.yml` が `.github/actions-tmp/.github/workflows/daily-project-summary.yml` を正しく呼び出し、最終的に `generated-docs/development-status.md` および `generated-docs/project-overview.md` が更新されていることを確認する。具体的には、これらのファイルがコミット `724ed1f Update project summaries (overview & development status) [auto]` によって更新された内容と、ワークフローの設計意図が一致しているか確認する。もし不一致があれば、原因を特定し、簡単な修正案を提案する。
 
-     確認事項: `README.md`の既存の記述との整合性、およびユーザーが理解しやすい表現になっているかを確認してください。`examples/config.example.toml`に追加する設定が実際に動作することを確認してください。
+     確認事項: ワークフローのトリガー設定、呼び出し先のパス、出力ファイルのパスと権限、GitHub Actionsの実行ログ。
 
-     期待する出力: 更新された`README.md`の内容と、`examples/config.example.toml`に追加された設定ブロックをmarkdown形式で出力してください。
+     期待する出力: `call-daily-project-summary.yml` ワークフローが正しく機能しているかどうかの評価、およびもし問題があればその特定と改善提案をmarkdown形式で出力してください。
      ```
 
-2. Agent生成ポリシーの見直しとガイドラインの明確化 ([Issue #116](../issue-notes/116.md))
-   - 最初の小さな一歩: `.github/copilot-instructions.md`の内容を読み込み、Agentによるドキュメント生成（特にIssue Notes）に関する記述が最新の方針（生成しない）と合致しているかを確認する。
+2. 開発状況生成プロンプトのAgent遵守度確認と精度向上
+   - 最初の小さな一歩: 本プロンプト（`.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md` の内容）と、それによって生成された結果 (`generated-docs/development-status.md`) を比較し、「生成しないもの」のルールが守られているか、および「必須要素」が適切に反映されているか評価する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `.github/copilot-instructions.md`, `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md`
+     対象ファイル: .github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md, generated-docs/development-status.md, .github/copilot-instructions.md
 
-     実行内容: `.github/copilot-instructions.md`に記載されているAgentの振る舞いに関するガイドラインを分析し、特に「Issue Notesを生成しない」という新しい方針が明確に反映されているかを確認してください。もし不明瞭な点があれば、その点を指摘し、より明確にするための修正案を提案してください。また、`development-status-prompt.md`がこの新しいガイドラインと矛盾しないか確認してください。
+     実行内容: `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md` の内容と、それに基づいて生成された `generated-docs/development-status.md` を比較分析する。「生成しないもの」セクション（特にハルシネーションの防止）と、「必須要素」セクション（特にAgent実行プロンプトの構造）が守られているかを評価し、改善点があれば提案する。また、必要に応じて `.github/copilot-instructions.md` の関連部分の改善提案も含める。
 
-     確認事項: ガイドラインがハルシネーションを防止し、Agentが期待通りの振る舞いをするように促しているか。開発者にとって理解しやすい表現になっているか。
+     確認事項: プロンプトの指示と生成結果の乖離、過去のハルシネーション事例（もしあれば）。
 
-     期待する出力: `.github/copilot-instructions.md`の分析結果をmarkdown形式で出力し、必要に応じて修正案を提示してください。また、`development-status-prompt.md`との整合性に関する評価も含めてください。
+     期待する出力: `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md` の遵守度に関する評価レポートをmarkdown形式で出力してください。特に、ハルシネーション防止策の有効性について言及し、さらなる精度向上に向けたプロンプトの修正案や、`.github/copilot-instructions.md` の修正案を提示してください。
      ```
 
-3. コード品質の継続的改善とテストカバレッジの拡充 ([Issue #117](../issue-notes/117.md))
-   - 最初の小さな一歩: 最近変更があった `src/cat_file_watcher.py` および `src/command_executor.py` のテストカバレッジを分析し、不足している部分を特定する。
+3. 外部TOMLファイル監視機能のテストカバレッジ強化
+   - 最初の小さな一歩: `tests/test_external_files_reload.py` のテストケースをレビューし、外部TOMLファイルが削除された場合、破損した場合、パーミッションエラーが発生した場合などのシナリオがカバーされているか確認する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `src/cat_file_watcher.py`, `src/command_executor.py`, `tests/test_cat_file_watcher.py`, `tests/test_command_logging.py`, `tests/test_command_suppression.py`, `tests/test_empty_filename_messages.py`, `tests/test_print_color_specification.py`
+     対象ファイル: src/external_config_merger.py, src/file_monitor.py, tests/test_external_files_reload.py
 
-     実行内容: `src/cat_file_watcher.py`と`src/command_executor.py`の最近の変更点（コミット履歴 `31d6860` から `cee3bf1` の間）を考慮し、関連するテストファイル群のテストカバレッジを静的に分析してください。特に、新しい機能や修正されたロジックに対するテストが十分に行われているか、エッジケースがカバーされているかを評価してください。
+     実行内容: 外部TOMLファイル監視機能（`src/external_config_merger.py` と `src/file_monitor.py` に関連する部分）の既存テスト (`tests/test_external_files_reload.py`) をレビューする。特に、以下のシナリオがカバーされているか確認し、不足しているテストケースがあれば追加案を提案する。
+     1. 監視対象TOMLファイルが実行中に削除された場合
+     2. 監視対象TOMLファイルが構文エラーで破損した場合
+     3. 監視対象TOMLファイルへの読み取り権限がない場合
+     4. 複数の外部TOMLファイルが同時に変更された場合
 
-     確認事項: 分析対象のファイルが、実際のコードベースでの役割と適切に合致しているか。既存のテストコードが最新のコード変更を反映しているか。
+     確認事項: 既存のテストの構造とカバレッジ、`src/external_config_merger.py` と `src/file_monitor.py` のエラーハンドリングロジック。
 
-     期待する出力: `src/cat_file_watcher.py`と`src/command_executor.py`に対するテストカバレッジの分析結果をmarkdown形式で出力してください。具体的には、カバレッジが不足していると思われる領域、または追加のテストケースが推奨される機能について言及してください。
+     期待する出力: `tests/test_external_files_reload.py` のテストカバレッジに関する分析レポートと、不足しているテストケースに対する具体的な追加テストコードの提案（pytest形式）をmarkdown形式で出力してください。
 
 ---
-Generated at: 2025-11-08 07:02:03 JST
+Generated at: 2025-11-10 07:01:46 JST

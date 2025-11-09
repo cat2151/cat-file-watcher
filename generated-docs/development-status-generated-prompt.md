@@ -1,4 +1,4 @@
-Last updated: 2025-11-08
+Last updated: 2025-11-10
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -144,7 +144,6 @@ Last updated: 2025-11-08
 - .github/actions-tmp/.github_automation/project_summary/scripts/overview/ProjectDataCollector.cjs
 - .github/actions-tmp/.github_automation/project_summary/scripts/overview/ProjectDataFormatter.cjs
 - .github/actions-tmp/.github_automation/project_summary/scripts/overview/ProjectOverviewGenerator.cjs
-- .github/actions-tmp/.github_automation/project_summary/scripts/overview/TechStackAnalyzer.cjs
 - .github/actions-tmp/.github_automation/project_summary/scripts/shared/BaseGenerator.cjs
 - .github/actions-tmp/.github_automation/project_summary/scripts/shared/FileSystemUtils.cjs
 - .github/actions-tmp/.github_automation/project_summary/scripts/shared/ProjectFileUtils.cjs
@@ -155,6 +154,7 @@ Last updated: 2025-11-08
 - .github/actions-tmp/LICENSE
 - .github/actions-tmp/README.ja.md
 - .github/actions-tmp/README.md
+- .github/actions-tmp/_config.yml
 - .github/actions-tmp/generated-docs/callgraph.html
 - .github/actions-tmp/generated-docs/callgraph.js
 - .github/actions-tmp/generated-docs/development-status-generated-prompt.md
@@ -181,6 +181,7 @@ Last updated: 2025-11-08
 - .github/actions-tmp/issue-notes/26.md
 - .github/actions-tmp/issue-notes/27.md
 - .github/actions-tmp/issue-notes/28.md
+- .github/actions-tmp/issue-notes/29.md
 - .github/actions-tmp/issue-notes/3.md
 - .github/actions-tmp/issue-notes/4.md
 - .github/actions-tmp/issue-notes/7.md
@@ -205,6 +206,7 @@ Last updated: 2025-11-08
 - dev-requirements.txt
 - examples/config.example.toml
 - examples/monitoring-group-example.toml
+- generated-docs/project-overview-generated-prompt.md
 - issue-notes/62.md
 - issue-notes/71.md
 - issue-notes/78.md
@@ -260,6 +262,9 @@ Last updated: 2025-11-08
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+42b765a Merge branch 'main' of github.com:cat2151/cat-file-watcher into main
+43707d0 github-actionsリポジトリの共通ワークフローを導入
+724ed1f Update project summaries (overview & development status) [auto]
 31d6860 Merge branch 'main' of github.com:cat2151/cat-file-watcher into main
 ab90db0 agentにissue-notesを生成させないようにしたので、その方針に準拠して、今までのagent生成issue-notesを削除し、ドキュメント陳腐化を防止した
 63150c4 Update copilot instructions with user guidelines
@@ -267,11 +272,10 @@ ab90db0 agentにissue-notesを生成させないようにしたので、その�
 37cdc99 Add issue note documentation for #113
 c378ce5 Address code review feedback
 d64a0fd Add timestamp monitoring for external TOML files
-cee3bf1 Initial plan
 
 ### 変更されたファイル:
 .github/copilot-instructions.md
-README.md
+.github/workflows/call-daily-project-summary.yml
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview.md
@@ -281,6 +285,7 @@ issue-notes/105.md
 issue-notes/107.md
 issue-notes/109.md
 issue-notes/11.md
+issue-notes/111.md
 issue-notes/16-refactoring-summary.md
 issue-notes/19-refactoring-summary.md
 issue-notes/21.md
@@ -330,4 +335,4 @@ tests/test_print_color_specification.py
 
 
 ---
-Generated at: 2025-11-08 07:01:41 JST
+Generated at: 2025-11-10 07:01:28 JST
