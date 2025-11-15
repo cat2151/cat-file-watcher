@@ -187,8 +187,10 @@ midnight_window = { start = "23:59", end = "00:01" }
 
 # Example 20: Execute command without stealing focus (no_focus)
 # When no_focus is enabled, commands run in the background without taking window focus
-# This uses shell=False and splits the command by spaces
-# Particularly useful on Windows to prevent command windows from popping up
+# Windows: Uses CREATE_NO_WINDOW flag and STARTUPINFO with SW_HIDE to prevent focus stealing
+# Unix/Linux: Uses start_new_session=True to detach from parent session
+# Commands are parsed with shlex.split() for proper argument handling (quotes, escapes, etc.)
+# Particularly useful on Windows to prevent command windows from popping up and stealing focus
 # Note: Shell features (pipes, redirects, env vars) are not available in this mode
 # [[files]]
 # path = "data.txt"
