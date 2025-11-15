@@ -140,6 +140,11 @@ class CommandExecutor:
         This method launches the command asynchronously and does not wait for it to complete.
         The window will be shown but will not steal focus from the current foreground window.
 
+        On Windows, this uses a two-step approach:
+        1. Launch the process with SW_SHOWNOACTIVATE to prevent initial focus stealing
+        2. If pywin32 is available, also restore focus to the original window after launch
+           This provides additional protection against focus stealing
+
         Args:
             command: The shell command to execute
             cwd: Working directory for the command
