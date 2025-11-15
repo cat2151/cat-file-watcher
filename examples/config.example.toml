@@ -7,7 +7,7 @@
 # enable_timestamp = true
 
 # Default interval for checking files
-# Supports time format: "1s" (1 second), "2m" (2 minutes), "3h" (3 hours), "0.5s" (0.5 seconds)
+# Supports time format: "500ms" (500 milliseconds), "1s" (1 second), "2m" (2 minutes), "3h" (3 hours), "0.5s" (0.5 seconds)
 # Default: "1s" (1 second)
 default_interval = "1s"
 
@@ -83,7 +83,7 @@ midnight_window = { start = "23:59", end = "00:01" }
 # [[files]]
 # path = "app.log"
 # command = "notify-send 'Log Updated' 'app.log has new entries'"
-# interval = "0.5s"
+# interval = "500ms"
 
 # Example 5: Monitor a document and create a backup (uses default interval)
 # [[files]]

@@ -58,6 +58,21 @@ class TestIntervalParser:
             result = IntervalParser.parse_interval(interval_str)
             assert result == expected, f"Failed for {interval_str}: expected {expected}, got {result}"
 
+    def test_parse_milliseconds(self):
+        """Test parsing milliseconds format."""
+        test_cases = [
+            ("500ms", 0.5),
+            ("1000ms", 1.0),
+            ("100ms", 0.1),
+            ("250ms", 0.25),
+            ("1ms", 0.001),
+            ("2000ms", 2.0),
+            ("50ms", 0.05),
+        ]
+        for interval_str, expected in test_cases:
+            result = IntervalParser.parse_interval(interval_str)
+            assert result == expected, f"Failed for {interval_str}: expected {expected}, got {result}"
+
     def test_parse_with_whitespace(self):
         """Test parsing with leading/trailing whitespace."""
         test_cases = [
@@ -65,6 +80,7 @@ class TestIntervalParser:
             (" 2m ", 120.0),
             ("  3h  ", 10800.0),
             (" 0.5s ", 0.5),
+            (" 500ms ", 0.5),
         ]
         for interval_str, expected in test_cases:
             result = IntervalParser.parse_interval(interval_str)
@@ -78,6 +94,8 @@ class TestIntervalParser:
             ("1.0s", 1.0),
             ("2.5m", 150.0),
             ("0.25h", 900.0),
+            ("0.5ms", 0.0005),
+            ("1.5ms", 0.0015),
         ]
         for interval_str, expected in test_cases:
             result = IntervalParser.parse_interval(interval_str)
@@ -92,9 +110,9 @@ class TestIntervalParser:
             "1.2.3s",  # Invalid number
             "abc",  # Not a number
             "1 s",  # Space between number and unit
-            "1ms",  # Millisecond unit not supported in string format
             "",  # Empty string
             "1sm",  # Invalid unit combination
+            "1 ms",  # Space between number and unit (ms)
         ]
         for invalid_str in invalid_formats:
             with pytest.raises(ValueError, match="Invalid interval format"):
