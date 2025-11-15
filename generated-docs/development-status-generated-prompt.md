@@ -1,4 +1,4 @@
-Last updated: 2025-11-10
+Last updated: 2025-11-16
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -159,6 +159,7 @@ Last updated: 2025-11-10
 - .github/actions-tmp/generated-docs/callgraph.js
 - .github/actions-tmp/generated-docs/development-status-generated-prompt.md
 - .github/actions-tmp/generated-docs/development-status.md
+- .github/actions-tmp/generated-docs/project-overview-generated-prompt.md
 - .github/actions-tmp/generated-docs/project-overview.md
 - .github/actions-tmp/generated-docs/style.css
 - .github/actions-tmp/issue-notes/10.md
@@ -183,6 +184,7 @@ Last updated: 2025-11-10
 - .github/actions-tmp/issue-notes/28.md
 - .github/actions-tmp/issue-notes/29.md
 - .github/actions-tmp/issue-notes/3.md
+- .github/actions-tmp/issue-notes/30.md
 - .github/actions-tmp/issue-notes/4.md
 - .github/actions-tmp/issue-notes/7.md
 - .github/actions-tmp/issue-notes/8.md
@@ -207,6 +209,11 @@ Last updated: 2025-11-10
 - examples/config.example.toml
 - examples/monitoring-group-example.toml
 - generated-docs/project-overview-generated-prompt.md
+- issue-notes/117.md
+- issue-notes/119.md
+- issue-notes/121.md
+- issue-notes/123.md
+- issue-notes/125.md
 - issue-notes/62.md
 - issue-notes/71.md
 - issue-notes/78.md
@@ -246,6 +253,7 @@ Last updated: 2025-11-10
 - tests/test_main_loop_interval.py
 - tests/test_multiple_empty_filenames.py
 - tests/test_new_interval_format.py
+- tests/test_no_focus.py
 - tests/test_print_color_specification.py
 - tests/test_process_detection.py
 - tests/test_suppression_logging.py
@@ -262,77 +270,25 @@ Last updated: 2025-11-10
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-42b765a Merge branch 'main' of github.com:cat2151/cat-file-watcher into main
-43707d0 github-actionsリポジトリの共通ワークフローを導入
-724ed1f Update project summaries (overview & development status) [auto]
-31d6860 Merge branch 'main' of github.com:cat2151/cat-file-watcher into main
-ab90db0 agentにissue-notesを生成させないようにしたので、その方針に準拠して、今までのagent生成issue-notesを削除し、ドキュメント陳腐化を防止した
-63150c4 Update copilot instructions with user guidelines
-66b7ad9 Merge pull request #114 from cat2151/copilot/add-timestamp-monitoring-for-toml
-37cdc99 Add issue note documentation for #113
-c378ce5 Address code review feedback
-d64a0fd Add timestamp monitoring for external TOML files
+8ac82bc Auto-translate README.ja.md to README.md [auto]
+b95aabb README: Windowsアプリのフォーカス保持設定に関する説明を追加
+19316e8 Merge pull request #126 from cat2151/copilot/fix-windows-focus-restoration
+96938df Implement retry loop for Windows focus restoration with verification
+2b5ee04 Initial plan
+bbe8733 Add issue note for #125 [auto]
+33e3045 Merge pull request #124 from cat2151/copilot/investigate-exe-launch-focus-issue
+1b123c6 Update docstring for enhanced focus prevention details
+fc11a84 Add enhanced focus prevention for Windows no_focus mode
+d793a75 Initial plan
 
 ### 変更されたファイル:
-.github/copilot-instructions.md
-.github/workflows/call-daily-project-summary.yml
-generated-docs/development-status-generated-prompt.md
-generated-docs/development-status.md
-generated-docs/project-overview.md
-issue-notes/101.md
-issue-notes/103.md
-issue-notes/105.md
-issue-notes/107.md
-issue-notes/109.md
-issue-notes/11.md
-issue-notes/111.md
-issue-notes/16-refactoring-summary.md
-issue-notes/19-refactoring-summary.md
-issue-notes/21.md
-issue-notes/24.md
-issue-notes/26.md
-issue-notes/27.md
-issue-notes/30.md
-issue-notes/33.md
-issue-notes/35.md
-issue-notes/37.md
-issue-notes/39.md
-issue-notes/41.md
-issue-notes/43.md
-issue-notes/46.md
-issue-notes/48.md
-issue-notes/50.md
-issue-notes/52.md
-issue-notes/54.md
-issue-notes/56.md
-issue-notes/57.md
-issue-notes/58.md
-issue-notes/63.md
-issue-notes/65.md
-issue-notes/67.md
-issue-notes/69.md
-issue-notes/71-investigation-report.md
-issue-notes/72.md
-issue-notes/74.md
-issue-notes/76.md
-issue-notes/79-investigation-report.md
-issue-notes/79.md
-issue-notes/81.md
-issue-notes/83-completion.md
-issue-notes/85.md
-issue-notes/87.md
-issue-notes/89.md
-issue-notes/91.md
-issue-notes/93.md
-issue-notes/95.md
-issue-notes/97.md
-issue-notes/99.md
-src/cat_file_watcher.py
+README.ja.md
+README.md
+issue-notes/123.md
+issue-notes/125.md
+requirements.txt
 src/command_executor.py
-tests/test_empty_filename_messages.py
-tests/test_external_files_reload.py
-tests/test_print_color_specification.py
 
 
 ---
-Generated at: 2025-11-10 07:01:28 JST
+Generated at: 2025-11-16 07:01:29 JST

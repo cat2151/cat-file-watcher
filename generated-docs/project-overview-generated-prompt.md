@@ -1,4 +1,4 @@
-Last updated: 2025-11-10
+Last updated: 2025-11-16
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -87,6 +87,7 @@ Last updated: 2025-11-10
 - ファイル変更時にカスタムコマンドを実行
 - TOML設定ファイルで設定可能
 - 軽量で使いやすい
+- Windowsで、起動したアプリにフォーカスを奪われない（厳密にはすぐ奪い返す）設定可
 
 ## インストール
 
@@ -191,6 +192,7 @@ night_shift = { start = "23:00", end = "01:00" }
   - `time_period` (省略可): ファイルまたはディレクトリを監視する時間帯の名前。`[time_periods]` セクションで定義された時間帯名を指定します。指定した時間帯内でのみ監視します
   - `enable_log` (省略可): `true` に設定すると、コマンド実行の詳細をログファイルに記録します（デフォルト: `false`）。グローバル設定で `log_file` の設定が必要です
   - `cwd` (省略可): コマンドを実行する前に指定されたパスに作業ディレクトリを変更します。これにより、コマンド内の相対パスが指定されたディレクトリから解決されます
+  - `no_focus` (省略可): `true` に設定すると、フォーカスを奪わずにコマンドを実行します（デフォルト: `false`）。**Windows専用** - コマンドは非同期で起動され（ツールは完了を待機しません）、ウィンドウは表示されますがアクティブ化されないため、フォーカスの奪取を防ぎます。`shell=False` を使用し、コマンドをスペースで分割します。Windows以外のプラットフォームでは、警告を表示して通常実行にフォールバックします。注意: パイプ、リダイレクト、環境変数展開などのシェル機能はこのモードでは使用できません
 
 ### グローバル設定
 
@@ -399,6 +401,11 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 monitoring-group-example.toml
 📁 generated-docs/
 📁 issue-notes/
+  📖 117.md
+  📖 119.md
+  📖 121.md
+  📖 123.md
+  📖 125.md
   📖 62.md
   📖 71.md
   📖 78.md
@@ -440,6 +447,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 test_main_loop_interval.py
   📄 test_multiple_empty_filenames.py
   📄 test_new_interval_format.py
+  📄 test_no_focus.py
   📄 test_print_color_specification.py
   📄 test_process_detection.py
   📄 test_suppression_logging.py
@@ -460,6 +468,11 @@ MIT License - 詳細はLICENSEファイルを参照してください
 .vscode/settings.json
 README.ja.md
 README.md
+issue-notes/117.md
+issue-notes/119.md
+issue-notes/121.md
+issue-notes/123.md
+issue-notes/125.md
 issue-notes/62.md
 issue-notes/71.md
 issue-notes/78.md
@@ -474,4 +487,4 @@ issue-notes/78.md
 
 
 ---
-Generated at: 2025-11-10 07:01:28 JST
+Generated at: 2025-11-16 07:01:29 JST
