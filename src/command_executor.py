@@ -163,6 +163,19 @@ class CommandExecutor:
         # SW_SHOWNOACTIVATE (4) shows the window without activating it
         SW_SHOWNOACTIVATE = 4
 
+        # Try to import win32gui for enhanced focus control
+        # This is optional - if not available, we'll just use SW_SHOWNOACTIVATE
+        try:
+            import time
+
+            import win32gui
+
+            # Save the current foreground window
+            hwnd_before = win32gui.GetForegroundWindow()
+            has_win32gui = True
+        except ImportError:
+            has_win32gui = False
+
         # Configure startupinfo to show window without focus
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -175,6 +188,17 @@ class CommandExecutor:
             cwd=cwd,
             startupinfo=startupinfo,
         )
+
+        # If win32gui is available, restore focus to the original window
+        if has_win32gui:
+            # Wait briefly for the window to be created
+            time.sleep(0.1)
+            # Restore focus to the original window
+            try:
+                win32gui.SetForegroundWindow(hwnd_before)
+            except Exception:
+                # If SetForegroundWindow fails (e.g., window was closed), silently continue
+                pass
 
         # Return a mock CompletedProcess object since we're not waiting
         # This maintains compatibility with the existing code structure
