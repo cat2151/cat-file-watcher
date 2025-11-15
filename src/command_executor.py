@@ -196,14 +196,26 @@ class CommandExecutor:
 
         # If win32gui is available, restore focus to the original window
         if has_win32gui:
-            # Wait briefly for the window to be created
-            time.sleep(0.1)
-            # Restore focus to the original window
-            try:
-                win32gui.SetForegroundWindow(hwnd_before)
-            except Exception:
-                # If SetForegroundWindow fails (e.g., window was closed), silently continue
-                pass
+            max_attempts = 20
+            for attempt in range(max_attempts):
+                time.sleep(0.1)
+                try:
+                    win32gui.SetForegroundWindow(hwnd_before)
+                    current_hwnd = win32gui.GetForegroundWindow()
+                    if current_hwnd == hwnd_before:
+                        print(
+                            f"Successfully restored focus to the original window (attempt {attempt + 1}). {hwnd_before}"
+                        )
+                        break
+                    elif attempt == max_attempts - 1:
+                        print(
+                            f"Failed to restore focus after {attempt + 1} attempts. Original window: {hwnd_before}, Current: {current_hwnd}"
+                        )
+                except Exception:
+                    # If SetForegroundWindow fails (e.g., window was closed), silently continue
+                    if attempt == max_attempts - 1:
+                        print(f"Exception occurred while restoring focus after {attempt + 1} attempts")
+                    pass
 
         # Return a mock CompletedProcess object since we're not waiting
         # This maintains compatibility with the existing code structure
