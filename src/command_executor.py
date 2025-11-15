@@ -150,8 +150,6 @@ class CommandExecutor:
         # Platform-specific configuration to prevent focus stealing
         if sys.platform == "win32":
             # Windows-specific: Use creationflags and startupinfo to prevent window focus
-            import subprocess
-
             # CREATE_NO_WINDOW prevents console window from appearing
             CREATE_NO_WINDOW = 0x08000000
 
