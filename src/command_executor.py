@@ -3,7 +3,9 @@
 Command executor for File Watcher
 """
 
+import shlex
 import subprocess
+import sys
 from datetime import datetime
 
 from colorama import Fore, Style
@@ -108,10 +110,8 @@ class CommandExecutor:
         try:
             # Use capture_output=False to allow real-time output for long-running commands
             if no_focus:
-                # When no_focus is enabled, use shell=False and split command by spaces
-                # This prevents windows from stealing focus (especially on Windows)
-                command_args = command.split()
-                result = subprocess.run(command_args, shell=False, capture_output=False, text=True, timeout=30, cwd=cwd)
+                # When no_focus is enabled, prevent focus stealing with platform-specific mechanisms
+                result = CommandExecutor._run_no_focus_command(command, cwd)
             else:
                 # Default behavior: use shell=True
                 result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
@@ -132,6 +132,56 @@ class CommandExecutor:
             TimestampPrinter.print(f"{error_msg}: {e}", Fore.RED)
             ErrorLogger.log_error(error_log_file, error_msg, e)
             raise
+
+    @staticmethod
+    def _run_no_focus_command(command, cwd):
+        """Run a command without stealing focus using platform-specific mechanisms.
+
+        Args:
+            command: The shell command to execute
+            cwd: Working directory for the command
+
+        Returns:
+            subprocess.CompletedProcess: Result of the command execution
+        """
+        # Use shlex.split for proper argument parsing (handles quotes, escapes, etc.)
+        command_args = shlex.split(command)
+
+        # Platform-specific configuration to prevent focus stealing
+        if sys.platform == "win32":
+            # Windows-specific: Use creationflags and startupinfo to prevent window focus
+            # CREATE_NO_WINDOW prevents console window from appearing
+            CREATE_NO_WINDOW = 0x08000000
+
+            # Configure startupinfo to hide the window
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = 0  # SW_HIDE
+
+            result = subprocess.run(
+                command_args,
+                shell=False,
+                capture_output=False,
+                text=True,
+                timeout=30,
+                cwd=cwd,
+                creationflags=CREATE_NO_WINDOW,
+                startupinfo=startupinfo,
+            )
+        else:
+            # Unix/Linux: Use start_new_session to detach from parent session
+            # This prevents the subprocess from inheriting the terminal and stealing focus
+            result = subprocess.run(
+                command_args,
+                shell=False,
+                capture_output=False,
+                text=True,
+                timeout=30,
+                cwd=cwd,
+                start_new_session=True,
+            )
+
+        return result
 
     @staticmethod
     def _handle_command_result(result, command, filepath, error_log_file):
