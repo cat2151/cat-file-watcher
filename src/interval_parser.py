@@ -14,10 +14,10 @@ class IntervalParser:
     def parse_interval(interval_value):
         """Parse interval value to seconds.
 
-        Supports time strings like "1s", "2m", "3h", "0.5s".
+        Supports time strings like "1s", "500ms", "2m", "3h", "0.5s".
 
         Args:
-            interval_value: A string with time unit ("1s", "2m", "3h", "0.5s")
+            interval_value: A string with time unit ("1s", "500ms", "2m", "3h", "0.5s")
 
         Returns:
             float: Interval in seconds
@@ -27,20 +27,22 @@ class IntervalParser:
         """
         # Handle time string format
         if isinstance(interval_value, str):
-            # Parse time string format: number + unit (s/m/h)
+            # Parse time string format: number + unit (ms/s/m/h)
             # Supports decimal numbers like "0.5s"
-            match = re.match(r"^(\d+\.?\d*|\.\d+)(s|m|h)$", interval_value.strip())
+            match = re.match(r"^(\d+\.?\d*|\.\d+)(ms|s|m|h)$", interval_value.strip())
             if not match:
                 raise ValueError(
                     f"Invalid interval format: '{interval_value}'. "
-                    f"Expected format: '1s' (seconds), '2m' (minutes), '3h' (hours), or '0.5s' (decimal)"
+                    f"Expected format: '500ms' (milliseconds), '1s' (seconds), '2m' (minutes), '3h' (hours), or '0.5s' (decimal)"
                 )
 
             number_str, unit = match.groups()
             number = float(number_str)
 
             # Convert to seconds based on unit
-            if unit == "s":
+            if unit == "ms":
+                return number / 1000.0
+            elif unit == "s":
                 return number
             elif unit == "m":
                 return number * 60.0
