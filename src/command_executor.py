@@ -135,53 +135,53 @@ class CommandExecutor:
 
     @staticmethod
     def _run_no_focus_command(command, cwd):
-        """Run a command without stealing focus using platform-specific mechanisms.
+        """Run a command without stealing focus (Windows only, asynchronous).
+
+        This method launches the command asynchronously and does not wait for it to complete.
+        The window will be shown but will not steal focus from the current foreground window.
 
         Args:
             command: The shell command to execute
             cwd: Working directory for the command
 
         Returns:
-            subprocess.CompletedProcess: Result of the command execution
+            subprocess.CompletedProcess: A mock result object with returncode 0
         """
+        if sys.platform != "win32":
+            # no_focus is only supported on Windows
+            TimestampPrinter.print(
+                "Warning: no_focus is only supported on Windows. Falling back to normal execution.", Fore.YELLOW
+            )
+            # Fallback to normal execution
+            result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
+            return result
+
         # Use shlex.split for proper argument parsing (handles quotes, escapes, etc.)
         command_args = shlex.split(command)
 
-        # Platform-specific configuration to prevent focus stealing
-        if sys.platform == "win32":
-            # Windows-specific: Use creationflags and startupinfo to prevent window focus
-            # CREATE_NO_WINDOW prevents console window from appearing
-            CREATE_NO_WINDOW = 0x08000000
+        # Windows-specific: Show window without stealing focus
+        # SW_SHOWNOACTIVATE (4) shows the window without activating it
+        SW_SHOWNOACTIVATE = 4
 
-            # Configure startupinfo to hide the window
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            startupinfo.wShowWindow = 0  # SW_HIDE
+        # Configure startupinfo to show window without focus
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = SW_SHOWNOACTIVATE
 
-            result = subprocess.run(
-                command_args,
-                shell=False,
-                capture_output=False,
-                text=True,
-                timeout=30,
-                cwd=cwd,
-                creationflags=CREATE_NO_WINDOW,
-                startupinfo=startupinfo,
-            )
-        else:
-            # Unix/Linux: Use start_new_session to detach from parent session
-            # This prevents the subprocess from inheriting the terminal and stealing focus
-            result = subprocess.run(
-                command_args,
-                shell=False,
-                capture_output=False,
-                text=True,
-                timeout=30,
-                cwd=cwd,
-                start_new_session=True,
-            )
+        # Launch asynchronously - don't wait for the process to complete
+        subprocess.Popen(
+            command_args,
+            shell=False,
+            cwd=cwd,
+            startupinfo=startupinfo,
+        )
 
-        return result
+        # Return a mock CompletedProcess object since we're not waiting
+        # This maintains compatibility with the existing code structure
+        class MockResult:
+            returncode = 0
+
+        return MockResult()
 
     @staticmethod
     def _handle_command_result(result, command, filepath, error_log_file):
