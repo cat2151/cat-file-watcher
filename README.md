@@ -128,6 +128,7 @@ The configuration file requires a `[files]` section where each entry maps a file
   - `time_period` (optional): The name of the time period during which the file or directory should be monitored. Specify a time period name defined in the `[time_periods]` section. Monitoring will only occur within the specified time period.
   - `enable_log` (optional): If set to `true`, detailed command execution will be logged to a log file (default: `false`). The `log_file` setting is required in the global configuration.
   - `cwd` (optional): Changes the working directory to the specified path before executing the command. This ensures that relative paths within the command are resolved from the specified directory.
+  - `no_focus` (optional): If set to `true`, the command will be executed without stealing focus (default: `false`). When enabled, uses `shell=False` and splits the command by spaces. This is particularly useful on Windows to prevent command windows from popping up and taking focus. Note: Shell features like pipes, redirects, and environment variable expansion are not available in this mode.
 
 ### Global Settings
 
