@@ -103,10 +103,18 @@ class CommandExecutor:
 
         error_log_file = config.get("error_log_file") if config else None
         cwd = settings.get("cwd")
+        no_focus = settings.get("no_focus", False)
 
         try:
             # Use capture_output=False to allow real-time output for long-running commands
-            result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
+            if no_focus:
+                # When no_focus is enabled, use shell=False and split command by spaces
+                # This prevents windows from stealing focus (especially on Windows)
+                command_args = command.split()
+                result = subprocess.run(command_args, shell=False, capture_output=False, text=True, timeout=30, cwd=cwd)
+            else:
+                # Default behavior: use shell=True
+                result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
             CommandExecutor._handle_command_result(result, command, filepath, error_log_file)
         except subprocess.TimeoutExpired as e:
             if filepath == "":

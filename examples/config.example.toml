@@ -185,7 +185,17 @@ midnight_window = { start = "23:59", end = "00:01" }
 # command = "gcc -c module.c -o module.o"
 # cwd = "./lib"
 
-# Example 20: Process termination without file watching (terminate_if_process)
+# Example 20: Execute command without stealing focus (no_focus)
+# When no_focus is enabled, commands run in the background without taking window focus
+# This uses shell=False and splits the command by spaces
+# Particularly useful on Windows to prevent command windows from popping up
+# Note: Shell features (pipes, redirects, env vars) are not available in this mode
+# [[files]]
+# path = "data.txt"
+# command = "python process.py data.txt"
+# no_focus = true
+
+# Example 21: Process termination without file watching (terminate_if_process)
 # Monitors and terminates processes matching the regex pattern(s)
 # IMPORTANT: Can ONLY be used with empty path ("") and NO command field
 # Safety check per pattern: Only terminates when exactly ONE process matches the pattern
@@ -207,7 +217,7 @@ midnight_window = { start = "23:59", end = "00:01" }
 # # If process2.exe has 2+ instances → warning, NOT terminated (safety check)
 # # If process3.exe has 0 instances → no action
 
-# Example 21: Terminate process only during specific time period
+# Example 22: Terminate process only during specific time period
 # Check every minute and terminate matching process only during night shift
 # [[files]]
 # path = ""
@@ -215,13 +225,13 @@ midnight_window = { start = "23:59", end = "00:01" }
 # interval = "60s"
 # time_period = "night_shift"
 
-# Example 22: Monitor and terminate rogue process every 5 minutes
+# Example 23: Monitor and terminate rogue process every 5 minutes
 # [[files]]
 # path = ""
 # terminate_if_process = "memory_hog_app"
 # interval = "5m"
 
-# Example 23: Multiple empty path entries for different periodic tasks
+# Example 24: Multiple empty path entries for different periodic tasks
 # With the new array format, you can have multiple entries with empty paths
 # [[files]]
 # path = ""
