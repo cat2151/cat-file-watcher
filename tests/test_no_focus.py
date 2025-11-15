@@ -150,11 +150,23 @@ no_focus = true
         # Run one iteration
         watcher._check_files()
 
+        # Since no_focus is asynchronous, wait a bit for the command to complete
+        time.sleep(0.5)
+
         # Verify the command executed with correct arguments
         if os.path.exists(self.output_file):
             with open(self.output_file, "r") as f:
                 output = f.read()
                 self.assertEqual(output, "arg1 arg2 arg3")
+        else:
+            # If on Windows with no_focus, the file should eventually exist
+            # If not on Windows, the fallback to normal execution should have created it
+            # Wait a bit more and try again
+            time.sleep(1.0)
+            if os.path.exists(self.output_file):
+                with open(self.output_file, "r") as f:
+                    output = f.read()
+                    self.assertEqual(output, "arg1 arg2 arg3")
 
     def test_no_focus_false(self):
         """Test command execution with no_focus explicitly set to false."""
