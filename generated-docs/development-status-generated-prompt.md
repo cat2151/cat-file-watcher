@@ -1,4 +1,4 @@
-Last updated: 2025-11-16
+Last updated: 2025-12-02
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -162,6 +162,7 @@ Last updated: 2025-11-16
 - .github/actions-tmp/generated-docs/project-overview-generated-prompt.md
 - .github/actions-tmp/generated-docs/project-overview.md
 - .github/actions-tmp/generated-docs/style.css
+- .github/actions-tmp/googled947dc864c270e07.html
 - .github/actions-tmp/issue-notes/10.md
 - .github/actions-tmp/issue-notes/11.md
 - .github/actions-tmp/issue-notes/12.md
@@ -209,6 +210,7 @@ Last updated: 2025-11-16
 - examples/config.example.toml
 - examples/monitoring-group-example.toml
 - generated-docs/project-overview-generated-prompt.md
+- googled947dc864c270e07.html
 - issue-notes/117.md
 - issue-notes/119.md
 - issue-notes/121.md
@@ -270,25 +272,21 @@ Last updated: 2025-11-16
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-8ac82bc Auto-translate README.ja.md to README.md [auto]
-b95aabb README: Windowsアプリのフォーカス保持設定に関する説明を追加
-19316e8 Merge pull request #126 from cat2151/copilot/fix-windows-focus-restoration
-96938df Implement retry loop for Windows focus restoration with verification
-2b5ee04 Initial plan
-bbe8733 Add issue note for #125 [auto]
-33e3045 Merge pull request #124 from cat2151/copilot/investigate-exe-launch-focus-issue
-1b123c6 Update docstring for enhanced focus prevention details
-fc11a84 Add enhanced focus prevention for Windows no_focus mode
-d793a75 Initial plan
+f8acd40 Google検索にindexさせる用
+2f3d8c4 Google検索にindexさせる用
 
 ### 変更されたファイル:
 README.ja.md
 README.md
-issue-notes/123.md
+_config.yml
+generated-docs/development-status-generated-prompt.md
+generated-docs/development-status.md
+generated-docs/project-overview-generated-prompt.md
+generated-docs/project-overview.md
+googled947dc864c270e07.html
 issue-notes/125.md
-requirements.txt
 src/command_executor.py
 
 
 ---
-Generated at: 2025-11-16 07:01:29 JST
+Generated at: 2025-12-02 07:01:45 JST

@@ -1,4 +1,4 @@
-Last updated: 2025-11-16
+Last updated: 2025-12-02
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -400,6 +400,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 config.example.toml
   📄 monitoring-group-example.toml
 📁 generated-docs/
+🌐 googled947dc864c270e07.html
 📁 issue-notes/
   📖 117.md
   📖 119.md
@@ -457,7 +458,9 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 test_timestamp.py
 
 ## ファイル詳細分析
-
+**googled947dc864c270e07.html** (1行, 53バイト)
+  - 関数: なし
+  - インポート: なし
 
 ## 関数呼び出し階層
 関数呼び出し階層を分析できませんでした
@@ -468,6 +471,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
 .vscode/settings.json
 README.ja.md
 README.md
+googled947dc864c270e07.html
 issue-notes/117.md
 issue-notes/119.md
 issue-notes/121.md
@@ -487,4 +491,4 @@ issue-notes/78.md
 
 
 ---
-Generated at: 2025-11-16 07:01:29 JST
+Generated at: 2025-12-02 07:01:45 JST
