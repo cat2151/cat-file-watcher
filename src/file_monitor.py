@@ -120,8 +120,26 @@ class FileMonitor:
                 ErrorLogger.log_error(error_log_file, error_msg)
                 return False
 
+        # Validate terminate_if_window_title configuration
+        if "terminate_if_window_title" in settings:
+            if filename != "":
+                error_msg = f"Fatal configuration error: terminate_if_window_title can only be used with empty filename, but filename is '{filename}'"
+                TimestampPrinter.print(error_msg, Fore.RED)
+                ErrorLogger.log_error(error_log_file, error_msg)
+                return False
+
+            if "command" in settings and settings["command"]:
+                error_msg = "Fatal configuration error: terminate_if_window_title cannot be used with command field (command must be empty)"
+                TimestampPrinter.print(error_msg, Fore.RED)
+                ErrorLogger.log_error(error_log_file, error_msg)
+                return False
+
         # Check if command is specified
-        if "command" not in settings and "terminate_if_process" not in settings:
+        if (
+            "command" not in settings
+            and "terminate_if_process" not in settings
+            and "terminate_if_window_title" not in settings
+        ):
             TimestampPrinter.print(f"Warning: No command specified for file '{filename}'", Fore.YELLOW)
             return False
 
