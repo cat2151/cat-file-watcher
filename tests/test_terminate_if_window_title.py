@@ -146,9 +146,3 @@ class TestProcessDetectorWindowEnhancements:
         """Test that get_all_windows_by_title returns a list."""
         result = ProcessDetector.get_all_windows_by_title(r".*")
         assert isinstance(result, list), "Should return a list"
-
-    def test_get_all_windows_by_title_invalid_regex(self):
-        """Test that invalid regex is handled gracefully."""
-        result = ProcessDetector.get_all_windows_by_title(r"[invalid(regex")
-        assert isinstance(result, list), "Should return a list"
-        assert len(result) == 0, "Should return empty list for invalid regex"

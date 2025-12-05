@@ -31,8 +31,10 @@ class CommandExecutor:
         Args:
             command: The shell command to execute
             filepath: The path to the file that changed
-            settings: Dictionary containing file-specific settings including optional 'suppress_if_process', 'enable_log', 'terminate_if_process', 'terminate_if_window_title'
-            config: Optional global configuration dictionary containing 'log_file'
+            settings: Dictionary containing file-specific settings.
+                Optional keys: suppress_if_process, enable_log,
+                terminate_if_process, terminate_if_window_title
+            config: Optional global configuration dictionary containing log_file
         """
         # Handle terminate_if_process feature
         if "terminate_if_process" in settings:
