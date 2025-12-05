@@ -1,4 +1,4 @@
-Last updated: 2025-12-02
+Last updated: 2025-12-06
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -407,6 +407,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📖 121.md
   📖 123.md
   📖 125.md
+  📖 127.md
   📖 62.md
   📖 71.md
   📖 78.md
@@ -453,6 +454,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 test_process_detection.py
   📄 test_suppression_logging.py
   📄 test_terminate_if_process.py
+  📄 test_terminate_if_window_title.py
   📄 test_terminate_message_color.py
   📄 test_time_periods.py
   📄 test_timestamp.py
@@ -477,6 +479,7 @@ issue-notes/119.md
 issue-notes/121.md
 issue-notes/123.md
 issue-notes/125.md
+issue-notes/127.md
 issue-notes/62.md
 issue-notes/71.md
 issue-notes/78.md
@@ -491,4 +494,4 @@ issue-notes/78.md
 
 
 ---
-Generated at: 2025-12-02 07:01:45 JST
+Generated at: 2025-12-06 07:01:33 JST
