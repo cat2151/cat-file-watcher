@@ -31,12 +31,17 @@ class CommandExecutor:
         Args:
             command: The shell command to execute
             filepath: The path to the file that changed
-            settings: Dictionary containing file-specific settings including optional 'suppress_if_process', 'enable_log', 'terminate_if_process'
+            settings: Dictionary containing file-specific settings including optional 'suppress_if_process', 'enable_log', 'terminate_if_process', 'terminate_if_window_title'
             config: Optional global configuration dictionary containing 'log_file'
         """
         # Handle terminate_if_process feature
         if "terminate_if_process" in settings:
             CommandExecutor._handle_process_termination(settings, config)
+            return
+
+        # Handle terminate_if_window_title feature
+        if "terminate_if_window_title" in settings:
+            CommandExecutor._handle_window_title_termination(settings, config)
             return
 
         # Check if command execution should be suppressed based on running processes
@@ -319,6 +324,30 @@ class CommandExecutor:
             CommandExecutor._process_matched_processes(pattern, matched_processes, error_log_file)
 
     @staticmethod
+    def _handle_window_title_termination(settings, config):
+        """Handle process termination based on terminate_if_window_title setting.
+
+        This is Windows-specific. On non-Windows platforms, it prints a warning and returns.
+        Uses EnumWindows, GetWindowText, GetWindowThreadProcessId to find windows by title,
+        then terminates the processes that own those windows.
+
+        Args:
+            settings: Dictionary containing 'terminate_if_window_title' regex pattern(s) - can be a string or list of strings
+            config: Optional global configuration dictionary
+        """
+        title_patterns = settings["terminate_if_window_title"]
+        error_log_file = config.get("error_log_file") if config else None
+
+        # Normalize to list if a single string is provided
+        if isinstance(title_patterns, str):
+            title_patterns = [title_patterns]
+
+        # Process each pattern independently with safety check
+        for pattern in title_patterns:
+            matched_windows = ProcessDetector.get_all_windows_by_title(pattern)
+            CommandExecutor._process_matched_windows(pattern, matched_windows, error_log_file)
+
+    @staticmethod
     def _process_matched_processes(pattern, matched_processes, error_log_file):
         """Process the matched processes for a given pattern.
 
@@ -376,5 +405,68 @@ class CommandExecutor:
         # Log details of matched processes
         for pid, process_name in matched_processes:
             detail_msg = f"  - PID: {pid}, Name: {process_name}"
+            TimestampPrinter.print(detail_msg, Fore.YELLOW)
+            ErrorLogger.log_error(error_log_file, detail_msg)
+
+    @staticmethod
+    def _process_matched_windows(pattern, matched_windows, error_log_file):
+        """Process the matched windows for a given pattern.
+
+        Args:
+            pattern: The regex pattern used to match window titles
+            matched_windows: List of (pid, window_title) tuples
+            error_log_file: Path to error log file (optional)
+        """
+        if len(matched_windows) == 0:
+            # No windows found - this is normal, no action needed
+            return
+
+        if len(matched_windows) == 1:
+            # Exactly one window found - terminate the owning process
+            CommandExecutor._terminate_window_process(pattern, matched_windows[0], error_log_file)
+        else:
+            # Multiple windows found - safety check, don't terminate
+            CommandExecutor._handle_multiple_window_matches(pattern, matched_windows, error_log_file)
+
+    @staticmethod
+    def _terminate_window_process(pattern, window_info, error_log_file):
+        """Terminate the process that owns a window.
+
+        Args:
+            pattern: The regex pattern that matched this window
+            window_info: Tuple of (pid, window_title)
+            error_log_file: Path to error log file (optional)
+        """
+        pid, window_title = window_info
+        msg = f"Terminating process (PID: {pid}) owning window '{window_title}' matching pattern '{pattern}'"
+        TimestampPrinter.print(msg, Fore.GREEN)
+
+        success = ProcessDetector.terminate_process(pid)
+        if success:
+            success_msg = f"Successfully sent terminate signal to process {pid}"
+            TimestampPrinter.print(success_msg, Fore.GREEN)
+        else:
+            error_msg = f"Failed to terminate process {pid}"
+            TimestampPrinter.print(error_msg, Fore.RED)
+            ErrorLogger.log_error(error_log_file, error_msg)
+
+    @staticmethod
+    def _handle_multiple_window_matches(pattern, matched_windows, error_log_file):
+        """Handle the case when multiple windows match a pattern.
+
+        Args:
+            pattern: The regex pattern that matched multiple windows
+            matched_windows: List of (pid, window_title) tuples
+            error_log_file: Path to error log file (optional)
+        """
+        warning_msg = (
+            f"Warning: Found {len(matched_windows)} windows matching pattern '{pattern}'. Not terminating for safety."
+        )
+        TimestampPrinter.print(warning_msg, Fore.YELLOW)
+        ErrorLogger.log_error(error_log_file, warning_msg)
+
+        # Log details of matched windows
+        for pid, window_title in matched_windows:
+            detail_msg = f"  - PID: {pid}, Title: {window_title}"
             TimestampPrinter.print(detail_msg, Fore.YELLOW)
             ErrorLogger.log_error(error_log_file, detail_msg)

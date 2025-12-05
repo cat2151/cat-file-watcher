@@ -233,7 +233,24 @@ midnight_window = { start = "23:59", end = "00:01" }
 # terminate_if_process = "memory_hog_app"
 # interval = "5m"
 
-# Example 24: Multiple empty path entries for different periodic tasks
+# Example 24: Terminate process by window title (Windows only)
+# Finds windows matching the regex pattern and terminates the owning process
+# IMPORTANT: Can ONLY be used with empty path ("") and NO command field
+# Safety check per pattern: Only terminates when exactly ONE window matches the pattern
+# Uses Win32 APIs: EnumWindows, GetWindowText, GetWindowThreadProcessId
+# Useful for terminating applications that cannot be identified by process name alone
+# [[files]]
+# path = ""
+# terminate_if_window_title = "Untitled - Notepad"  # Single pattern
+# interval = "60s"
+#
+# # Or use an array for multiple patterns (each pattern is checked independently):
+# [[files]]
+# path = ""
+# terminate_if_window_title = ["My App - Instance.*", "Test Window"]
+# interval = "60s"
+
+# Example 25: Multiple empty path entries for different periodic tasks
 # With the new array format, you can have multiple entries with empty paths
 # [[files]]
 # path = ""
