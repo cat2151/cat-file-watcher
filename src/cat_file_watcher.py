@@ -92,6 +92,32 @@ class FileWatcher:
 
         self.external_file_timestamps = new_timestamps
 
+    def _reset_file_timestamps_after_reload(self):
+        """Reset all file timestamps to current state after config reload.
+
+        This prevents false triggers when config structure changes (e.g., when
+        entries are added/removed by uncommenting TOML lines). Without this,
+        old index-to-timestamp mappings can cause unintended command execution.
+        """
+        if "files" not in self.config:
+            self.file_timestamps = {}
+            self.file_last_check = {}
+            return
+
+        new_timestamps = {}
+        for index, entry in enumerate(self.config["files"]):
+            filename = entry.get("path", "")
+            entry_key = f"#{index}"
+
+            if filename:  # Only for actual files, not empty paths
+                current_timestamp = self._get_file_timestamp(filename)
+                if current_timestamp is not None:
+                    new_timestamps[entry_key] = current_timestamp
+
+        self.file_timestamps = new_timestamps
+        # Clear check times to allow immediate checking if needed
+        self.file_last_check = {}
+
     def _calculate_main_loop_interval(self):
         """Calculate the main loop interval from config settings.
 
@@ -195,6 +221,8 @@ class FileWatcher:
                     self.config_timestamp = self._get_file_timestamp(self.config_path)
                 # Update external file tracking after reload (list may have changed)
                 self._update_external_file_tracking()
+                # Reset file timestamps to prevent false triggers from index shifts
+                self._reset_file_timestamps_after_reload()
                 TimestampPrinter.print("Config reloaded successfully", Fore.GREEN)
             except SystemExit as e:
                 error_msg = f"Fatal error reloading config file '{changed_file}'"
