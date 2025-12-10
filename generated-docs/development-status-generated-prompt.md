@@ -1,4 +1,4 @@
-Last updated: 2025-12-06
+Last updated: 2025-12-11
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -107,11 +107,13 @@ Last updated: 2025-12-06
 - .github/actions-tmp/.github/workflows/call-callgraph.yml
 - .github/actions-tmp/.github/workflows/call-daily-project-summary.yml
 - .github/actions-tmp/.github/workflows/call-issue-note.yml
+- .github/actions-tmp/.github/workflows/call-rust-windows-check.yml
 - .github/actions-tmp/.github/workflows/call-translate-readme.yml
 - .github/actions-tmp/.github/workflows/callgraph.yml
 - .github/actions-tmp/.github/workflows/check-recent-human-commit.yml
 - .github/actions-tmp/.github/workflows/daily-project-summary.yml
 - .github/actions-tmp/.github/workflows/issue-note.yml
+- .github/actions-tmp/.github/workflows/rust-windows-check.yml
 - .github/actions-tmp/.github/workflows/translate-readme.yml
 - .github/actions-tmp/.github_automation/callgraph/codeql-queries/callgraph.ql
 - .github/actions-tmp/.github_automation/callgraph/codeql-queries/codeql-pack.lock.yml
@@ -217,6 +219,7 @@ Last updated: 2025-12-06
 - issue-notes/123.md
 - issue-notes/125.md
 - issue-notes/127.md
+- issue-notes/129.md
 - issue-notes/62.md
 - issue-notes/71.md
 - issue-notes/78.md
@@ -253,6 +256,7 @@ Last updated: 2025-12-06
 - tests/test_external_files_reload.py
 - tests/test_interval_parser.py
 - tests/test_intervals.py
+- tests/test_issue_129.py
 - tests/test_main_loop_interval.py
 - tests/test_multiple_empty_filenames.py
 - tests/test_new_interval_format.py
@@ -265,6 +269,7 @@ Last updated: 2025-12-06
 - tests/test_terminate_message_color.py
 - tests/test_time_periods.py
 - tests/test_timestamp.py
+- tests/test_timestamp_reset_on_reload.py
 
 ## 現在のオープンIssues
 オープン中のIssueはありません
@@ -274,30 +279,34 @@ Last updated: 2025-12-06
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+89499da Merge pull request #130 from cat2151/copilot/fix-command-launch-issue
+8db18f8 Implement timestamp reset on config reload (Option 2)
+4698b1e Fix linting issues in test_issue_129.py
+6267d0b Add investigation test and analysis for issue #129
+a7bad1d Initial plan
+838e10a Add issue note for #129 [auto]
+25dc333 Update project summaries (overview & development status) [auto]
 ba4abb7 Merge pull request #128 from cat2151/copilot/add-terminate-if-window-title
 017c286 Fix code review comments: remove duplicate test and improve docstring
 69efbb5 Add terminate_if_window_title feature for Windows
-b2bf8da Initial plan
-3327094 Add issue note for #127 [auto]
-bc871cb Update project summaries (overview & development status) [auto]
-f8acd40 Google検索にindexさせる用
-2f3d8c4 Google検索にindexさせる用
 
 ### 変更されたファイル:
-README.md
 _config.yml
 examples/config.example.toml
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-googled947dc864c270e07.html
 issue-notes/127.md
+issue-notes/129.md
+src/cat_file_watcher.py
 src/command_executor.py
 src/file_monitor.py
 src/process_detector.py
+tests/test_issue_129.py
 tests/test_terminate_if_window_title.py
+tests/test_timestamp_reset_on_reload.py
 
 
 ---
-Generated at: 2025-12-06 07:01:33 JST
+Generated at: 2025-12-11 07:01:44 JST

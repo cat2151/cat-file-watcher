@@ -1,4 +1,4 @@
-Last updated: 2025-12-06
+Last updated: 2025-12-11
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -408,6 +408,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📖 123.md
   📖 125.md
   📖 127.md
+  📖 129.md
   📖 62.md
   📖 71.md
   📖 78.md
@@ -446,6 +447,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 test_external_files_reload.py
   📄 test_interval_parser.py
   📄 test_intervals.py
+  📄 test_issue_129.py
   📄 test_main_loop_interval.py
   📄 test_multiple_empty_filenames.py
   📄 test_new_interval_format.py
@@ -458,6 +460,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 test_terminate_message_color.py
   📄 test_time_periods.py
   📄 test_timestamp.py
+  📄 test_timestamp_reset_on_reload.py
 
 ## ファイル詳細分析
 **googled947dc864c270e07.html** (1行, 53バイト)
@@ -480,6 +483,7 @@ issue-notes/121.md
 issue-notes/123.md
 issue-notes/125.md
 issue-notes/127.md
+issue-notes/129.md
 issue-notes/62.md
 issue-notes/71.md
 issue-notes/78.md
@@ -494,4 +498,4 @@ issue-notes/78.md
 
 
 ---
-Generated at: 2025-12-06 07:01:33 JST
+Generated at: 2025-12-11 07:01:44 JST

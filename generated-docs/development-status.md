@@ -1,51 +1,59 @@
-Last updated: 2025-12-06
+Last updated: 2025-12-11
 
 # Development Status
 
 ## 現在のIssues
-- 現在、オープン中のIssueはありません。
-- プロジェクトは安定しており、新機能の追加や既存機能の改善に取り組むことができます。
-- 特に直近では、`terminate_if_window_title` 機能が追加されました。
+- 現在、プロジェクトにオープン中のIssueはありません。
+- 全ての既知の課題は最近のマージコミットによって対応され、プロジェクトは安定した状態にあります。
+- これにより、次の機能開発や既存システムの改善に注力する準備が整いました。
 
 ## 次の一手候補
-1. terminate_if_window_title 機能のREADMEへの追加と使用例の拡充 (新規)
-   - 最初の小さな一歩: `examples/config.example.toml` に `terminate_if_window_title` の具体的な設定例を追加する。
+1. 新規機能のテストカバレッジ拡充 [Issue #TBD]
+   - 最初の小さな一歩: 最近追加された `terminate_if_window_title` 機能のテストファイル `tests/test_terminate_if_window_title.py` をレビューし、考えられるエッジケースや異なるシナリオ（例: 部分一致、大文字小文字の違い、複数のプロセスが存在する場合など）を洗い出す。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `src/process_detector.py`, `src/file_monitor.py`, `tests/test_terminate_if_window_title.py`, `README.md`, `examples/config.example.toml`
+     対象ファイル: `tests/test_terminate_if_window_title.py`, `src/process_detector.py`
 
-     実行内容: 新しく追加された `terminate_if_window_title` 機能について、`README.md` に機能説明と具体的な使用例を追加してください。また、`examples/config.example.toml` にも設定例を追記してください。機能の背景やユースケースも簡潔に説明してください。
+     実行内容: `tests/test_terminate_if_window_title.py` を分析し、`terminate_if_window_title` 機能のテストカバレッジを向上させるために、以下のシナリオをカバーする新しいテストケースを少なくとも3つ追加してください：
+     1. ウィンドウタイトルが部分的に一致する場合。
+     2. 大文字・小文字が異なるウィンドウタイトル。
+     3. 複数のプロセスが実行されており、特定のウィンドウタイトルを持つプロセスのみを検知・終了させる場合。
+     また、`src/process_detector.py` における `terminate_if_window_title` の実装が、これらのシナリオを正しく処理できるか確認し、必要に応じてリファクタリングの提案を行ってください。
 
-     確認事項: 既存の `terminate_if_process` 機能との混同を避け、設定の意図が明確に伝わるように説明を記述すること。既存のテストケースとの整合性を確認してください。加筆された内容が、README全体の構成やトーンと一致していることを確認してください。
+     確認事項: 新しいテストケースが既存のテストスイートに影響を与えず、全てのテストがグリーンになることを確認してください。`process_detector.py` の変更が必要な場合は、既存機能への影響がないことを優先してください。
 
-     期待する出力: `README.md` と `examples/config.example.toml` の更新内容をmarkdown形式で出力し、それぞれのファイルへのパッチ形式の変更案を提示してください。
+     期待する出力: `tests/test_terminate_if_window_title.py` ファイルの更新内容をMarkdown形式で記述してください（追加されたテストケースのコードブロックと簡単な説明を含む）。また、必要であれば`src/process_detector.py`の変更提案を含めてください。
      ```
 
-2. .github/actions-tmp/ディレクトリ内のGitHub Actionsワークフローの整理と本番配置の検討 (新規)
-   - 最初の小さな一歩: `.github/actions-tmp/.github/workflows/` ディレクトリ内のファイルと、ルートの `.github/workflows/` ディレクトリ内のファイルを比較し、重複や意図を特定する。
+2. 自動生成される開発状況レポートのプロンプト改善 [Issue #TBD]
+   - 最初の小さな一歩: 現在の `development-status-prompt.md` を読み込み、オープンIssueがない場合に、どのような情報（例: 最近完了した機能の要約、今後の短い期間での目標など）が追加されると開発者にとって最も有用かを検討する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `.github/actions-tmp/.github/workflows/` ディレクトリ内の全ファイル, ルートの `.github/workflows/` ディレクトリ内の全ファイル
+     対象ファイル: `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md`
 
-     実行内容: `.github/actions-tmp/.github/workflows/` ディレクトリに存在するGitHub Actionsワークフローが、なぜこの一時ディレクトリに配置されているのか、その意図を調査してください。また、これらのワークフローが現在どのように使用されているか、あるいは意図されているかを分析し、重複するワークフローや不要なファイルの有無を特定してください。
+     実行内容: 対象ファイルを分析し、「現在のIssues」セクションがオープン中のIssueがない場合でも、より洞察に富んだ情報を提供できるようプロンプトを改訂してください。具体的には、以下の要素を考慮に入れる指示を追加してください：
+     1. 最近のコミット履歴から、過去7日間にマージされた主要な機能追加やバグ修正の概要を最大3点要約する。
+     2. プロジェクトの現在の安定性や次の開発フェーズへの移行可能性について言及する。
+     3. 今後の短期間での開発の一般的な方向性や注力すべき領域を簡潔に示唆する。
 
-     確認事項: `.github/actions-tmp/` が単なるコピーであるのか、それとも何らかのCI/CDパイプラインの途中で生成される一時ファイルであるのかを確認してください。ワークフローの移動や削除が、他のワークフローやスクリプト、またはプロジェクトのビルドプロセスに影響を与えないことを検証してください。
+     確認事項: プロンプトの変更がハルシネーション（誤った情報や無価値なタスクの提案）を引き起こさないことを最優先とし、GitHub APIを通じて実際に取得可能な情報（コミットメッセージ、Issueタイトルなど）に基づいて内容が生成されるよう指示を具体的に記述してください。
 
-     期待する出力: `.github/actions-tmp/.github/workflows/` 内の各ワークフローファイルについて、その役割、ルートの `.github/workflows/` との関連性、および今後の整理方針（移動、削除、統合など）を記述した詳細なレポートをmarkdown形式で生成してください。
+     期待する出力: 改訂された `development-status-prompt.md` ファイルの全文をMarkdown形式で出力してください。
      ```
 
-3. IssueTrackerがオープンIssueなしの場合のDevelopment Status生成ロジック改善 ([Issue #123](../issue-notes/123.md) 関連)
-   - 最初の小さな一歩: `IssueTracker.cjs` がIssueをどのように取得しているか、および `DevelopmentStatusGenerator.cjs` がそれをどのように利用しているかを分析し、オープンIssueがない場合のフォールバックロジックを検討する。
+3. Issueノート生成ワークフローの機能強化 [Issue #TBD]
+   - 最初の小さな一歩: `issue-note.yml` ワークフローの現在の処理フローと、`issue-notes/` ディレクトリに存在する既存のノートの構造を確認し、Issue作成時に自動で追加できる有用な情報の種類（例: 関連ファイルへのリンク、テンプレート化された再現手順など）を特定する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `.github/actions-tmp/.github_automation/project_summary/scripts/development/IssueTracker.cjs`, `.github/actions-tmp/.github_automation/project_summary/scripts/development/DevelopmentStatusGenerator.cjs`, `.github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md`
+     対象ファイル: `.github/actions-tmp/.github/workflows/issue-note.yml`, `issue-notes/` ディレクトリ内の既存ノートファイル（参照用）
 
-     実行内容: 現在の `DevelopmentStatusGenerator.cjs` と `IssueTracker.cjs` の実装において、オープンIssueが存在しない場合に「現在のIssues」セクションが空になる問題を解決するための改善策を提案してください。特に、過去のクローズドIssueや特定のラベルを持つIssue、あるいは最近のコミット履歴から自動で関連タスクを抽出するなど、より有益な情報を生成する方法を検討してください。生成される情報がハルシネーションとならないよう、あくまで「事実に基づいた現状」を示す範囲で検討してください。
+     実行内容: `issue-note.yml` ワークフローを分析し、新しく作成されるIssueノートの有用性を高めるための改善案を提案してください。以下の機能を組み込むことを検討してください：
+     1. 新規Issueのタイトルや内容に基づいて、関連性の高いソースコードファイル（例: `src/` ディレクトリ内）へのMarkdownリンクを自動で挿入する機能。
+     2. Issueのタイプ（バグ、機能要求など）に応じて、再現手順や期待される動作を記述するための基本的なテンプレートセクション（例: "再現手順:", "期待される結果:", "実際の結果:"）を自動挿入する機能。
 
-     確認事項: 提案される変更がハルシネーションの増加につながらないこと。既存のIssue取得ロジックのパフォーマンスに影響を与えないこと。現在のプロンプトガイドライン「ハルシネーションしそうなものは生成しない」に違反しない形で実現可能であること。
+     確認事項: GitHub APIの利用制限を考慮し、提案される機能がワークフローの実行時間に過度な影響を与えないことを確認してください。また、Issueノートの内容が過度に複雑にならないよう、シンプルかつ効果的な追加情報に留めることを確認してください。
 
-     期待する出力: `IssueTracker.cjs` および `DevelopmentStatusGenerator.cjs` の変更案を含む、新しいIssue要約ロジックの設計をmarkdown形式で出力してください。また、この新しいロジックを反映した場合の「現在のIssues」セクションの具体的な生成例も併記してください。
-     ```
+     期待する出力: `issue-note.yml` の変更が必要な部分とその理由、および改善後のワークフローの変更例をMarkdown形式で出力してください。
 
 ---
-Generated at: 2025-12-06 07:01:52 JST
+Generated at: 2025-12-11 07:02:17 JST
