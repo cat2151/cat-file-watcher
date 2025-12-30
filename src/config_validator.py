@@ -137,3 +137,43 @@ class ConfigValidator:
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, None)
                 sys.exit(1)
+
+    @staticmethod
+    def validate_no_focus_commands(config, error_log_file):
+        """Validate that no_focus entries don't use 'start' at the beginning of command.
+
+        Args:
+            config: Configuration dictionary to validate
+            error_log_file: Error log file path for logging
+
+        Raises:
+            SystemExit: If no_focus command starts with 'start'
+        """
+        if "files" not in config:
+            return
+
+        files_section = config["files"]
+
+        # Files section must be a list (array of tables)
+        if not isinstance(files_section, list):
+            return
+
+        # Validate each file entry
+        for i, entry in enumerate(files_section):
+            if not isinstance(entry, dict):
+                continue
+
+            # Check if no_focus is enabled
+            if not entry.get("no_focus", False):
+                continue
+
+            # Check if command exists and starts with "start"
+            command = entry.get("command", "")
+            if command.strip().lower().startswith("start "):
+                error_msg = (
+                    f"[files] entry #{i + 1}: no_focus=trueの場合、shell=falseですので先頭にstartは書けません。"
+                    f"no_focus=falseにするか、startの前にcmd /cを追加することを検討してください"
+                )
+                TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
+                ErrorLogger.log_error(error_log_file, error_msg, None)
+                sys.exit(1)
