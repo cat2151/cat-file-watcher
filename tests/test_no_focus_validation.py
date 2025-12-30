@@ -220,6 +220,27 @@ no_focus = true
         self.assertIsNotNone(config)
         self.assertTrue(config["files"][0]["no_focus"])
 
+    def test_no_focus_with_start_only_should_error(self):
+        """Test that no_focus=true with just 'start' command raises error."""
+        # Create config with no_focus=true and command as just "start"
+        config_content = """
+default_interval = "1s"
+
+[[files]]
+path = "test.txt"
+command = "start"
+no_focus = true
+"""
+        with open(self.config_file, "w") as f:
+            f.write(config_content)
+
+        # Import ConfigLoader
+        from config_loader import ConfigLoader
+
+        # This should raise SystemExit
+        with self.assertRaises(SystemExit):
+            ConfigLoader.load_config(self.config_file)
+
 
 if __name__ == "__main__":
     unittest.main()
