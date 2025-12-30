@@ -155,8 +155,8 @@ command = "start notepad.exe"
         self.assertIsNotNone(config)
         self.assertNotIn("no_focus", config["files"][0])
 
-    def test_no_focus_with_cmd_c_start_should_error(self):
-        """Test that no_focus=true with 'cmd /c start' still raises error (start is present)."""
+    def test_no_focus_with_cmd_c_start_should_succeed(self):
+        """Test that no_focus=true with 'cmd /c start' succeeds (start is not at beginning)."""
         # Create config with no_focus=true and command with "cmd /c start"
         config_content = """
 default_interval = "1s"
