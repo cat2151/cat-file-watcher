@@ -8,6 +8,11 @@ import sys
 import tempfile
 import unittest
 
+# Add src directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
+from config_loader import ConfigLoader
+
 
 class TestNoFocusValidation(unittest.TestCase):
     """Test cases for no_focus command validation."""
@@ -16,9 +21,6 @@ class TestNoFocusValidation(unittest.TestCase):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.test_dir, "config.toml")
-
-        # Add src directory to path for imports
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
     def tearDown(self):
         """Clean up test files."""
@@ -41,9 +43,6 @@ no_focus = true
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
-
         # This should raise SystemExit
         with self.assertRaises(SystemExit):
             ConfigLoader.load_config(self.config_file)
@@ -61,9 +60,6 @@ no_focus = true
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
-
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
 
         # This should raise SystemExit
         with self.assertRaises(SystemExit):
@@ -83,9 +79,6 @@ no_focus = true
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
-
         # This should raise SystemExit
         with self.assertRaises(SystemExit):
             ConfigLoader.load_config(self.config_file)
@@ -103,9 +96,6 @@ no_focus = true
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
-
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
 
         # This should NOT raise an exception
         config = ConfigLoader.load_config(self.config_file)
@@ -126,9 +116,6 @@ no_focus = false
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
-
         # This should NOT raise an exception
         config = ConfigLoader.load_config(self.config_file)
         self.assertIsNotNone(config)
@@ -146,9 +133,6 @@ command = "start notepad.exe"
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
-
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
 
         # This should NOT raise an exception
         config = ConfigLoader.load_config(self.config_file)
@@ -169,9 +153,6 @@ no_focus = true
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
-
         # This should NOT raise an exception because "start" is not at the beginning
         config = ConfigLoader.load_config(self.config_file)
         self.assertIsNotNone(config)
@@ -189,9 +170,6 @@ no_focus = true
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
-
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
 
         # This should NOT raise an exception
         config = ConfigLoader.load_config(self.config_file)
@@ -212,9 +190,6 @@ no_focus = true
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
-
         # This should NOT raise an exception
         config = ConfigLoader.load_config(self.config_file)
         self.assertIsNotNone(config)
@@ -234,8 +209,23 @@ no_focus = true
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # Import ConfigLoader
-        from config_loader import ConfigLoader
+        # This should raise SystemExit
+        with self.assertRaises(SystemExit):
+            ConfigLoader.load_config(self.config_file)
+
+    def test_no_focus_with_start_tab_separated_should_error(self):
+        """Test that no_focus=true with 'start\\tnotepad.exe' (tab-separated) raises error."""
+        # Create config with no_focus=true and command with tab after start
+        config_content = """
+default_interval = "1s"
+
+[[files]]
+path = "test.txt"
+command = "start\tnotepad.exe"
+no_focus = true
+"""
+        with open(self.config_file, "w") as f:
+            f.write(config_content)
 
         # This should raise SystemExit
         with self.assertRaises(SystemExit):

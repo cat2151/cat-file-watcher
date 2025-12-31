@@ -167,11 +167,11 @@ class ConfigValidator:
             if not entry.get("no_focus", False):
                 continue
 
-            # Check if command exists and starts with "start"
+            # Check if command exists and starts with "start" as the first token
             command = entry.get("command", "")
             command_lower = command.strip().lower()
-            # Check if command starts with "start" followed by space or is exactly "start"
-            if command_lower.startswith("start ") or command_lower == "start":
+            tokens = command_lower.split(None, 1)
+            if tokens and tokens[0] == "start":
                 error_msg = (
                     f"[files] entry #{i + 1}: no_focus=trueの場合、shell=falseですので先頭にstartは書けません。"
                     f"no_focus=falseにするか、startの前にcmd /cを追加することを検討してください"

@@ -55,15 +55,15 @@ class ConfigLoader:
             # Validate processes section format
             ConfigValidator.validate_processes_format(config, error_log_file)
 
-            # Validate no_focus commands don't use 'start'
-            ConfigValidator.validate_no_focus_commands(config, error_log_file)
-
             # Load external files if specified
             if "external_files" in config:
                 ExternalConfigMerger.merge_external_files(config, config_path, error_log_file)
 
             # Merge commands and processes sections into files
             ExternalConfigMerger.merge_sections(config, error_log_file)
+
+            # Validate no_focus commands don't use 'start' (after merging)
+            ConfigValidator.validate_no_focus_commands(config, error_log_file)
 
             return config
         except FileNotFoundError as e:
