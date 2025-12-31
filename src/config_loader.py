@@ -62,6 +62,9 @@ class ConfigLoader:
             # Merge commands and processes sections into files
             ExternalConfigMerger.merge_sections(config, error_log_file)
 
+            # Validate no_focus commands don't use 'start' (after merging)
+            ConfigValidator.validate_no_focus_commands(config, error_log_file)
+
             return config
         except FileNotFoundError as e:
             error_msg = f"Configuration file '{config_path}' not found."
