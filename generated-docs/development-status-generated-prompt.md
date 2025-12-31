@@ -1,4 +1,4 @@
-Last updated: 2025-12-11
+Last updated: 2026-01-01
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -220,6 +220,7 @@ Last updated: 2025-12-11
 - issue-notes/125.md
 - issue-notes/127.md
 - issue-notes/129.md
+- issue-notes/131.md
 - issue-notes/62.md
 - issue-notes/71.md
 - issue-notes/78.md
@@ -261,6 +262,7 @@ Last updated: 2025-12-11
 - tests/test_multiple_empty_filenames.py
 - tests/test_new_interval_format.py
 - tests/test_no_focus.py
+- tests/test_no_focus_validation.py
 - tests/test_print_color_specification.py
 - tests/test_process_detection.py
 - tests/test_suppression_logging.py
@@ -279,34 +281,34 @@ Last updated: 2025-12-11
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-89499da Merge pull request #130 from cat2151/copilot/fix-command-launch-issue
-8db18f8 Implement timestamp reset on config reload (Option 2)
-4698b1e Fix linting issues in test_issue_129.py
-6267d0b Add investigation test and analysis for issue #129
-a7bad1d Initial plan
-838e10a Add issue note for #129 [auto]
-25dc333 Update project summaries (overview & development status) [auto]
-ba4abb7 Merge pull request #128 from cat2151/copilot/add-terminate-if-window-title
-017c286 Fix code review comments: remove duplicate test and improve docstring
-69efbb5 Add terminate_if_window_title feature for Windows
+453e883 Merge pull request #132 from cat2151/copilot/add-validation-for-no-focus
+5595da6 Fix docstring: clarify tab character notation
+cc61e3d Apply code review feedback: improve validation and test structure
+f2b5978 Improve validation to catch 'start' without arguments
+e3b0027 Fix test name and docstring for cmd /c start test
+30425a6 Add validation for no_focus with start command
+b38b5bd Initial plan
+5f306a3 Add issue note for #131 [auto]
 
 ### 変更されたファイル:
-_config.yml
 examples/config.example.toml
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-issue-notes/127.md
 issue-notes/129.md
+issue-notes/131.md
 src/cat_file_watcher.py
 src/command_executor.py
+src/config_loader.py
+src/config_validator.py
 src/file_monitor.py
 src/process_detector.py
 tests/test_issue_129.py
+tests/test_no_focus_validation.py
 tests/test_terminate_if_window_title.py
 tests/test_timestamp_reset_on_reload.py
 
 
 ---
-Generated at: 2025-12-11 07:01:44 JST
+Generated at: 2026-01-01 07:01:41 JST

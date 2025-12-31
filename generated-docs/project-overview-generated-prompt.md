@@ -1,4 +1,4 @@
-Last updated: 2025-12-11
+Last updated: 2026-01-01
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -409,6 +409,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📖 125.md
   📖 127.md
   📖 129.md
+  📖 131.md
   📖 62.md
   📖 71.md
   📖 78.md
@@ -452,6 +453,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 test_multiple_empty_filenames.py
   📄 test_new_interval_format.py
   📄 test_no_focus.py
+  📄 test_no_focus_validation.py
   📄 test_print_color_specification.py
   📄 test_process_detection.py
   📄 test_suppression_logging.py
@@ -484,6 +486,7 @@ issue-notes/123.md
 issue-notes/125.md
 issue-notes/127.md
 issue-notes/129.md
+issue-notes/131.md
 issue-notes/62.md
 issue-notes/71.md
 issue-notes/78.md
@@ -498,4 +501,4 @@ issue-notes/78.md
 
 
 ---
-Generated at: 2025-12-11 07:01:44 JST
+Generated at: 2026-01-01 07:01:41 JST
