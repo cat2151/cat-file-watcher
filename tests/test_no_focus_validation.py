@@ -214,7 +214,7 @@ no_focus = true
             ConfigLoader.load_config(self.config_file)
 
     def test_no_focus_with_start_tab_separated_should_error(self):
-        """Test that no_focus=true with 'start\\tnotepad.exe' (tab-separated) raises error."""
+        """Test that no_focus=true with 'start<tab>notepad.exe' (tab-separated) raises error."""
         # Create config with no_focus=true and command with tab after start
         config_content = """
 default_interval = "1s"
