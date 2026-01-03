@@ -1,4 +1,4 @@
-Last updated: 2026-01-01
+Last updated: 2026-01-04
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -281,6 +281,9 @@ Last updated: 2026-01-01
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+8d5c700 Auto-translate README.ja.md to README.md [auto]
+7cf7077 Add DeepWiki badge to Japanese README
+99f7347 Update project summaries (overview & development status) [auto]
 453e883 Merge pull request #132 from cat2151/copilot/add-validation-for-no-focus
 5595da6 Fix docstring: clarify tab character notation
 cc61e3d Apply code review feedback: improve validation and test structure
@@ -288,27 +291,22 @@ f2b5978 Improve validation to catch 'start' without arguments
 e3b0027 Fix test name and docstring for cmd /c start test
 30425a6 Add validation for no_focus with start command
 b38b5bd Initial plan
-5f306a3 Add issue note for #131 [auto]
 
 ### 変更されたファイル:
-examples/config.example.toml
+README.ja.md
+README.md
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-issue-notes/129.md
 issue-notes/131.md
 src/cat_file_watcher.py
-src/command_executor.py
 src/config_loader.py
 src/config_validator.py
-src/file_monitor.py
-src/process_detector.py
 tests/test_issue_129.py
 tests/test_no_focus_validation.py
-tests/test_terminate_if_window_title.py
 tests/test_timestamp_reset_on_reload.py
 
 
 ---
-Generated at: 2026-01-01 07:01:41 JST
+Generated at: 2026-01-04 07:01:28 JST

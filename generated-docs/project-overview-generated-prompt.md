@@ -1,4 +1,4 @@
-Last updated: 2026-01-01
+Last updated: 2026-01-04
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -68,6 +68,7 @@ Last updated: 2026-01-01
 <p align="left">
   <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-Japanese-red.svg" alt="Japanese"></a>
   <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
+  <a href="https://deepwiki.com/cat2151/cat-file-watcher"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 </p>
 
 ※このドキュメントは大部分がAI生成です。issueをagentに投げて生成させました。一部（コンセプト、使い分け、test）は人力で書いています
@@ -501,4 +502,4 @@ issue-notes/78.md
 
 
 ---
-Generated at: 2026-01-01 07:01:41 JST
+Generated at: 2026-01-04 07:01:28 JST
