@@ -190,11 +190,11 @@ midnight_window = { start = "23:59", end = "00:01" }
 # Windows: Shows the window without activating it (SW_SHOWNOACTIVATE) to prevent focus stealing
 # The window is visible but does not take focus from the current foreground window
 # Non-Windows: Falls back to normal execution with a warning
-# Commands are parsed with shlex.split() for proper argument handling (quotes, escapes, etc.)
-# Note: Shell features (pipes, redirects, env vars) are not available in this mode
+# IMPORTANT: When no_focus=true, you MUST use 'argv' array instead of 'command' string
+# argv array format: [executable, arg1, arg2, ...] for explicit argument specification
 # [[files]]
 # path = "data.txt"
-# command = "python process.py data.txt"
+# argv = ["python", "process.py", "data.txt"]
 # no_focus = true
 
 # Example 21: Process termination without file watching (terminate_if_process)
