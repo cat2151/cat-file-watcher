@@ -30,13 +30,13 @@ class TestNoFocus(unittest.TestCase):
 
     def test_no_focus_enabled(self):
         """Test command execution with no_focus enabled."""
-        # Create config with no_focus=true
+        # Create config with no_focus=true and argv array
         config_content = f"""
 default_interval = "100ms"
 
 [[files]]
 path = "{self.test_file}"
-command = "echo test_output"
+argv = ["echo", "test_output"]
 no_focus = true
 """
         with open(self.config_file, "w") as f:
@@ -120,13 +120,13 @@ with open(r'{self.output_file}', 'w') as f:
     f.write(' '.join(sys.argv[1:]))
 """)
 
-        # Create config with no_focus=true and a command with arguments
+        # Create config with no_focus=true and argv with arguments
         config_content = f"""
 default_interval = "100ms"
 
 [[files]]
 path = "{self.test_file}"
-command = "python {script_file} arg1 arg2 arg3"
+argv = ["python", "{script_file}", "arg1", "arg2", "arg3"]
 no_focus = true
 """
         with open(self.config_file, "w") as f:

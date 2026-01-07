@@ -29,69 +29,86 @@ class TestNoFocusValidation(unittest.TestCase):
         if os.path.exists(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def test_no_focus_with_start_command_should_error(self):
-        """Test that no_focus=true with 'start' command at beginning raises error."""
-        # Create config with no_focus=true and command starting with "start"
+    def test_no_focus_with_command_should_error(self):
+        """Test that no_focus=true with 'command' field raises error."""
+        # Create config with no_focus=true and command field
         config_content = """
 default_interval = "1s"
 
 [[files]]
 path = "test.txt"
-command = "start notepad.exe"
+command = "notepad.exe test.txt"
 no_focus = true
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # This should raise SystemExit
+        # This should raise SystemExit because command is not allowed with no_focus
         with self.assertRaises(SystemExit):
             ConfigLoader.load_config(self.config_file)
 
-    def test_no_focus_with_start_uppercase_command_should_error(self):
-        """Test that no_focus=true with 'START' command (uppercase) raises error."""
-        # Create config with no_focus=true and command starting with "START"
+    def test_no_focus_without_argv_should_error(self):
+        """Test that no_focus=true without 'argv' field raises error."""
+        # Create config with no_focus=true but no argv field
         config_content = """
 default_interval = "1s"
 
 [[files]]
 path = "test.txt"
-command = "START notepad.exe"
 no_focus = true
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # This should raise SystemExit
+        # This should raise SystemExit because argv is required with no_focus
         with self.assertRaises(SystemExit):
             ConfigLoader.load_config(self.config_file)
 
-    def test_no_focus_with_start_mixed_case_command_should_error(self):
-        """Test that no_focus=true with 'Start' command (mixed case) raises error."""
-        # Create config with no_focus=true and command starting with "Start"
+    def test_no_focus_with_empty_argv_should_error(self):
+        """Test that no_focus=true with empty argv array raises error."""
+        # Create config with no_focus=true and empty argv
         config_content = """
 default_interval = "1s"
 
 [[files]]
 path = "test.txt"
-command = "Start notepad.exe"
+argv = []
 no_focus = true
 """
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-        # This should raise SystemExit
+        # This should raise SystemExit because argv cannot be empty
         with self.assertRaises(SystemExit):
             ConfigLoader.load_config(self.config_file)
 
-    def test_no_focus_without_start_command_should_succeed(self):
-        """Test that no_focus=true without 'start' command succeeds."""
-        # Create config with no_focus=true and normal command
+    def test_no_focus_with_non_array_argv_should_error(self):
+        """Test that no_focus=true with argv as string raises error."""
+        # Create config with no_focus=true and argv as string instead of array
         config_content = """
 default_interval = "1s"
 
 [[files]]
 path = "test.txt"
-command = "python script.py"
+argv = "notepad.exe test.txt"
+no_focus = true
+"""
+        with open(self.config_file, "w") as f:
+            f.write(config_content)
+
+        # This should raise SystemExit because argv must be an array
+        with self.assertRaises(SystemExit):
+            ConfigLoader.load_config(self.config_file)
+
+    def test_no_focus_with_valid_argv_should_succeed(self):
+        """Test that no_focus=true with valid argv array succeeds."""
+        # Create config with no_focus=true and valid argv array
+        config_content = """
+default_interval = "1s"
+
+[[files]]
+path = "test.txt"
+argv = ["notepad.exe", "test.txt"]
 no_focus = true
 """
         with open(self.config_file, "w") as f:
@@ -101,10 +118,31 @@ no_focus = true
         config = ConfigLoader.load_config(self.config_file)
         self.assertIsNotNone(config)
         self.assertTrue(config["files"][0]["no_focus"])
+        self.assertEqual(config["files"][0]["argv"], ["notepad.exe", "test.txt"])
 
-    def test_no_focus_false_with_start_command_should_succeed(self):
-        """Test that no_focus=false with 'start' command succeeds."""
-        # Create config with no_focus=false and command starting with "start"
+    def test_no_focus_with_single_element_argv_should_succeed(self):
+        """Test that no_focus=true with single element argv array succeeds."""
+        # Create config with no_focus=true and single element argv
+        config_content = """
+default_interval = "1s"
+
+[[files]]
+path = "test.txt"
+argv = ["notepad.exe"]
+no_focus = true
+"""
+        with open(self.config_file, "w") as f:
+            f.write(config_content)
+
+        # This should NOT raise an exception
+        config = ConfigLoader.load_config(self.config_file)
+        self.assertIsNotNone(config)
+        self.assertTrue(config["files"][0]["no_focus"])
+        self.assertEqual(config["files"][0]["argv"], ["notepad.exe"])
+
+    def test_no_focus_false_with_command_should_succeed(self):
+        """Test that no_focus=false with 'command' field succeeds."""
+        # Create config with no_focus=false and command field
         config_content = """
 default_interval = "1s"
 
@@ -121,9 +159,9 @@ no_focus = false
         self.assertIsNotNone(config)
         self.assertFalse(config["files"][0]["no_focus"])
 
-    def test_no_focus_not_specified_with_start_command_should_succeed(self):
-        """Test that no_focus not specified (defaults to false) with 'start' command succeeds."""
-        # Create config without no_focus and command starting with "start"
+    def test_no_focus_not_specified_with_command_should_succeed(self):
+        """Test that no_focus not specified (defaults to false) with 'command' field succeeds."""
+        # Create config without no_focus and command field
         config_content = """
 default_interval = "1s"
 
@@ -139,33 +177,15 @@ command = "start notepad.exe"
         self.assertIsNotNone(config)
         self.assertNotIn("no_focus", config["files"][0])
 
-    def test_no_focus_with_cmd_c_start_should_succeed(self):
-        """Test that no_focus=true with 'cmd /c start' succeeds (start is not at beginning)."""
-        # Create config with no_focus=true and command with "cmd /c start"
+    def test_no_focus_with_argv_containing_special_chars_should_succeed(self):
+        """Test that no_focus=true with argv containing special characters succeeds."""
+        # Create config with no_focus=true and argv with spaces and special chars
         config_content = """
 default_interval = "1s"
 
 [[files]]
 path = "test.txt"
-command = "cmd /c start notepad.exe"
-no_focus = true
-"""
-        with open(self.config_file, "w") as f:
-            f.write(config_content)
-
-        # This should NOT raise an exception because "start" is not at the beginning
-        config = ConfigLoader.load_config(self.config_file)
-        self.assertIsNotNone(config)
-
-    def test_no_focus_with_restart_command_should_succeed(self):
-        """Test that no_focus=true with command containing 'restart' (not 'start ') succeeds."""
-        # Create config with no_focus=true and command containing "restart"
-        config_content = """
-default_interval = "1s"
-
-[[files]]
-path = "test.txt"
-command = "systemctl restart myservice"
+argv = ["python", "-c", "print('hello world')"]
 no_focus = true
 """
         with open(self.config_file, "w") as f:
@@ -175,61 +195,7 @@ no_focus = true
         config = ConfigLoader.load_config(self.config_file)
         self.assertIsNotNone(config)
         self.assertTrue(config["files"][0]["no_focus"])
-
-    def test_no_focus_with_start_at_end_should_succeed(self):
-        """Test that no_focus=true with 'start' not at beginning succeeds."""
-        # Create config with no_focus=true and command with "start" in the middle
-        config_content = """
-default_interval = "1s"
-
-[[files]]
-path = "test.txt"
-command = "python --start-server"
-no_focus = true
-"""
-        with open(self.config_file, "w") as f:
-            f.write(config_content)
-
-        # This should NOT raise an exception
-        config = ConfigLoader.load_config(self.config_file)
-        self.assertIsNotNone(config)
-        self.assertTrue(config["files"][0]["no_focus"])
-
-    def test_no_focus_with_start_only_should_error(self):
-        """Test that no_focus=true with just 'start' command raises error."""
-        # Create config with no_focus=true and command as just "start"
-        config_content = """
-default_interval = "1s"
-
-[[files]]
-path = "test.txt"
-command = "start"
-no_focus = true
-"""
-        with open(self.config_file, "w") as f:
-            f.write(config_content)
-
-        # This should raise SystemExit
-        with self.assertRaises(SystemExit):
-            ConfigLoader.load_config(self.config_file)
-
-    def test_no_focus_with_start_tab_separated_should_error(self):
-        """Test that no_focus=true with 'start<tab>notepad.exe' (tab-separated) raises error."""
-        # Create config with no_focus=true and command with tab after start
-        config_content = """
-default_interval = "1s"
-
-[[files]]
-path = "test.txt"
-command = "start\tnotepad.exe"
-no_focus = true
-"""
-        with open(self.config_file, "w") as f:
-            f.write(config_content)
-
-        # This should raise SystemExit
-        with self.assertRaises(SystemExit):
-            ConfigLoader.load_config(self.config_file)
+        self.assertEqual(config["files"][0]["argv"], ["python", "-c", "print('hello world')"])
 
 
 if __name__ == "__main__":

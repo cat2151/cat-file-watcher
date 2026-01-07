@@ -123,14 +123,15 @@ The configuration file requires a `[files]` section where each entry maps a file
 - **Key**: The path to the file or directory to monitor (relative or absolute).
   - For files: The command is executed when the file's modification time changes.
   - For directories: The command is executed when the directory's modification time changes (e.g., adding or deleting files).
-- **Value**: An object containing a `command` field and other optional parameters:
-  - `command` (required): The shell command to execute when the file or directory changes.
+- **Value**: An object containing a `command` field (normal mode) or an `argv` field (no_focus mode) and other optional parameters:
+  - `command` (required for normal mode): The shell command to execute when the file or directory changes. **Note**: Cannot be used when `no_focus=true`.
+  - `argv` (required for no_focus mode): An array field required when `no_focus=true`. Specifies the executable name and arguments as an array. Example: `argv = ["notepad.exe", "file.txt"]`
   - `interval` (optional): The monitoring interval for this specific file or directory. Specified in time format ("1s", "2m", "3h", "0.5s"). Decimal values are allowed (e.g., "0.5s" for 0.5 seconds). If omitted, `default_interval` is used.
   - `suppress_if_process` (optional): A regular expression pattern to match against running process names. If a matching process is found, command execution will be skipped. Useful for preventing actions from triggering when specific programs (like editors) are running.
   - `time_period` (optional): The name of a time period during which the file or directory should be monitored. Specifies a time period name defined in the `[time_periods]` section. Monitoring only occurs within the specified time period.
   - `enable_log` (optional): If set to `true`, detailed command execution will be logged to the log file (default: `false`). Requires `log_file` to be set in the global configuration.
   - `cwd` (optional): Changes the working directory to the specified path before executing the command. This ensures that relative paths within the command are resolved from the specified directory.
-  - `no_focus` (optional): If set to `true`, the command will be executed without stealing focus (default: `false`). **Windows-specific** - Commands are launched asynchronously (the tool does not wait for completion), and the window is displayed but not activated, preventing focus theft. Uses `shell=False` and splits the command by spaces. On non-Windows platforms, it will issue a warning and fall back to normal execution. Note: Shell features like pipes, redirection, and environment variable expansion cannot be used in this mode.
+  - `no_focus` (optional): If set to `true`, the command will be executed without stealing focus (default: `false`). **Windows-specific** - Commands are launched asynchronously (the tool does not wait for completion), and the window is displayed but not activated, preventing focus theft. Uses `shell=False`. On non-Windows platforms, it will issue a warning and fall back to normal execution. **Important**: When `no_focus=true`, the `command` field cannot be used. Instead, the `argv` array field is required. Example: `argv = ["notepad.exe", "file.txt"]`
 
 ### Global Settings
 
