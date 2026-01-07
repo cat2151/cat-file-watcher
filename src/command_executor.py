@@ -105,10 +105,18 @@ class CommandExecutor:
         if no_focus:
             # For no_focus, use argv array
             argv = settings.get("argv", [])
-            display_command = " ".join(argv)
+            # Use shlex.join for proper quoting of arguments with spaces
+            try:
+                import shlex
+
+                display_command = shlex.join(argv)
+            except AttributeError:
+                # Python < 3.8 fallback: simple join (shlex.join added in 3.8)
+                display_command = " ".join(argv)
         else:
             # For normal execution, use command string
             display_command = command
+            argv = None  # Not used for normal execution
 
         # Color only the command part in green for emphasis
         # For empty filename, show the command directly instead of "for ''"
@@ -126,7 +134,6 @@ class CommandExecutor:
             # Use capture_output=False to allow real-time output for long-running commands
             if no_focus:
                 # When no_focus is enabled, prevent focus stealing with platform-specific mechanisms
-                argv = settings.get("argv", [])
                 result = CommandExecutor._run_no_focus_command(argv, cwd)
             else:
                 # Default behavior: use shell=True
