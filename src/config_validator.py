@@ -169,20 +169,14 @@ class ConfigValidator:
 
             # When no_focus=true, 'command' field must NOT be present
             if "command" in entry:
-                error_msg = (
-                    f"[files] entry #{i + 1}: no_focus=trueの場合、commandフィールドは使用できません。"
-                    f"代わりにargvフィールド（配列）を使用してください。例: argv = ['notepad.exe', 'file.txt']"
-                )
+                error_msg = f"[files] entry #{i + 1}: no_focus=trueの場合、commandフィールドは使用できません。代わりにargvフィールド（配列）を使用してください。例: argv = ['notepad.exe', 'file.txt']"
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, None)
                 sys.exit(1)
 
             # When no_focus=true, 'argv' field MUST be present and must be an array
             if "argv" not in entry:
-                error_msg = (
-                    f"[files] entry #{i + 1}: no_focus=trueの場合、argvフィールド（配列）が必須です。"
-                    f"例: argv = ['notepad.exe', 'file.txt']"
-                )
+                error_msg = f"[files] entry #{i + 1}: no_focus=trueの場合、argvフィールド（配列）が必須です。例: argv = ['notepad.exe', 'file.txt']"
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, None)
                 sys.exit(1)
