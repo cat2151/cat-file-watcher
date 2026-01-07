@@ -140,14 +140,14 @@ class ConfigValidator:
 
     @staticmethod
     def validate_no_focus_commands(config, error_log_file):
-        """Validate that no_focus entries don't use 'start' at the beginning of command.
+        """Validate that no_focus entries use argv array instead of command.
 
         Args:
             config: Configuration dictionary to validate
             error_log_file: Error log file path for logging
 
         Raises:
-            SystemExit: If no_focus command starts with 'start'
+            SystemExit: If no_focus entry has invalid configuration
         """
         if "files" not in config:
             return
@@ -167,14 +167,38 @@ class ConfigValidator:
             if not entry.get("no_focus", False):
                 continue
 
-            # Check if command exists and starts with "start" as the first token
-            command = entry.get("command", "")
-            command_lower = command.strip().lower()
-            tokens = command_lower.split(None, 1)
-            if tokens and tokens[0] == "start":
+            # When no_focus=true, 'command' field must NOT be present
+            if "command" in entry:
                 error_msg = (
-                    f"[files] entry #{i + 1}: no_focus=trueの場合、shell=falseですので先頭にstartは書けません。"
-                    f"no_focus=falseにするか、startの前にcmd /cを追加することを検討してください"
+                    f"[files] entry #{i + 1}: no_focus=trueの場合、commandフィールドは使用できません。"
+                    f"代わりにargvフィールド（配列）を使用してください。例: argv = ['notepad.exe', 'file.txt']"
+                )
+                TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
+                ErrorLogger.log_error(error_log_file, error_msg, None)
+                sys.exit(1)
+
+            # When no_focus=true, 'argv' field MUST be present and must be an array
+            if "argv" not in entry:
+                error_msg = (
+                    f"[files] entry #{i + 1}: no_focus=trueの場合、argvフィールド（配列）が必須です。"
+                    f"例: argv = ['notepad.exe', 'file.txt']"
+                )
+                TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
+                ErrorLogger.log_error(error_log_file, error_msg, None)
+                sys.exit(1)
+
+            # Validate that argv is an array
+            argv = entry.get("argv")
+            if not isinstance(argv, list):
+                error_msg = f"[files] entry #{i + 1}: argvフィールドは配列でなければなりません。例: argv = ['notepad.exe', 'file.txt']"
+                TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
+                ErrorLogger.log_error(error_log_file, error_msg, None)
+                sys.exit(1)
+
+            # Validate that argv is not empty
+            if len(argv) == 0:
+                error_msg = (
+                    f"[files] entry #{i + 1}: argvフィールドは空の配列にできません。少なくとも実行ファイル名が必要です"
                 )
                 TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
                 ErrorLogger.log_error(error_log_file, error_msg, None)

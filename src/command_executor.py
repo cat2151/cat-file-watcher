@@ -3,7 +3,6 @@
 Command executor for File Watcher
 """
 
-import shlex
 import subprocess
 import sys
 from datetime import datetime
@@ -29,10 +28,10 @@ class CommandExecutor:
         """Execute a shell command if the conditions are met.
 
         Args:
-            command: The shell command to execute
+            command: The shell command to execute (ignored if no_focus is enabled)
             filepath: The path to the file that changed
             settings: Dictionary containing file-specific settings.
-                Optional keys: suppress_if_process, enable_log,
+                Optional keys: suppress_if_process, enable_log, argv,
                 terminate_if_process, terminate_if_window_title
             config: Optional global configuration dictionary containing log_file
         """
@@ -93,39 +92,49 @@ class CommandExecutor:
         """Execute a shell command and handle the result.
 
         Args:
-            command: The shell command to execute
+            command: The shell command to execute (ignored if no_focus is enabled)
             filepath: The path to the file that changed
             settings: Dictionary containing file-specific settings
             config: Optional global configuration dictionary
         """
+        error_log_file = config.get("error_log_file") if config else None
+        cwd = settings.get("cwd")
+        no_focus = settings.get("no_focus", False)
+
+        # Determine the command to display and execute
+        if no_focus:
+            # For no_focus, use argv array
+            argv = settings.get("argv", [])
+            display_command = " ".join(argv)
+        else:
+            # For normal execution, use command string
+            display_command = command
+
         # Color only the command part in green for emphasis
         # For empty filename, show the command directly instead of "for ''"
         if filepath == "":
-            message = f"Executing command: {Fore.GREEN}{command}{Style.RESET_ALL}"
+            message = f"Executing command: {Fore.GREEN}{display_command}{Style.RESET_ALL}"
         else:
-            message = f"Executing command for '{filepath}': {Fore.GREEN}{command}{Style.RESET_ALL}"
+            message = f"Executing command for '{filepath}': {Fore.GREEN}{display_command}{Style.RESET_ALL}"
         TimestampPrinter.print(message)
 
         # Write to log file if enabled
         if settings.get("enable_log", False) and config and config.get("log_file"):
             CommandExecutor._write_to_log(filepath, settings, config)
 
-        error_log_file = config.get("error_log_file") if config else None
-        cwd = settings.get("cwd")
-        no_focus = settings.get("no_focus", False)
-
         try:
             # Use capture_output=False to allow real-time output for long-running commands
             if no_focus:
                 # When no_focus is enabled, prevent focus stealing with platform-specific mechanisms
-                result = CommandExecutor._run_no_focus_command(command, cwd)
+                argv = settings.get("argv", [])
+                result = CommandExecutor._run_no_focus_command(argv, cwd)
             else:
                 # Default behavior: use shell=True
                 result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
-            CommandExecutor._handle_command_result(result, command, filepath, error_log_file)
+            CommandExecutor._handle_command_result(result, display_command, filepath, error_log_file)
         except subprocess.TimeoutExpired as e:
             if filepath == "":
-                error_msg = f"Command timed out after 30 seconds: {command}"
+                error_msg = f"Command timed out after 30 seconds: {display_command}"
             else:
                 error_msg = f"Command timed out after 30 seconds for '{filepath}'"
             TimestampPrinter.print(f"Error: {error_msg}", Fore.RED)
@@ -133,7 +142,7 @@ class CommandExecutor:
             raise
         except Exception as e:
             if filepath == "":
-                error_msg = f"Error executing command: {command}"
+                error_msg = f"Error executing command: {display_command}"
             else:
                 error_msg = f"Error executing command for '{filepath}'"
             TimestampPrinter.print(f"{error_msg}: {e}", Fore.RED)
@@ -141,7 +150,7 @@ class CommandExecutor:
             raise
 
     @staticmethod
-    def _run_no_focus_command(command, cwd):
+    def _run_no_focus_command(argv, cwd):
         """Run a command without stealing focus (Windows only, asynchronous).
 
         This method launches the command asynchronously and does not wait for it to complete.
@@ -153,7 +162,7 @@ class CommandExecutor:
            This provides additional protection against focus stealing
 
         Args:
-            command: The shell command to execute
+            argv: Array of command arguments [executable, arg1, arg2, ...]
             cwd: Working directory for the command
 
         Returns:
@@ -164,12 +173,9 @@ class CommandExecutor:
             TimestampPrinter.print(
                 "Warning: no_focus is only supported on Windows. Falling back to normal execution.", Fore.YELLOW
             )
-            # Fallback to normal execution
-            result = subprocess.run(command, shell=True, capture_output=False, text=True, timeout=30, cwd=cwd)
+            # Fallback to normal execution - on non-Windows, just run the command
+            result = subprocess.run(argv, shell=False, capture_output=False, text=True, timeout=30, cwd=cwd)
             return result
-
-        # Use shlex.split for proper argument parsing (handles quotes, escapes, etc.)
-        command_args = shlex.split(command)
 
         # Windows-specific: Show window without stealing focus
         # SW_SHOWNOACTIVATE (4) shows the window without activating it
@@ -195,7 +201,7 @@ class CommandExecutor:
 
         # Launch asynchronously - don't wait for the process to complete
         subprocess.Popen(
-            command_args,
+            argv,
             shell=False,
             cwd=cwd,
             startupinfo=startupinfo,
