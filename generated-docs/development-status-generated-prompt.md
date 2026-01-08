@@ -1,4 +1,4 @@
-Last updated: 2026-01-04
+Last updated: 2026-01-09
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -221,6 +221,7 @@ Last updated: 2026-01-04
 - issue-notes/127.md
 - issue-notes/129.md
 - issue-notes/131.md
+- issue-notes/133.md
 - issue-notes/62.md
 - issue-notes/71.md
 - issue-notes/78.md
@@ -281,32 +282,31 @@ Last updated: 2026-01-04
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+52056a0 Auto-translate README.ja.md to README.md [auto]
+3c0a70e Merge pull request #134 from cat2151/copilot/fix-no-focus-command-error
+c4346f2 Address PR review comments: fix argv handling and TOML syntax in errors
+34142ad Fix code review comments: simplify error message formatting
+572ea89 Update documentation for no_focus argv requirement
+8eaa42f Implement breaking change: no_focus requires argv array instead of command
+18479d6 Add issue note for #133 [auto]
+9348bc9 Initial plan
+eb46202 Update project summaries (overview & development status) [auto]
 8d5c700 Auto-translate README.ja.md to README.md [auto]
-7cf7077 Add DeepWiki badge to Japanese README
-99f7347 Update project summaries (overview & development status) [auto]
-453e883 Merge pull request #132 from cat2151/copilot/add-validation-for-no-focus
-5595da6 Fix docstring: clarify tab character notation
-cc61e3d Apply code review feedback: improve validation and test structure
-f2b5978 Improve validation to catch 'start' without arguments
-e3b0027 Fix test name and docstring for cmd /c start test
-30425a6 Add validation for no_focus with start command
-b38b5bd Initial plan
 
 ### 変更されたファイル:
 README.ja.md
 README.md
+examples/config.example.toml
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-issue-notes/131.md
-src/cat_file_watcher.py
-src/config_loader.py
+issue-notes/133.md
+src/command_executor.py
 src/config_validator.py
-tests/test_issue_129.py
+tests/test_no_focus.py
 tests/test_no_focus_validation.py
-tests/test_timestamp_reset_on_reload.py
 
 
 ---
-Generated at: 2026-01-04 07:01:28 JST
+Generated at: 2026-01-09 07:01:35 JST
