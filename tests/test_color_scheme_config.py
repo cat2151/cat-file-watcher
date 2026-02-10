@@ -88,3 +88,42 @@ command = "echo ok"
         assert Fore.RED == "\033[38;2;10;20;30m"
     finally:
         os.unlink(config_path)
+
+
+def test_custom_color_scheme_accepts_whitespace_in_components():
+    """RGB values with spaces should be parsed."""
+    config_path = _write_config(
+        """
+[color_scheme]
+red = "10, 20, 30"
+
+[[files]]
+path = ""
+command = "echo ok"
+"""
+    )
+    try:
+        ConfigLoader.load_config(config_path)
+        assert Fore.RED == "\033[38;2;10;20;30m"
+    finally:
+        os.unlink(config_path)
+
+
+def test_invalid_38_2_segment_falls_back_to_default_component():
+    """Invalid 38;2 segment should not override the default palette."""
+    default_red = Fore.RED
+    config_path = _write_config(
+        """
+[color_scheme]
+red = "38;2;999;999;999"
+
+[[files]]
+path = ""
+command = "echo ok"
+"""
+    )
+    try:
+        ConfigLoader.load_config(config_path)
+        assert Fore.RED == default_red
+    finally:
+        os.unlink(config_path)

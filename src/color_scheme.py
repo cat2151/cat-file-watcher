@@ -109,14 +109,25 @@ class ColorScheme:
 
         # RGB components separated by commas or semicolons (e.g., 255,0,0 or 255;0;0)
         rgb_parts = re.split(r"[;,]", value)
-        if len(rgb_parts) == 3 and all(part.isdigit() for part in rgb_parts):
-            r, g, b = (int(part) for part in rgb_parts)
+        stripped_parts = [part.strip() for part in rgb_parts]
+        if len(stripped_parts) == 3 and all(part.isdigit() for part in stripped_parts):
+            r, g, b = (int(part) for part in stripped_parts)
             if all(0 <= val <= 255 for val in (r, g, b)):
                 return f"\033[38;2;{r};{g};{b}m"
 
         # Partial ANSI segment (e.g., 38;2;255;0;0)
         if value.startswith("38;2;"):
-            return f"\033[{value}m"
+            parts = value.split(";")
+            if (
+                len(parts) == 5
+                and parts[0] == "38"
+                and parts[1] == "2"
+                and all(component.strip().isdigit() for component in parts[2:])
+            ):
+                r, g, b = (int(component) for component in parts[2:])
+                if all(0 <= val <= 255 for val in (r, g, b)):
+                    return f"\033[38;2;{r};{g};{b}m"
+            return None
 
         return None
 
