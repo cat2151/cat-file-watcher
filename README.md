@@ -140,6 +140,7 @@ The configuration file requires a `[files]` section where each entry maps a file
 - `log_file` (optional): Path to the log file for recording command execution details. If set, command execution information (timestamp, path, TOML configuration content) for files or directories with `enable_log = true` will be recorded in this file.
 - `error_log_file` (optional): Path to the error log file for recording command execution error details. If set, detailed information such as error messages, executed commands, standard error output, and stack traces on command failure will be recorded in this file.
 - `suppression_log_file` (optional): Path to the log file for recording command execution suppression details. If set, information (timestamp, file path, process pattern, matched process) when command execution is skipped due to `suppress_if_process` will be recorded in this file.
+- `color_scheme` (optional): Terminal color palette. Supported values: `monokai` (default) or `classic`. To use custom colors, define a `[color_scheme]` table with `green`, `yellow`, and `red` specified as `#RRGGBB` or `38;2;R;G;B` values.
 
 ### Time Period Settings
 
