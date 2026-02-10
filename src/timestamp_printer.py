@@ -8,8 +8,16 @@ from datetime import datetime
 
 from colorama import Style, init
 
+# Support both relative and absolute imports
+try:
+    from .color_scheme import ColorScheme
+except ImportError:
+    from color_scheme import ColorScheme
+
 # Initialize colorama for cross-platform colored terminal output
 init(autoreset=True)
+# Ensure default color palette is applied at startup
+ColorScheme.reset_to_default()
 
 
 class TimestampPrinter:

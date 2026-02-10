@@ -10,12 +10,14 @@ from colorama import Fore
 
 # Support both relative and absolute imports
 try:
+    from .color_scheme import ColorScheme
     from .config_validator import ConfigValidator
     from .error_logger import ErrorLogger
     from .external_config_merger import ExternalConfigMerger
     from .interval_parser import IntervalParser
     from .timestamp_printer import TimestampPrinter
 except ImportError:
+    from color_scheme import ColorScheme
     from config_validator import ConfigValidator
     from error_logger import ErrorLogger
     from external_config_merger import ExternalConfigMerger
@@ -64,6 +66,17 @@ class ConfigLoader:
 
             # Validate no_focus commands don't use 'start' (after merging)
             ConfigValidator.validate_no_focus_commands(config, error_log_file)
+
+            # Apply color scheme from config (default: monokai)
+            configured_scheme = config.get("color_scheme", ColorScheme.DEFAULT_COLOR_SCHEME)
+            applied_scheme, used_default = ColorScheme.apply(configured_scheme)
+            config["color_scheme"] = applied_scheme
+            if used_default and configured_scheme is not None:
+                supported = ", ".join(ColorScheme.get_supported_schemes())
+                TimestampPrinter.print(
+                    f"Warning: Unsupported color_scheme '{configured_scheme}'. Using default '{ColorScheme.DEFAULT_COLOR_SCHEME}'. Supported schemes: {supported}",
+                    Fore.YELLOW,
+                )
 
             return config
         except FileNotFoundError as e:
