@@ -1,4 +1,4 @@
-Last updated: 2026-01-09
+Last updated: 2026-02-11
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -203,6 +203,7 @@ night_shift = { start = "23:00", end = "01:00" }
 - `log_file` (省略可): コマンド実行の詳細を記録するログファイルのパス。設定すると、`enable_log = true` が指定されたファイルまたはディレクトリのコマンド実行情報（タイムスタンプ、パス、TOML設定内容）がこのファイルに記録されます
 - `error_log_file` (省略可): コマンド実行エラーの詳細を記録するエラーログファイルのパス。設定すると、コマンド失敗時のエラーメッセージ、実行コマンド、標準エラー出力、スタックトレースなどの詳細情報がこのファイルに記録されます
 - `suppression_log_file` (省略可): コマンド実行抑制の詳細を記録するログファイルのパス。設定すると、`suppress_if_process` によりコマンド実行がスキップされた際の情報（タイムスタンプ、ファイルパス、プロセスパターン、マッチしたプロセス）がこのファイルに記録されます
+- `color_scheme` (省略可): ターミナル出力の配色。`monokai`（デフォルト）または`classic`を指定できます。カスタム色を使う場合は `[color_scheme]` テーブルで `green`、`yellow`、`red` を `#RRGGBB`、`R,G,B`、`R;G;B`、`38;2;R;G;B`、または ANSI エスケープシーケンス（例: `\x1b[38;2;255;60;80m`）形式で指定してください。
 
 
 ### 時間帯設定
@@ -413,6 +414,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📖 129.md
   📖 131.md
   📖 133.md
+  📖 135.md
   📖 62.md
   📖 71.md
   📖 78.md
@@ -423,6 +425,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 __init__.py
   📄 __main__.py
   📄 cat_file_watcher.py
+  📄 color_scheme.py
   📄 command_executor.py
   📄 config_loader.py
   📄 config_validator.py
@@ -436,6 +439,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
 📁 tests/
   📄 test_basics.py
   📄 test_cat_file_watcher.py
+  📄 test_color_scheme_config.py
   📄 test_colorama.py
   📄 test_command_logging.py
   📄 test_command_suppression.py
@@ -491,6 +495,7 @@ issue-notes/127.md
 issue-notes/129.md
 issue-notes/131.md
 issue-notes/133.md
+issue-notes/135.md
 issue-notes/62.md
 issue-notes/71.md
 issue-notes/78.md
@@ -505,4 +510,4 @@ issue-notes/78.md
 
 
 ---
-Generated at: 2026-01-09 07:01:35 JST
+Generated at: 2026-02-11 07:11:37 JST

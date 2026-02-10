@@ -1,4 +1,4 @@
-Last updated: 2026-01-09
+Last updated: 2026-02-11
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -110,6 +110,7 @@ Last updated: 2026-01-09
 - .github/actions-tmp/.github/workflows/call-rust-windows-check.yml
 - .github/actions-tmp/.github/workflows/call-translate-readme.yml
 - .github/actions-tmp/.github/workflows/callgraph.yml
+- .github/actions-tmp/.github/workflows/check-large-files.yml
 - .github/actions-tmp/.github/workflows/check-recent-human-commit.yml
 - .github/actions-tmp/.github/workflows/daily-project-summary.yml
 - .github/actions-tmp/.github/workflows/issue-note.yml
@@ -132,6 +133,9 @@ Last updated: 2026-01-09
 - .github/actions-tmp/.github_automation/callgraph/scripts/find-process-results.cjs
 - .github/actions-tmp/.github_automation/callgraph/scripts/generate-html-graph.cjs
 - .github/actions-tmp/.github_automation/callgraph/scripts/generateHTML.cjs
+- .github/actions-tmp/.github_automation/check-large-files/README.md
+- .github/actions-tmp/.github_automation/check-large-files/check-large-files.toml.example
+- .github/actions-tmp/.github_automation/check-large-files/scripts/check_large_files.py
 - .github/actions-tmp/.github_automation/check_recent_human_commit/scripts/check-recent-human-commit.cjs
 - .github/actions-tmp/.github_automation/project_summary/docs/daily-summary-setup.md
 - .github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md
@@ -188,6 +192,9 @@ Last updated: 2026-01-09
 - .github/actions-tmp/issue-notes/29.md
 - .github/actions-tmp/issue-notes/3.md
 - .github/actions-tmp/issue-notes/30.md
+- .github/actions-tmp/issue-notes/31.md
+- .github/actions-tmp/issue-notes/33.md
+- .github/actions-tmp/issue-notes/35.md
 - .github/actions-tmp/issue-notes/4.md
 - .github/actions-tmp/issue-notes/7.md
 - .github/actions-tmp/issue-notes/8.md
@@ -222,6 +229,7 @@ Last updated: 2026-01-09
 - issue-notes/129.md
 - issue-notes/131.md
 - issue-notes/133.md
+- issue-notes/135.md
 - issue-notes/62.md
 - issue-notes/71.md
 - issue-notes/78.md
@@ -231,6 +239,7 @@ Last updated: 2026-01-09
 - src/__init__.py
 - src/__main__.py
 - src/cat_file_watcher.py
+- src/color_scheme.py
 - src/command_executor.py
 - src/config_loader.py
 - src/config_validator.py
@@ -243,6 +252,7 @@ Last updated: 2026-01-09
 - src/timestamp_printer.py
 - tests/test_basics.py
 - tests/test_cat_file_watcher.py
+- tests/test_color_scheme_config.py
 - tests/test_colorama.py
 - tests/test_command_logging.py
 - tests/test_command_suppression.py
@@ -282,16 +292,12 @@ Last updated: 2026-01-09
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-52056a0 Auto-translate README.ja.md to README.md [auto]
-3c0a70e Merge pull request #134 from cat2151/copilot/fix-no-focus-command-error
-c4346f2 Address PR review comments: fix argv handling and TOML syntax in errors
-34142ad Fix code review comments: simplify error message formatting
-572ea89 Update documentation for no_focus argv requirement
-8eaa42f Implement breaking change: no_focus requires argv array instead of command
-18479d6 Add issue note for #133 [auto]
-9348bc9 Initial plan
-eb46202 Update project summaries (overview & development status) [auto]
-8d5c700 Auto-translate README.ja.md to README.md [auto]
+8403a07 Auto-translate README.ja.md to README.md [auto]
+ec10d3b Merge pull request #136 from cat2151/codex/add-color-settings-toml
+614e843 docs: clarify supported color formats and harden parser
+dd1ee12 feat: add configurable color scheme support
+26fa0af Initial plan
+766c864 Add issue note for #135 [auto]
 
 ### 変更されたファイル:
 README.ja.md
@@ -302,11 +308,16 @@ generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
 issue-notes/133.md
+issue-notes/135.md
+src/color_scheme.py
 src/command_executor.py
+src/config_loader.py
 src/config_validator.py
+src/timestamp_printer.py
+tests/test_color_scheme_config.py
 tests/test_no_focus.py
 tests/test_no_focus_validation.py
 
 
 ---
-Generated at: 2026-01-09 07:01:35 JST
+Generated at: 2026-02-11 07:11:37 JST
