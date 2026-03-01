@@ -137,6 +137,7 @@ class FileMonitor:
         # Check if command is specified
         if (
             "command" not in settings
+            and "argv" not in settings
             and "terminate_if_process" not in settings
             and "terminate_if_window_title" not in settings
         ):
@@ -181,7 +182,7 @@ class FileMonitor:
         # Check if timestamp changed
         elif current_timestamp != file_timestamps[entry_key]:
             TimestampPrinter.print(f"Detected change in '{filename}'")
-            CommandExecutor.execute_command(settings["command"], filename, settings, config)
+            CommandExecutor.execute_command(settings.get("command", ""), filename, settings, config)
             file_timestamps[entry_key] = current_timestamp
 
         return file_timestamps

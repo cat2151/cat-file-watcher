@@ -197,6 +197,42 @@ no_focus = true
         self.assertTrue(config["files"][0]["no_focus"])
         self.assertEqual(config["files"][0]["argv"], ["python", "-c", "print('hello world')"])
 
+    def test_no_focus_with_argv_should_not_warn_no_command(self):
+        """Test that no_focus=true with argv does not produce 'No command specified' warning."""
+        import io
+        from unittest.mock import patch
+
+        from file_monitor import FileMonitor
+
+        # Entry with no_focus=true and argv but no command
+        settings = {
+            "path": "test.txt",
+            "argv": ["notepad.exe", "test.txt"],
+            "no_focus": True,
+        }
+        # _should_process_entry should return True (no warning, entry is processed)
+        captured_output = io.StringIO()
+        with patch("sys.stdout", captured_output):
+            result = FileMonitor._should_process_entry("test.txt", settings, None)
+        self.assertTrue(result)
+        self.assertNotIn("No command specified", captured_output.getvalue())
+
+    def test_no_command_and_no_argv_should_warn(self):
+        """Test that an entry with neither command nor argv produces 'No command specified' warning."""
+        import io
+        from unittest.mock import patch
+
+        from file_monitor import FileMonitor
+
+        # Entry with no command and no argv
+        settings = {"path": "test.txt"}
+        # _should_process_entry should return False (warning printed, entry skipped)
+        captured_output = io.StringIO()
+        with patch("sys.stdout", captured_output):
+            result = FileMonitor._should_process_entry("test.txt", settings, None)
+        self.assertFalse(result)
+        self.assertIn("No command specified", captured_output.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
