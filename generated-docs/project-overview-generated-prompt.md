@@ -1,4 +1,4 @@
-Last updated: 2026-02-11
+Last updated: 2026-03-03
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -405,16 +405,8 @@ MIT License - 詳細はLICENSEファイルを参照してください
 📁 generated-docs/
 🌐 googled947dc864c270e07.html
 📁 issue-notes/
-  📖 117.md
-  📖 119.md
-  📖 121.md
-  📖 123.md
-  📖 125.md
-  📖 127.md
-  📖 129.md
-  📖 131.md
-  📖 133.md
-  📖 135.md
+  📖 137.md
+  📖 139.md
   📖 62.md
   📖 71.md
   📖 78.md
@@ -486,16 +478,8 @@ MIT License - 詳細はLICENSEファイルを参照してください
 README.ja.md
 README.md
 googled947dc864c270e07.html
-issue-notes/117.md
-issue-notes/119.md
-issue-notes/121.md
-issue-notes/123.md
-issue-notes/125.md
-issue-notes/127.md
-issue-notes/129.md
-issue-notes/131.md
-issue-notes/133.md
-issue-notes/135.md
+issue-notes/137.md
+issue-notes/139.md
 issue-notes/62.md
 issue-notes/71.md
 issue-notes/78.md
@@ -510,4 +494,4 @@ issue-notes/78.md
 
 
 ---
-Generated at: 2026-02-11 07:11:37 JST
+Generated at: 2026-03-03 07:04:49 JST
