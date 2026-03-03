@@ -43,6 +43,13 @@ config_check_interval = "1s"
 # Log includes: timestamp, process pattern regex, and the actual matched process name
 # suppression_log_file = "suppression.log"
 
+# Optional: Automatic repository update check
+# When [auto_update] is present, a background thread periodically checks the git remote
+# for updates and optionally pulls and restarts the process.
+# [auto_update]
+# enabled = true   # false (default) = dry-run: notify only; true = git pull + restart
+# interval = "1h"  # How often to check for updates (default: "1h")
+
 # Optional: Define time periods for file monitoring
 # Files can specify a time_period to only be monitored during certain hours
 # Time periods support spanning across midnight (e.g., 23:00-01:00)
