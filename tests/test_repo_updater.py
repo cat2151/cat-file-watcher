@@ -144,6 +144,16 @@ class TestRepoUpdaterGitCommands:
         updater._run_git_command = lambda args: (1, "", "merge conflict")
         assert updater._pull() is False
 
+    def test_restart_disables_auto_update_on_oserror(self):
+        """_restart catches OSError, logs a message, and sets enabled=False."""
+        updater = self._make_updater()
+        updater.enabled = True
+
+        with patch("os.execv", side_effect=OSError("permission denied")):
+            updater._restart()
+
+        assert updater.enabled is False
+
 
 class TestRepoUpdaterDryRun:
     """Test dry-run behaviour (no pull, no restart)."""
@@ -157,11 +167,7 @@ class TestRepoUpdaterDryRun:
         updater._pull = lambda: pull_called.append(True) or True
         updater._restart = lambda: None  # should never be called
 
-        # Manually run one iteration of the check loop logic (without sleeping)
-        updater._stop_event.set()  # stop immediately after first wait returns False
-        updater._stop_event.clear()
-
-        # Simulate one loop body
+        # Simulate one iteration of the check-loop body (without sleeping)
         if updater._has_updates():
             if updater.enabled:
                 updater._pull()
@@ -209,6 +215,23 @@ class TestRepoUpdaterThread:
         updater.start()
         updater.stop()
         assert updater._stop_event.is_set()
+
+    def test_check_loop_runs_immediately_before_first_sleep(self):
+        """_check_loop performs a check immediately without waiting first."""
+        check_called = []
+
+        updater = RepoUpdater({"auto_update": {"interval": "1h"}})
+
+        def fake_do_check():
+            check_called.append(True)
+            # After first call, stop the loop so the test doesn't hang
+            updater._stop_event.set()
+
+        updater._do_check = fake_do_check
+        updater.start()
+        updater._thread.join(timeout=2)
+
+        assert check_called, "_do_check should have been called immediately on start"
 
 
 class TestFileWatcherAutoUpdate:

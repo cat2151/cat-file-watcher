@@ -272,5 +272,6 @@ class FileWatcher:
                 time.sleep(interval)
         except KeyboardInterrupt:
             TimestampPrinter.print("\nStopping file watcher...")
+        finally:
             if self._repo_updater is not None:
                 self._repo_updater.stop()

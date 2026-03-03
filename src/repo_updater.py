@@ -112,28 +112,42 @@ class RepoUpdater:
     def _restart(self):
         """Replace the current process with a fresh instance (self-restart)."""
         TimestampPrinter.print("Restarting...", Fore.GREEN)
-        os.execv(sys.executable, [sys.executable] + sys.argv)
+        try:
+            os.execv(sys.executable, [sys.executable] + sys.argv)
+        except OSError as exc:
+            TimestampPrinter.print(
+                f"Error: failed to restart process via execv: {exc}. "
+                "Disabling automatic repository updates to avoid repeated restart attempts.",
+                Fore.RED,
+            )
+            self.enabled = False
+
+    def _do_check(self):
+        """Perform one update-check iteration (fetch, compare, pull/restart if needed)."""
+        TimestampPrinter.print("Checking for repository updates...", Fore.GREEN)
+        if self._has_updates():
+            if self.enabled:
+                TimestampPrinter.print("Repository updates found. Pulling and restarting...", Fore.GREEN)
+                if self._pull():
+                    self._restart()
+            else:
+                TimestampPrinter.print(
+                    "Repository updates available. "
+                    "(dry-run: set auto_update.enabled = true to pull and restart automatically)",
+                    Fore.YELLOW,
+                )
+        else:
+            TimestampPrinter.print("No repository updates found.", Fore.GREEN)
 
     def _check_loop(self):
-        """Background thread: sleep for *interval*, then check for updates."""
-        while not self._stop_event.wait(self.interval):
+        """Background thread: check immediately, then repeat every *interval*."""
+        while True:
             try:
-                TimestampPrinter.print("Checking for repository updates...", Fore.GREEN)
-                if self._has_updates():
-                    if self.enabled:
-                        TimestampPrinter.print("Repository updates found. Pulling and restarting...", Fore.GREEN)
-                        if self._pull():
-                            self._restart()
-                    else:
-                        TimestampPrinter.print(
-                            "Repository updates available. "
-                            "(dry-run: set auto_update.enabled = true to pull and restart automatically)",
-                            Fore.YELLOW,
-                        )
-                else:
-                    TimestampPrinter.print("No repository updates found.", Fore.GREEN)
+                self._do_check()
             except Exception as e:
                 TimestampPrinter.print(f"Warning: Error during repository update check: {e}", Fore.YELLOW)
+            if self._stop_event.wait(self.interval):
+                break
 
     def start(self):
         """Start the background update-check thread (daemon thread)."""
