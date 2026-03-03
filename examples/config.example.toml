@@ -44,8 +44,11 @@ config_check_interval = "1s"
 # suppression_log_file = "suppression.log"
 
 # Optional: Automatic repository update check
-# When [auto_update] is present, a background thread periodically checks the git remote
-# for updates and optionally pulls and restarts the process.
+# When [auto_update] is present, a background thread periodically checks the git
+# upstream tracking branch for updates and optionally pulls and restarts the process.
+# NOTE: Requires a configured upstream tracking branch (e.g. via
+# 'git branch --set-upstream-to' or cloning with a default upstream); without it,
+# updates will never be detected.
 # [auto_update]
 # enabled = true   # false (default) = dry-run: notify only; true = git pull + restart
 # interval = "1h"  # How often to check for updates (default: "1h")

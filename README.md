@@ -142,6 +142,21 @@ The configuration file requires a `[files]` section, where each entry maps a fil
 - `suppression_log_file` (optional): The path to the log file for recording details of command execution suppression. If set, information (timestamp, file path, process pattern, matched process) when command execution is skipped due to `suppress_if_process` will be recorded in this file.
 - `color_scheme` (optional): The color scheme for terminal output. Can be `monokai` (default) or `classic`. To use custom colors, specify `green`, `yellow`, and `red` in the `[color_scheme]` table using `#RRGGBB`, `R,G,B`, `R;G;B`, `38;2;R;G;B`, or ANSI escape sequence format (e.g., `\x1b[38;2;255;60;80m`).
 
+### Auto-Update Configuration
+
+You can configure automatic git repository update checking with the optional `[auto_update]` section. When present, a background thread periodically checks the remote repository for updates:
+
+- `enabled` (optional): When set to `true`, performs a `git pull` and restarts the process when updates are found. Default is `false` (dry-run mode: notifies about available updates without pulling or restarting).
+- `interval` (optional): The interval between update checks. Specified in time format ("1s", "2m", "3h", etc.). Default is `"1h"` (1 hour).
+
+If the `[auto_update]` table is absent from the configuration file, the background thread will not start. Additionally, if the current branch has no configured upstream tracking branch (`@{u}`), updates will never be detected and `git pull` will not be executed.
+
+```toml
+[auto_update]
+enabled = true   # false (default) = dry-run: notify only; true = git pull + restart
+interval = "1h"  # Update check interval (default: 1 hour)
+```
+
 ### Time Period Configuration
 
 You can define time periods in the `[time_periods]` section (optional):
