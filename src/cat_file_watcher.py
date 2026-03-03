@@ -15,6 +15,7 @@ try:
     from .file_monitor import FileMonitor
     from .interval_parser import IntervalParser
     from .process_detector import ProcessDetector
+    from .repo_updater import RepoUpdater
     from .timestamp_printer import TimestampPrinter
 except ImportError:
     from config_loader import ConfigLoader
@@ -22,6 +23,7 @@ except ImportError:
     from file_monitor import FileMonitor
     from interval_parser import IntervalParser
     from process_detector import ProcessDetector
+    from repo_updater import RepoUpdater
     from timestamp_printer import TimestampPrinter
 
 
@@ -45,6 +47,9 @@ class FileWatcher:
         # Configure timestamp display from config (default: True)
         enable_timestamp = self.config.get("enable_timestamp", True)
         TimestampPrinter.set_enable_timestamp(enable_timestamp)
+
+        # Set up auto-update checker (only active when [auto_update] is in config)
+        self._repo_updater = RepoUpdater(self.config) if "auto_update" in self.config else None
 
     def _get_file_timestamp(self, filepath):
         """Get the modification timestamp of a file (backward compatibility)."""
@@ -257,6 +262,9 @@ class FileWatcher:
         TimestampPrinter.print(f"Checking for changes every {interval} second(s)...")
         TimestampPrinter.print("Press Ctrl+C to stop.")
 
+        if self._repo_updater is not None:
+            self._repo_updater.start()
+
         try:
             while True:
                 self._check_config_file()
@@ -264,3 +272,5 @@ class FileWatcher:
                 time.sleep(interval)
         except KeyboardInterrupt:
             TimestampPrinter.print("\nStopping file watcher...")
+            if self._repo_updater is not None:
+                self._repo_updater.stop()
