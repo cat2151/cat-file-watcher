@@ -1,50 +1,51 @@
-Last updated: 2026-03-03
+Last updated: 2026-03-04
 
 # Development Status
 
 ## 現在のIssues
-- `[Issue #139](../issue-notes/139.md)` は、別スレッドで1時間ごとにリポジトリの更新をチェックし、必要に応じて`git pull`とアプリケーションの再起動を行う自動アップデート機能の実装を提案しています。
-- この機能により、ユーザーは手動でのリポジトリ更新確認とアプリケーション再起動の手間が不要になります。
-- 自動アップデートはデフォルトでdry-runモードで動作し、`toml`設定を通じて自動再起動を有効にすることが可能です。
+- [Issue #142](../issue-notes/142.md) は、`auto_update` TOML設定のドキュメント化がREADMEファイルに追加され完了している。
+- [Issue #141](../issue-notes/141.md) は、[Issue #139](../issue-notes/139.md) で実装されたリポジトリの自動更新機能の検証方法が不明確である点が課題となっている。
+- 最近のコミット履歴を見ると、自動更新機能自体はマージされており、関連する警告修正も含まれている。
 
 ## 次の一手候補
-1.  自動更新チェック機能のプロトタイプ実装 `[Issue #139](../issue-notes/139.md)`
-    -   最初の小さな一歩: `src/` ディレクトリに `git_manager.py` を新規作成し、`git fetch` を実行してリモートリポジトリの更新があるかを検出する関数を実装する。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `src/git_manager.py` (新規作成)
+1. [Issue #141](../issue-notes/141.md) 自動更新機能（[Issue #139](../issue-notes/139.md)）の具体的な検証手順を明確化する
+   - 最初の小さな一歩: `src/repo_updater.py` と `src/cat_file_watcher.py` を分析し、`auto_update` 機能がどのようにリポジトリの更新を検知し、適用するかを特定する。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: `src/repo_updater.py`, `src/cat_file_watcher.py`
 
-        実行内容: `src/git_manager.py` を作成し、`subprocess` モジュールを使用して `git fetch origin` を実行後、`git rev-parse HEAD` と `git rev-parse origin/HEAD` (または現在のブランチのHEAD) を比較することで、リモートに新しいコミットが存在するかを判定する関数 `has_remote_updates()` を実装してください。この関数はブール値を返すべきです。
+     実行内容: `auto_update` 機能の実装詳細、特にリポジトリの更新検知と適用ロジックについて分析し、手動での検証に必要な手順の概要をmarkdown形式で出力してください。
 
-        確認事項: Gitコマンドが実行環境で利用可能であること。リポジトリがGit管理下にあること。Gitコマンド実行時のエラーハンドリングを考慮してください。
+     確認事項: `auto_update` のTOML設定（`enabled`, `interval`）がコードでどのように扱われているか、バックグラウンドスレッドの起動と停止の仕組みを確認してください。
 
-        期待する出力: `src/git_manager.py` の完全なコード。
-        ```
+     期待する出力: `auto_update` 機能の動作を検証するための、具体的な手順書（例: 特定の変更をコミットして`cat-file-watcher`を起動し、ログや挙動で更新を確認する方法）をmarkdown形式で生成してください。
+     ```
 
-2.  自動更新に関する設定項目を `toml` ファイルに追加 `[Issue #139](../issue-notes/139.md)`
-    -   最初の小さな一歩: `examples/config.example.toml` に `[auto_update]` セクションを追加し、`enabled = false`、`dry_run = true`、`interval_hours = 1` の設定項目を定義する。その後、`src/config_loader.py` を更新し、これらの新しい設定値を読み込めるようにする。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `src/config_loader.py`, `examples/config.example.toml`
+2. `README.ja.md`の`auto_update`設定の説明を具体化する（[Issue #142](../issue-notes/142.md)のフォローアップ）
+   - 最初の小さな一歩: `README.ja.md` と `examples/config.example.toml` を比較し、`auto_update` 設定の記述が網羅的かつ分かりやすいか確認する。特に、`[auto_update]`テーブルの形式と`enabled`、`interval`フィールドの説明に焦点を当てる。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: `README.ja.md`, `examples/config.example.toml`
 
-        実行内容: まず `examples/config.example.toml` に新しい `[auto_update]` セクションを追加し、`enabled = false` (bool型), `dry_run = true` (bool型), `interval_hours = 1` (int型) の設定項目を定義してください。次に、`src/config_loader.py` を更新し、これらの新しい設定項目をデフォルト値 (enabled=False, dry_run=True, interval_hours=1) と共に読み込むロジックを追加してください。特に `dry_run` はデフォルトで `True` になるように実装してください。
+     実行内容: `README.ja.md` の「グローバル設定」セクションに、`auto_update` のTOML設定(`[auto_update]`テーブル、`enabled`、`interval`フィールド)に関する記述を追加または修正する提案をmarkdown形式で出力してください。特に、`auto_update`がどのように動作するか、設定例を具体的に示すことを考慮してください。
 
-        確認事項: 既存の設定読み込みロジックとの整合性を保つこと。新しい設定項目が適切にパースされ、デフォルト値が正しく適用されること。
+     確認事項: 既存のTOML設定の説明形式（例: `default_interval`）との整合性を保ち、利用者が設定ファイルを簡単に作成できるよう具体的な書式例を含めることを確認してください。
 
-        期待する出力: `examples/config.example.toml` の更新内容と、`src/config_loader.py` の変更内容（`load_config` メソッドまたは関連する部分）。
-        ```
+     期待する出力: `README.ja.md` の該当セクションに追記する形で、`auto_update`設定の詳細な説明とTOMLでの記述例を含むmarkdownテキスト。
+     ```
 
-3.  メインアプリケーションでの自動更新定期実行スレッドの組み込み `[Issue #139](../issue-notes/139.md)`
-    -   最初の小さな一歩: `src/__main__.py` 内のメイン実行ブロックに、`threading.Thread` を利用して新しいスレッドを起動する処理を追加する。このスレッドは、`config_loader` から取得した `interval_hours` に基づいて `time.sleep()` を行い、ダミーの更新チェック関数を定期的に呼び出すループを持つようにする。
-    -   Agent実行プロンプト:
-        ```
-        対象ファイル: `src/__main__.py`
+3. [Issue #139](../issue-notes/139.md) 自動更新機能のテストカバレッジを拡充する
+   - 最初の小さな一歩: `tests/test_repo_updater.py` を分析し、現在のテストカバレッジを確認するとともに、不足しているテストケースを特定する。特に、実際のGitリポジトリ操作を模擬したテストや、異なる更新間隔での動作を検証するテストを検討する。
+   - Agent実行プロンプト:
+     ```
+     対象ファイル: `tests/test_repo_updater.py`, `src/repo_updater.py`
 
-        実行内容: `src/__main__.py` のメイン実行ブロックに、Pythonの `threading` モジュールを使用して新しいスレッドを生成するロジックを追加してください。このスレッドは、`config_loader` から読み込んだ `interval_hours` の値（デフォルトは1時間）を基に `time.sleep()` を行い、仮の `check_updates_dummy()` 関数を呼び出す無限ループを実行するようにしてください。スレッドはデーモンとして設定し、メインアプリケーションの終了時に自動的に終了するようにしてください。
+     実行内容: `auto_update`機能のバックグラウンドスレッドによるリポジトリ更新、エラーハンドリング、および異なる`interval`設定での動作をカバーするテストケースの追加提案をmarkdown形式で出力してください。特に、`pytest`の`mocker`や一時的なGitリポジトリを使ったテスト方法を検討してください。
 
-        確認事項: メインスレッドの実行に悪影響を与えないこと。アプリケーション終了時のスレッドのライフサイクル管理が適切であること。
+     確認事項: 既存のテスト構造との整合性を保ち、Gitコマンドのモック化や実際のファイルシステムへの影響を最小限にするためのアプローチを考慮してください。
 
-        期待する出力: `src/__main__.py` の変更内容。
+     期待する出力: `tests/test_repo_updater.py` に追加すべき具体的なテスト関数とテストロジックを含むmarkdownテキスト。
+     ```
 
 ---
-Generated at: 2026-03-03 07:05:08 JST
+Generated at: 2026-03-04 07:03:52 JST
