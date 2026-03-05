@@ -3,6 +3,7 @@
 Command executor for File Watcher
 """
 
+import shlex
 import subprocess
 import sys
 from datetime import datetime
@@ -106,13 +107,7 @@ class CommandExecutor:
             # For no_focus, use argv array
             argv = settings.get("argv", [])
             # Use shlex.join for proper quoting of arguments with spaces
-            try:
-                import shlex
-
-                display_command = shlex.join(argv)
-            except AttributeError:
-                # Python < 3.8 fallback: simple join (shlex.join added in 3.8)
-                display_command = " ".join(argv)
+            display_command = shlex.join(argv)
         else:
             # For normal execution, use command string
             display_command = command
@@ -240,6 +235,12 @@ class CommandExecutor:
         # Return a mock CompletedProcess object since we're not waiting
         # This maintains compatibility with the existing code structure
         class MockResult:
+            """Mock subprocess.CompletedProcess for async no-focus command launch.
+
+            Provides minimal interface with returncode=0 to maintain compatibility
+            with existing code structure when launching commands asynchronously.
+            """
+
             returncode = 0
 
         return MockResult()

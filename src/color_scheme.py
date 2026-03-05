@@ -2,13 +2,12 @@
 """Color scheme utilities for terminal output."""
 
 import re
-from typing import Dict, Tuple
 
 from colorama import Fore
 
 DEFAULT_COLOR_SCHEME = "monokai"
 
-_COLOR_SCHEMES: Dict[str, Dict[str, str]] = {
+_COLOR_SCHEMES: dict[str, dict[str, str]] = {
     # Monokai-inspired palette (24-bit color)
     "monokai": {
         "green": "\033[38;2;166;226;46m",
@@ -40,7 +39,7 @@ class ColorScheme:
         return sorted(_COLOR_SCHEMES.keys())
 
     @staticmethod
-    def apply(color_scheme) -> Tuple[str, bool]:
+    def apply(color_scheme) -> tuple[str, bool]:
         """Apply the requested color scheme.
 
         Args:
@@ -60,7 +59,7 @@ class ColorScheme:
         ColorScheme.apply(DEFAULT_COLOR_SCHEME)
 
     @staticmethod
-    def _resolve_palette(color_scheme) -> Tuple[str, Dict[str, str], bool]:
+    def _resolve_palette(color_scheme) -> tuple[str, dict[str, str], bool]:
         """Resolve palette from config value."""
         default_palette = _COLOR_SCHEMES[DEFAULT_COLOR_SCHEME]
 
@@ -75,7 +74,7 @@ class ColorScheme:
         return DEFAULT_COLOR_SCHEME, default_palette, True
 
     @staticmethod
-    def _build_custom_palette(config_palette: Dict[str, str]) -> Dict[str, str]:
+    def _build_custom_palette(config_palette: dict[str, str]) -> dict[str, str]:
         """Build a palette from user-provided color codes."""
         palette = _COLOR_SCHEMES[DEFAULT_COLOR_SCHEME].copy()
         for key in ("green", "yellow", "red"):
@@ -132,7 +131,7 @@ class ColorScheme:
         return None
 
     @staticmethod
-    def _set_palette(palette: Dict[str, str]):
+    def _set_palette(palette: dict[str, str]):
         """Apply palette values to colorama Fore."""
         Fore.GREEN = palette.get("green", _COLOR_SCHEMES[DEFAULT_COLOR_SCHEME]["green"])
         Fore.YELLOW = palette.get("yellow", _COLOR_SCHEMES[DEFAULT_COLOR_SCHEME]["yellow"])
