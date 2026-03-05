@@ -176,10 +176,9 @@ cat-file-watcher is a Python-based file change monitoring tool that watches for 
 
 ### Documentation
 
-- Keep README.md and README.ja.md in sync
+- README.ja.mdを更新せよ。README.mdは更新禁止（README.ja.mdからCIで自動生成されるため）
 - Update examples when configuration format changes
 - Document all configuration options clearly
-- Note when README.md is auto-generated from README.ja.md
 
 ## Code Formatting and Quality
 
