@@ -1,18 +1,18 @@
-# GitHub Copilot Instructions for cat-file-watcher
+# cat-file-watcher GitHub Copilot 指示書
 
-## Project Overview
+## プロジェクト概要
 
-cat-file-watcher is a Python-based file change monitoring tool that watches for file timestamp changes and executes commands when files are updated. It's a lightweight, configurable tool using TOML for configuration.
+cat-file-watcherは、ファイルのタイムスタンプ変化を監視し、ファイルが更新されたときにコマンドを実行するPythonベースのファイル変更監視ツールです。TOMLで設定できる軽量なツールです。
 
-## Code Style and Standards
+## コードスタイルと規約
 
-### Python Style
+### Pythonスタイル
 
-- Use Python 3.12+ compatible syntax
-- Follow PEP 8 style guidelines
-- Use descriptive variable and function names
-- Include shebang `#!/usr/bin/env python3` at the top of executable scripts
-- Support both relative and absolute imports for maximum compatibility:
+- Python 3.12+互換の構文を使用する
+- PEP 8スタイルガイドラインに従う
+- わかりやすい変数名・関数名を使用する
+- 実行可能スクリプトの先頭にシバン `#!/usr/bin/env python3` を記述する
+- 最大限の互換性のため、相対インポートと絶対インポートの両方をサポートする:
   ```python
   try:
       from .module import Class
@@ -20,204 +20,204 @@ cat-file-watcher is a Python-based file change monitoring tool that watches for 
       from module import Class
   ```
 
-### Documentation
+### ドキュメント
 
-- Add docstrings to all classes and public methods
-- Use triple-quoted strings with clear descriptions
-- Include Args, Returns, and Raises sections in docstrings when applicable
-- Example format:
+- すべてのクラスとpublicメソッドにdocstringを追加する
+- 明確な説明を持つトリプルクォート文字列を使用する
+- 該当する場合はdocstringにArgs、Returns、Raisesセクションを含める
+- 記述例:
   ```python
   def method_name(self, param):
-      """Brief description.
+      """概要説明。
 
       Args:
-          param: Description of parameter
+          param: パラメータの説明
 
       Returns:
-          type: Description of return value
+          type: 戻り値の説明
 
       Raises:
-          ErrorType: Description of when error is raised
+          ErrorType: エラーが発生する条件の説明
       """
   ```
 
-### Comments
+### コメント
 
-- Add comments to explain complex logic or non-obvious behavior
-- Use inline comments sparingly and only when necessary
-- Prefer self-documenting code over excessive comments
+- 複雑なロジックや非自明な動作を説明するためにコメントを追加する
+- インラインコメントは必要な場合にのみ控えめに使用する
+- 過剰なコメントよりも自己文書化コードを優先する
 
-## Testing
+## テスト
 
-### Test Framework
+### テストフレームワーク
 
-- Use Python's built-in `unittest` framework for all tests
-- Place all test files in the `tests/` directory
-- Name test files with prefix `test_` (e.g., `test_feature.py`)
-- Use descriptive test method names starting with `test_`
+- すべてのテストにPython組み込みの `unittest` フレームワークを使用する
+- すべてのテストファイルは `tests/` ディレクトリに配置する
+- テストファイルは `test_` プレフィックスで命名する（例: `test_feature.py`）
+- テストメソッド名は `test_` で始まるわかりやすい名前にする
 
-### Test Structure
+### テスト構造
 
-- Create a test class inheriting from `unittest.TestCase`
-- Use `setUp()` for test fixtures
-- Use `tearDown()` for cleanup
-- Use `tempfile.mkdtemp()` for temporary test directories
-- Clean up temporary files after tests
+- `unittest.TestCase` を継承したテストクラスを作成する
+- テストフィクスチャには `setUp()` を使用する
+- クリーンアップには `tearDown()` を使用する
+- 一時テストディレクトリには `tempfile.mkdtemp()` を使用する
+- テスト後に一時ファイルをクリーンアップする
 
-### Test Coverage
+### テストカバレッジ
 
-- Write tests for all new features and bug fixes
-- Include both positive and negative test cases
-- Test edge cases and error conditions
-- Validate error messages and exception handling
+- すべての新機能とバグ修正に対してテストを書く
+- 正常系と異常系の両方のテストケースを含める
+- エッジケースやエラー条件をテストする
+- エラーメッセージと例外処理を検証する
 
-## Configuration
+## 設定
 
-### TOML Configuration
+### TOML設定
 
-- Use TOML format for all configuration files
-- Configuration should support:
-  - `default_interval`: Default monitoring interval in milliseconds
-  - `config_check_interval`: Config file self-check interval in milliseconds
-  - `[files]` section: File-to-command mappings
-- File-specific settings include:
-  - `command` (required): Shell command to execute
-  - `interval` (optional): Custom interval in milliseconds
-  - `suppress_if_process` (optional): Regex pattern for process suppression
+- すべての設定ファイルにTOML形式を使用する
+- 設定でサポートすべき項目:
+  - `default_interval`: デフォルトの監視間隔（ミリ秒）
+  - `config_check_interval`: 設定ファイル自己チェック間隔（ミリ秒）
+  - `[files]` セクション: ファイルとコマンドのマッピング
+- ファイル固有の設定項目:
+  - `command`（必須）: 実行するシェルコマンド
+  - `interval`（任意）: カスタム間隔（ミリ秒）
+  - `suppress_if_process`（任意）: プロセス抑制のための正規表現パターン
 
-### Interval Handling
+### インターバル処理
 
-- All intervals are specified in milliseconds in configuration
-- Convert milliseconds to seconds using float division: `interval_ms / 1000.0`
-- This ensures proper float results (e.g., 500ms -> 0.5s, 250ms -> 0.25s)
+- すべてのインターバルは設定でミリ秒単位で指定する
+- ミリ秒から秒への変換にはfloat除算を使用する: `interval_ms / 1000.0`
+- これにより適切なfloat結果が得られる（例: 500ms → 0.5s、250ms → 0.25s）
 
-## Architecture
+## アーキテクチャ
 
-### Module Organization
+### モジュール構成
 
-- `cat_file_watcher.py`: Main FileWatcher class and monitoring logic
-- `config_loader.py`: TOML configuration loading and parsing
-- `command_executor.py`: Shell command execution with process suppression
-- `process_detector.py`: Process detection for command suppression
-- `__main__.py`: Entry point for command-line execution
+- `cat_file_watcher.py`: メインのFileWatcherクラスと監視ロジック
+- `config_loader.py`: TOML設定の読み込みと解析
+- `command_executor.py`: プロセス抑制付きシェルコマンド実行
+- `process_detector.py`: コマンド抑制のためのプロセス検出
+- `__main__.py`: コマンドライン実行のエントリーポイント
 
-### Design Principles
+### 設計原則
 
-- Keep modules focused on single responsibilities
-- Use static methods for utility functions that don't require instance state
-- Handle errors gracefully with informative error messages
-- Use `print()` for user-facing output and logging
+- モジュールは単一責任に集中させる
+- インスタンス状態を必要としないユーティリティ関数にはstaticメソッドを使用する
+- わかりやすいエラーメッセージでエラーを適切に処理する
+- ユーザー向け出力とログには `print()` を使用する
 
-## Error Handling
+## エラーハンドリング
 
-### Configuration Errors
+### 設定エラー
 
-- Catch `FileNotFoundError` for missing config files
-- Catch `toml.TomlDecodeError` for invalid TOML syntax
-- Print clear error messages to users
-- Exit with `sys.exit(1)` for fatal errors
+- 設定ファイルが見つからない場合は `FileNotFoundError` をキャッチする
+- 無効なTOML構文には `toml.TomlDecodeError` をキャッチする
+- ユーザーにわかりやすいエラーメッセージを表示する
+- 致命的なエラーには `sys.exit(1)` で終了する
 
-### Runtime Errors
+### ランタイムエラー
 
-- Handle `OSError` for file system operations
-- Handle `subprocess.TimeoutExpired` for command timeouts (30 seconds)
-- Catch general exceptions and provide helpful error messages
-- Continue operation when non-fatal errors occur
+- ファイルシステム操作には `OSError` を処理する
+- コマンドタイムアウト（30秒）には `subprocess.TimeoutExpired` を処理する
+- 一般的な例外をキャッチし、役立つエラーメッセージを提供する
+- 致命的でないエラーが発生しても処理を継続する
 
-## Security
+## セキュリティ
 
-### Command Execution
+### コマンド実行
 
-- Use `subprocess.run()` with appropriate parameters
-- Set `shell=True` for shell command execution (required for this tool's purpose)
-- Use `timeout=30` to prevent hanging commands
-- Capture both stdout and stderr with `capture_output=True`
+- 適切なパラメータで `subprocess.run()` を使用する
+- シェルコマンド実行には `shell=True` を設定する（このツールの用途上必要）
+- コマンドがハングするのを防ぐため `timeout=30` を使用する
+- `capture_output=True` でstdoutとstderrの両方をキャプチャする
 
-### Input Validation
+### 入力検証
 
-- Validate TOML configuration structure
-- Handle invalid regex patterns gracefully
-- Sanitize file paths appropriately
+- TOML設定の構造を検証する
+- 無効な正規表現パターンを適切に処理する
+- ファイルパスを適切にサニタイズする
 
-## Dependencies
+## 依存関係
 
-### Required Packages
+### 必須パッケージ
 
-- `toml>=0.10.2`: TOML configuration parsing
-- `psutil>=5.9.0`: Process detection and management
+- `toml>=0.10.2`: TOML設定の解析
+- `psutil>=5.9.0`: プロセスの検出と管理
 
-### Adding Dependencies
+### 依存関係の追加
 
-- Update `requirements.txt` with version constraints
-- Document new dependencies in README if user-facing
-- Ensure cross-platform compatibility
+- バージョン制約を `requirements.txt` に更新する
+- ユーザー向けの新しい依存関係はREADMEに記載する
+- クロスプラットフォームの互換性を確保する
 
-## Compatibility
+## 互換性
 
-### Platform Support
+### プラットフォームサポート
 
-- Support Linux, macOS, and Windows
-- Use `os.path` for cross-platform file path handling
-- Test process detection on multiple platforms
+- Linux、macOS、Windowsをサポートする
+- クロスプラットフォームのファイルパス処理には `os.path` を使用する
+- 複数のプラットフォームでプロセス検出をテストする
 
-### Python Version
+### Pythonバージョン
 
-- Maintain compatibility with Python 3.6+
-- Use features available in older Python versions when possible
-- Document minimum Python version requirements
+- Python 3.6+との互換性を維持する
+- 可能な場合は古いPythonバージョンで利用可能な機能を使用する
+- 最低Pythonバージョン要件を文書化する
 
-## Development Workflow
+## 開発ワークフロー
 
-### Issue Tracking
+### Issue追跡
 
-- Use issue notes in `issue-notes/` directory for problem tracking
-- Create markdown files named `{issue-number}.md`
-- Document conclusions, verification steps, and changes made
+- 問題追跡には `issue-notes/` ディレクトリのIssueノートを使用する
+- `{issue-number}.md` という名前のmarkdownファイルを作成する
+- 結論、検証手順、変更内容を記録する
 
-### Documentation
+### ドキュメント
 
 - README.ja.mdを更新せよ。README.mdは更新禁止（README.ja.mdからCIで自動生成されるため）
-- Update examples when configuration format changes
-- Document all configuration options clearly
+- 設定形式が変更されたらexamplesを更新する
+- すべての設定オプションを明確に文書化する
 
-## Code Formatting and Quality
+## コードフォーマットと品質
 
-### Before Committing Changes
+### コミット前の手順
 
-**IMPORTANT**: Always run the following commands before committing any Python code changes:
+**重要**: Pythonコードを変更する前に、必ず以下のコマンドを実行すること:
 
 ```bash
-# Format code with Ruff
+# Ruffでコードをフォーマット
 ruff format src/ tests/
 
-# Fix auto-fixable lint issues
+# 自動修正可能なlint問題を修正
 ruff check --fix src/ tests/
 
-# Verify formatting and linting (should pass with no errors)
+# フォーマットとlintを確認（エラーなしで通過すること）
 ruff format --check src/ tests/
 ruff check src/ tests/
 ```
 
-These steps are **mandatory** for all code changes. Failure to format code will result in:
-- PR review delays
-- Manual formatting required by maintainers
-- Potential PR rejection
+これらの手順はすべてのコード変更において**必須**です。フォーマットを怠ると以下の結果をまねく:
+- PRレビューの遅延
+- メンテナーによる手動フォーマットが必要になる
+- PRが却下される可能性がある
 
-### Why This Matters
+### なぜ重要か
 
-- The project enforces consistent code style using Ruff
-- GitHub Actions workflows for auto-formatting were removed due to security concerns (see issue #71)
-- Manual formatting before commit is the safest and most efficient approach
+- このプロジェクトはRuffを使用して一貫したコードスタイルを強制している
+- セキュリティ上の懸念から自動フォーマットのGitHub Actionsワークフローが削除された（issue #71参照）
+- コミット前の手動フォーマットが最も安全で効率的なアプローチである
 
-## Best Practices
+## ベストプラクティス
 
-- Write self-documenting code with clear variable names
-- Keep functions small and focused
-- Avoid premature optimization
-- Test changes thoroughly before committing
-- **Always run ruff format and ruff check before committing**
-- Use meaningful commit messages
-- Follow existing code patterns and conventions
+- わかりやすい変数名で自己文書化コードを書く
+- 関数は小さく、集中した内容にする
+- 早期最適化を避ける
+- コミット前に変更を徹底的にテストする
+- **コミット前に必ずruff formatとruff checkを実行する**
+- 意味のあるコミットメッセージを使用する
+- 既存のコードパターンと規約に従う
 
 # userからの指示
 - commit前にruff formatとruff check --fixを実行する
