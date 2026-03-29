@@ -1,4 +1,4 @@
-Last updated: 2026-03-29
+Last updated: 2026-03-30
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -473,6 +473,7 @@ MIT License - 詳細はLICENSEファイルを参照してください
   📄 test_repo_updater.py
   📄 test_suppression_logging.py
   📄 test_terminate_if_process.py
+  📄 test_terminate_if_process_array.py
   📄 test_terminate_if_window_title.py
   📄 test_terminate_message_color.py
   📄 test_time_periods.py
@@ -510,4 +511,4 @@ issue-notes/78.md
 
 
 ---
-Generated at: 2026-03-29 07:03:31 JST
+Generated at: 2026-03-30 07:04:16 JST
